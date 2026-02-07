@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Form, Head, Link, usePage } from '@inertiajs/vue3';
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import { ref, reactive } from 'vue';
+import { useAuthStore } from '@/stores/auth';
 import DeleteUser from '@/components/DeleteUser.vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -9,32 +9,50 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import { edit } from '@/routes/profile';
-import { send } from '@/routes/verification';
 import { type BreadcrumbItem } from '@/types';
 
-type Props = {
-    mustVerifyEmail: boolean;
-    status?: string;
-};
-
-defineProps<Props>();
+const authStore = useAuthStore();
 
 const breadcrumbItems: BreadcrumbItem[] = [
     {
         title: 'Profile settings',
-        href: edit().url,
+        href: '/settings/profile',
     },
 ];
 
-const page = usePage();
-const user = page.props.auth.user;
+const form = reactive({
+    name: authStore.user?.name ?? '',
+    email: authStore.user?.email ?? '',
+});
+
+const errors = reactive<Record<string, string>>({});
+const processing = ref(false);
+const recentlySuccessful = ref(false);
+
+const mustVerifyEmail = false;
+const status = ref('');
+
+function submit() {
+    processing.value = true;
+    errors.name = '';
+    errors.email = '';
+
+    setTimeout(() => {
+        if (authStore.user) {
+            authStore.user.name = form.name;
+            authStore.user.email = form.email;
+        }
+        processing.value = false;
+        recentlySuccessful.value = true;
+        setTimeout(() => {
+            recentlySuccessful.value = false;
+        }, 2000);
+    }, 500);
+}
 </script>
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbItems">
-        <Head title="Profile settings" />
-
         <h1 class="sr-only">Profile Settings</h1>
 
         <SettingsLayout>
@@ -45,18 +63,13 @@ const user = page.props.auth.user;
                     description="Update your name and email address"
                 />
 
-                <Form
-                    v-bind="ProfileController.update.form()"
-                    class="space-y-6"
-                    v-slot="{ errors, processing, recentlySuccessful }"
-                >
+                <form @submit.prevent="submit" class="space-y-6">
                     <div class="grid gap-2">
                         <Label for="name">Name</Label>
                         <Input
                             id="name"
                             class="mt-1 block w-full"
-                            name="name"
-                            :default-value="user.name"
+                            v-model="form.name"
                             required
                             autocomplete="name"
                             placeholder="Full name"
@@ -70,8 +83,7 @@ const user = page.props.auth.user;
                             id="email"
                             type="email"
                             class="mt-1 block w-full"
-                            name="email"
-                            :default-value="user.email"
+                            v-model="form.email"
                             required
                             autocomplete="username"
                             placeholder="Email address"
@@ -79,16 +91,15 @@ const user = page.props.auth.user;
                         <InputError class="mt-2" :message="errors.email" />
                     </div>
 
-                    <div v-if="mustVerifyEmail && !user.email_verified_at">
+                    <div v-if="mustVerifyEmail && !authStore.user?.email_verified_at">
                         <p class="-mt-4 text-sm text-muted-foreground">
                             Your email address is unverified.
-                            <Link
-                                :href="send()"
-                                as="button"
+                            <button
+                                type="button"
                                 class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
                             >
                                 Click here to resend the verification email.
-                            </Link>
+                            </button>
                         </p>
 
                         <div
@@ -102,6 +113,7 @@ const user = page.props.auth.user;
 
                     <div class="flex items-center gap-4">
                         <Button
+                            type="submit"
                             :disabled="processing"
                             data-test="update-profile-button"
                             >Save</Button
@@ -121,7 +133,7 @@ const user = page.props.auth.user;
                             </p>
                         </Transition>
                     </div>
-                </Form>
+                </form>
             </div>
 
             <DeleteUser />
