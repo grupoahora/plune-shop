@@ -1,6 +1,5 @@
 import type { ComputedRef, Ref } from 'vue';
 import { computed, ref } from 'vue';
-import { qrCode, recoveryCodes, secretKey } from '@/routes/two-factor';
 
 export type UseTwoFactorAuthReturn = {
     qrCodeSvg: Ref<string | null>;
@@ -17,18 +16,6 @@ export type UseTwoFactorAuthReturn = {
     fetchRecoveryCodes: () => Promise<void>;
 };
 
-const fetchJson = async <T>(url: string): Promise<T> => {
-    const response = await fetch(url, {
-        headers: { Accept: 'application/json' },
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to fetch: ${response.status}`);
-    }
-
-    return response.json();
-};
-
 const errors = ref<string[]>([]);
 const manualSetupKey = ref<string | null>(null);
 const qrCodeSvg = ref<string | null>(null);
@@ -40,29 +27,13 @@ const hasSetupData = computed<boolean>(
 
 export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     const fetchQrCode = async (): Promise<void> => {
-        try {
-            const { svg } = await fetchJson<{ svg: string; url: string }>(
-                qrCode.url(),
-            );
-
-            qrCodeSvg.value = svg;
-        } catch {
-            errors.value.push('Failed to fetch QR code');
-            qrCodeSvg.value = null;
-        }
+        // Mock: In a real app, fetch from API
+        qrCodeSvg.value = '<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#eee"/><text x="50" y="50" text-anchor="middle" dy=".3em" font-size="10">QR Code</text></svg>';
     };
 
     const fetchSetupKey = async (): Promise<void> => {
-        try {
-            const { secretKey: key } = await fetchJson<{ secretKey: string }>(
-                secretKey.url(),
-            );
-
-            manualSetupKey.value = key;
-        } catch {
-            errors.value.push('Failed to fetch a setup key');
-            manualSetupKey.value = null;
-        }
+        // Mock: In a real app, fetch from API
+        manualSetupKey.value = 'ABCD-EFGH-IJKL-MNOP';
     };
 
     const clearSetupData = (): void => {
@@ -82,15 +53,17 @@ export const useTwoFactorAuth = (): UseTwoFactorAuthReturn => {
     };
 
     const fetchRecoveryCodes = async (): Promise<void> => {
-        try {
-            clearErrors();
-            recoveryCodesList.value = await fetchJson<string[]>(
-                recoveryCodes.url(),
-            );
-        } catch {
-            errors.value.push('Failed to fetch recovery codes');
-            recoveryCodesList.value = [];
-        }
+        // Mock: In a real app, fetch from API
+        recoveryCodesList.value = [
+            'AAAA-BBBB-CCCC',
+            'DDDD-EEEE-FFFF',
+            'GGGG-HHHH-IIII',
+            'JJJJ-KKKK-LLLL',
+            'MMMM-NNNN-OOOO',
+            'PPPP-QQQQ-RRRR',
+            'SSSS-TTTT-UUUU',
+            'VVVV-WWWW-XXXX',
+        ];
     };
 
     const fetchSetupData = async (): Promise<void> => {

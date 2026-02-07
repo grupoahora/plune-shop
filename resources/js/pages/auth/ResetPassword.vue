@@ -1,20 +1,36 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { update } from '@/routes/password';
 
-const props = defineProps<{
-    token: string;
-    email: string;
-}>();
+const route = useRoute();
+const router = useRouter();
 
-const inputEmail = ref(props.email);
+const token = route.params.token as string;
+const inputEmail = ref((route.query.email as string) || '');
+
+const form = ref({
+    password: '',
+    password_confirmation: '',
+});
+
+const errors = ref<Record<string, string>>({});
+const processing = ref(false);
+
+const handleSubmit = () => {
+    processing.value = true;
+    errors.value = {};
+    // Mock: In a real app, call the API
+    setTimeout(() => {
+        processing.value = false;
+        router.push('/login');
+    }, 500);
+};
 </script>
 
 <template>
@@ -22,21 +38,13 @@ const inputEmail = ref(props.email);
         title="Reset password"
         description="Please enter your new password below"
     >
-        <Head title="Reset password" />
-
-        <Form
-            v-bind="update.form()"
-            :transform="(data) => ({ ...data, token, email })"
-            :reset-on-success="['password', 'password_confirmation']"
-            v-slot="{ errors, processing }"
-        >
+        <form @submit.prevent="handleSubmit">
             <div class="grid gap-6">
                 <div class="grid gap-2">
                     <Label for="email">Email</Label>
                     <Input
                         id="email"
                         type="email"
-                        name="email"
                         autocomplete="email"
                         v-model="inputEmail"
                         class="mt-1 block w-full"
@@ -50,7 +58,7 @@ const inputEmail = ref(props.email);
                     <Input
                         id="password"
                         type="password"
-                        name="password"
+                        v-model="form.password"
                         autocomplete="new-password"
                         class="mt-1 block w-full"
                         autofocus
@@ -66,7 +74,7 @@ const inputEmail = ref(props.email);
                     <Input
                         id="password_confirmation"
                         type="password"
-                        name="password_confirmation"
+                        v-model="form.password_confirmation"
                         autocomplete="new-password"
                         class="mt-1 block w-full"
                         placeholder="Confirm password"
@@ -84,6 +92,6 @@ const inputEmail = ref(props.email);
                     Reset password
                 </Button>
             </div>
-        </Form>
+        </form>
     </AuthLayout>
 </template>

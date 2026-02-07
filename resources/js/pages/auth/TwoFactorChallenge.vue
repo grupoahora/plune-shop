@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,6 @@ import {
     InputOTPSlot,
 } from '@/components/ui/input-otp';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
 
 const authConfigContent = computed<TwoFactorConfigContent>(() => {
@@ -32,14 +30,26 @@ const authConfigContent = computed<TwoFactorConfigContent>(() => {
 });
 
 const showRecoveryInput = ref<boolean>(false);
+const code = ref<string>('');
+const recoveryCode = ref('');
+const errors = ref<Record<string, string>>({});
+const processing = ref(false);
 
-const toggleRecoveryMode = (clearErrors: () => void): void => {
+const toggleRecoveryMode = (): void => {
     showRecoveryInput.value = !showRecoveryInput.value;
-    clearErrors();
+    errors.value = {};
     code.value = '';
+    recoveryCode.value = '';
 };
 
-const code = ref<string>('');
+const handleSubmit = () => {
+    processing.value = true;
+    errors.value = {};
+    // Mock: In a real app, call the API
+    setTimeout(() => {
+        processing.value = false;
+    }, 500);
+};
 </script>
 
 <template>
@@ -47,18 +57,12 @@ const code = ref<string>('');
         :title="authConfigContent.title"
         :description="authConfigContent.description"
     >
-        <Head title="Two-Factor Authentication" />
-
         <div class="space-y-6">
             <template v-if="!showRecoveryInput">
-                <Form
-                    v-bind="store.form()"
+                <form
+                    @submit.prevent="handleSubmit"
                     class="space-y-4"
-                    reset-on-error
-                    @error="code = ''"
-                    #default="{ errors, processing, clearErrors }"
                 >
-                    <input type="hidden" name="code" :value="code" />
                     <div
                         class="flex flex-col items-center justify-center space-y-3 text-center"
                     >
@@ -89,23 +93,21 @@ const code = ref<string>('');
                         <button
                             type="button"
                             class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                            @click="() => toggleRecoveryMode(clearErrors)"
+                            @click="toggleRecoveryMode"
                         >
                             {{ authConfigContent.buttonText }}
                         </button>
                     </div>
-                </Form>
+                </form>
             </template>
 
             <template v-else>
-                <Form
-                    v-bind="store.form()"
+                <form
+                    @submit.prevent="handleSubmit"
                     class="space-y-4"
-                    reset-on-error
-                    #default="{ errors, processing, clearErrors }"
                 >
                     <Input
-                        name="recovery_code"
+                        v-model="recoveryCode"
                         type="text"
                         placeholder="Enter recovery code"
                         :autofocus="showRecoveryInput"
@@ -121,12 +123,12 @@ const code = ref<string>('');
                         <button
                             type="button"
                             class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                            @click="() => toggleRecoveryMode(clearErrors)"
+                            @click="toggleRecoveryMode"
                         >
                             {{ authConfigContent.buttonText }}
                         </button>
                     </div>
-                </Form>
+                </form>
             </template>
         </div>
     </AuthLayout>

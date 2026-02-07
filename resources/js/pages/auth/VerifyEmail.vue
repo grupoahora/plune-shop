@@ -1,15 +1,31 @@
 <script setup lang="ts">
-import { Form, Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { logout } from '@/routes';
-import { send } from '@/routes/verification';
+import { useAuthStore } from '@/stores/auth';
 
-defineProps<{
-    status?: string;
-}>();
+const router = useRouter();
+const authStore = useAuthStore();
+
+const processing = ref(false);
+const status = ref('');
+
+const handleResend = () => {
+    processing.value = true;
+    // Mock: In a real app, call the API
+    setTimeout(() => {
+        processing.value = false;
+        status.value = 'verification-link-sent';
+    }, 500);
+};
+
+const handleLogout = () => {
+    authStore.logout();
+    router.push('/login');
+};
 </script>
 
 <template>
@@ -17,8 +33,6 @@ defineProps<{
         title="Verify email"
         description="Please verify your email address by clicking on the link we just emailed to you."
     >
-        <Head title="Email verification" />
-
         <div
             v-if="status === 'verification-link-sent'"
             class="mb-4 text-center text-sm font-medium text-green-600"
@@ -27,23 +41,18 @@ defineProps<{
             provided during registration.
         </div>
 
-        <Form
-            v-bind="send.form()"
-            class="space-y-6 text-center"
-            v-slot="{ processing }"
-        >
-            <Button :disabled="processing" variant="secondary">
+        <div class="space-y-6 text-center">
+            <Button :disabled="processing" variant="secondary" @click="handleResend">
                 <Spinner v-if="processing" />
                 Resend verification email
             </Button>
 
-            <TextLink
-                :href="logout()"
-                as="button"
-                class="mx-auto block text-sm"
+            <button
+                @click="handleLogout"
+                class="mx-auto block text-sm text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
             >
                 Log out
-            </TextLink>
-        </Form>
+            </button>
+        </div>
     </AuthLayout>
 </template>

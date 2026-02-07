@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Form } from '@inertiajs/vue3';
 import { useClipboard } from '@vueuse/core';
 import { Check, Copy, ScanLine } from 'lucide-vue-next';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
@@ -21,7 +20,6 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/composables/useAppearance';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
-import { confirm } from '@/routes/two-factor';
 import type { TwoFactorConfigContent } from '@/types';
 
 type Props = {
@@ -40,6 +38,8 @@ const { qrCodeSvg, manualSetupKey, clearSetupData, fetchSetupData, errors } =
 
 const showVerificationStep = ref(false);
 const code = ref<string>('');
+const confirmErrors = ref<{ code?: string }>({});
+const confirmProcessing = ref(false);
 
 const pinInputContainerRef = useTemplateRef('pinInputContainerRef');
 
@@ -82,6 +82,15 @@ const handleModalNextStep = () => {
 
     clearSetupData();
     isOpen.value = false;
+};
+
+const handleConfirm = () => {
+    confirmProcessing.value = true;
+    // Mock: In a real app, call the API
+    setTimeout(() => {
+        confirmProcessing.value = false;
+        isOpen.value = false;
+    }, 1000);
 };
 
 const resetModalState = () => {
@@ -236,14 +245,7 @@ watch(
                 </template>
 
                 <template v-else>
-                    <Form
-                        v-bind="confirm.form()"
-                        reset-on-error
-                        @finish="code = ''"
-                        @success="isOpen = false"
-                        v-slot="{ errors, processing }"
-                    >
-                        <input type="hidden" name="code" :value="code" />
+                    <form @submit.prevent="handleConfirm">
                         <div
                             ref="pinInputContainerRef"
                             class="relative w-full space-y-3"
@@ -255,7 +257,7 @@ watch(
                                     id="otp"
                                     v-model="code"
                                     :maxlength="6"
-                                    :disabled="processing"
+                                    :disabled="confirmProcessing"
                                 >
                                     <InputOTPGroup>
                                         <InputOTPSlot
@@ -266,10 +268,7 @@ watch(
                                     </InputOTPGroup>
                                 </InputOTP>
                                 <InputError
-                                    :message="
-                                        errors?.confirmTwoFactorAuthentication
-                                            ?.code
-                                    "
+                                    :message="confirmErrors.code"
                                 />
                             </div>
 
@@ -279,20 +278,20 @@ watch(
                                     variant="outline"
                                     class="w-auto flex-1"
                                     @click="showVerificationStep = false"
-                                    :disabled="processing"
+                                    :disabled="confirmProcessing"
                                 >
                                     Back
                                 </Button>
                                 <Button
                                     type="submit"
                                     class="w-auto flex-1"
-                                    :disabled="processing || code.length < 6"
+                                    :disabled="confirmProcessing || code.length < 6"
                                 >
                                     Confirm
                                 </Button>
                             </div>
                         </div>
-                    </Form>
+                    </form>
                 </template>
             </div>
         </DialogContent>

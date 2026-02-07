@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { Form } from '@inertiajs/vue3';
-import { useTemplateRef } from 'vue';
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import { ref } from 'vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -18,7 +16,18 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-const passwordInput = useTemplateRef('passwordInput');
+const password = ref('');
+const errors = ref<{ password?: string }>({});
+const processing = ref(false);
+
+const handleDelete = () => {
+    processing.value = true;
+    // Mock: In a real app, call the API
+    setTimeout(() => {
+        processing.value = false;
+        alert('Account deletion would be processed here.');
+    }, 1000);
+};
 </script>
 
 <template>
@@ -44,16 +53,7 @@ const passwordInput = useTemplateRef('passwordInput');
                     >
                 </DialogTrigger>
                 <DialogContent>
-                    <Form
-                        v-bind="ProfileController.destroy.form()"
-                        reset-on-success
-                        @error="() => passwordInput?.$el?.focus()"
-                        :options="{
-                            preserveScroll: true,
-                        }"
-                        class="space-y-6"
-                        v-slot="{ errors, processing, reset, clearErrors }"
-                    >
+                    <form @submit.prevent="handleDelete" class="space-y-6">
                         <DialogHeader class="space-y-3">
                             <DialogTitle
                                 >Are you sure you want to delete your
@@ -75,8 +75,7 @@ const passwordInput = useTemplateRef('passwordInput');
                             <Input
                                 id="password"
                                 type="password"
-                                name="password"
-                                ref="passwordInput"
+                                v-model="password"
                                 placeholder="Password"
                             />
                             <InputError :message="errors.password" />
@@ -86,12 +85,7 @@ const passwordInput = useTemplateRef('passwordInput');
                             <DialogClose as-child>
                                 <Button
                                     variant="secondary"
-                                    @click="
-                                        () => {
-                                            clearErrors();
-                                            reset();
-                                        }
-                                    "
+                                    @click="password = ''; errors = {}"
                                 >
                                     Cancel
                                 </Button>
@@ -106,7 +100,7 @@ const passwordInput = useTemplateRef('passwordInput');
                                 Delete account
                             </Button>
                         </DialogFooter>
-                    </Form>
+                    </form>
                 </DialogContent>
             </Dialog>
         </div>
