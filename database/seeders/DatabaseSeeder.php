@@ -34,7 +34,6 @@ class DatabaseSeeder extends Seeder
         ])->assignRole('Cliente');
         $this->call([
             ProductSeeder::class,
-            OrderSeeder::class,
         ]);
     }
 }
