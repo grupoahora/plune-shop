@@ -113,30 +113,35 @@ withDefaults(
                                     <span class="material-symbols-outlined text-lg">person</span>
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent>
-                                <SheetHeader>
-                                    <SheetTitle>Iniciar sesión</SheetTitle>
-                                    <SheetDescription>
+                            <SheetContent
+                                class="border-[#dbe6df] bg-[#f6f8f6] text-[#111813] sm:max-w-md dark:border-[#2a3a2e] dark:bg-[#102216] dark:text-white">
+                                <SheetHeader class="space-y-2 border-b border-[#dbe6df] px-6 pb-4 dark:border-[#2a3a2e]">
+                                    <SheetTitle class="text-2xl font-extrabold tracking-tight">Iniciar sesión</SheetTitle>
+                                    <SheetDescription class="text-sm text-[#61896f] dark:text-[#a1b8a9]">
                                         Ingresa tus credenciales para acceder a tu cuenta.
                                     </SheetDescription>
                                 </SheetHeader>
-                                <Form class="grid flex-1 auto-rows-min gap-6 px-4" :action="login()" method="get">
+                                <Form class="grid flex-1 auto-rows-min gap-6 px-6 py-6" :action="login()" method="get">
                                     <div class="grid gap-3">
-                                        <Label for="sheet-login-email">Correo electrónico</Label>
+                                        <Label class="text-sm font-semibold" for="sheet-login-email">Correo electrónico</Label>
                                         <Input id="sheet-login-email" name="email" type="email"
+                                            class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
                                             placeholder="tucorreo@ejemplo.com" autocomplete="email" required />
                                     </div>
                                     <div class="grid gap-3">
-                                        <Label for="sheet-login-password">Contraseña</Label>
+                                        <Label class="text-sm font-semibold" for="sheet-login-password">Contraseña</Label>
                                         <Input id="sheet-login-password" name="password" type="password"
+                                            class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
                                             placeholder="Ingresa tu contraseña" autocomplete="current-password" required />
                                     </div>
-                                    <SheetFooter>
-                                        <Button type="submit">
+                                    <SheetFooter class="gap-3 border-t border-[#dbe6df] pt-6 dark:border-[#2a3a2e]">
+                                        <Button type="submit"
+                                            class="rounded-xl bg-[#13ec5b] font-bold text-[#111813] transition-all hover:-translate-y-0.5 hover:bg-[#13ec5b]/90">
                                             Continuar
                                         </Button>
                                         <SheetClose as-child>
-                                            <Button variant="outline">
+                                            <Button variant="outline"
+                                                class="rounded-xl border-[#dbe6df] bg-white font-semibold hover:border-[#13ec5b] dark:border-[#2a3a2e] dark:bg-[#1a2e20]">
                                                 Cancelar
                                             </Button>
                                         </SheetClose>
