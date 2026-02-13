@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Form, Head, Link } from '@inertiajs/vue3';
 import { Moon, Sun } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -120,7 +120,7 @@ withDefaults(
                                         Ingresa tus credenciales para acceder a tu cuenta.
                                     </SheetDescription>
                                 </SheetHeader>
-                                <form class="grid flex-1 auto-rows-min gap-6 px-4" :action="login()" method="get">
+                                <Form class="grid flex-1 auto-rows-min gap-6 px-4" :action="login()" method="get">
                                     <div class="grid gap-3">
                                         <Label for="sheet-login-email">Correo electrónico</Label>
                                         <Input id="sheet-login-email" name="email" type="email"
@@ -141,7 +141,7 @@ withDefaults(
                                             </Button>
                                         </SheetClose>
                                     </SheetFooter>
-                                </form>
+                                </Form>
                             </SheetContent>
                         </Sheet>
                     </div>
