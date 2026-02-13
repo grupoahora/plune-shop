@@ -115,31 +115,33 @@ withDefaults(
                             </SheetTrigger>
                             <SheetContent>
                                 <SheetHeader>
-                                    <SheetTitle>Edit profile</SheetTitle>
+                                    <SheetTitle>Iniciar sesión</SheetTitle>
                                     <SheetDescription>
-                                        Make changes to your profile here. Click save when you're done.
+                                        Ingresa tus credenciales para acceder a tu cuenta.
                                     </SheetDescription>
                                 </SheetHeader>
-                                <div class="grid flex-1 auto-rows-min gap-6 px-4">
+                                <form class="grid flex-1 auto-rows-min gap-6 px-4" :action="login()" method="get">
                                     <div class="grid gap-3">
-                                        <Label for="sheet-demo-name">Name</Label>
-                                        <Input id="sheet-demo-name" default-value="Pedro Duarte" />
+                                        <Label for="sheet-login-email">Correo electrónico</Label>
+                                        <Input id="sheet-login-email" name="email" type="email"
+                                            placeholder="tucorreo@ejemplo.com" autocomplete="email" required />
                                     </div>
                                     <div class="grid gap-3">
-                                        <Label for="sheet-demo-username">Username</Label>
-                                        <Input id="sheet-demo-username" default-value="@peduarte" />
+                                        <Label for="sheet-login-password">Contraseña</Label>
+                                        <Input id="sheet-login-password" name="password" type="password"
+                                            placeholder="Ingresa tu contraseña" autocomplete="current-password" required />
                                     </div>
-                                </div>
-                                <SheetFooter>
-                                    <Button type="submit">
-                                        Save changes
-                                    </Button>
-                                    <SheetClose as-child>
-                                        <Button variant="outline">
-                                            Close
+                                    <SheetFooter>
+                                        <Button type="submit">
+                                            Continuar
                                         </Button>
-                                    </SheetClose>
-                                </SheetFooter>
+                                        <SheetClose as-child>
+                                            <Button variant="outline">
+                                                Cancelar
+                                            </Button>
+                                        </SheetClose>
+                                    </SheetFooter>
+                                </form>
                             </SheetContent>
                         </Sheet>
                     </div>
