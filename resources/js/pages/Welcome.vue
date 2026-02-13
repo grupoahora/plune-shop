@@ -1,12 +1,19 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
-import { Moon, Sun } from 'lucide-vue-next';
+import { Moon, ShoppingCart, Sun, User } from 'lucide-vue-next';
+import InputError from '@/components/InputError.vue';
+import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/composables/useAppearance';
-import { dashboard, login, register } from '@/routes';
+import { dashboard } from '@/routes';
+import { store } from '@/routes/login';
+import { request } from '@/routes/password';
+import type { AppPageProps } from '@/types';
 
 const { resolvedAppearance, updateAppearance } = useAppearance();
 
@@ -17,22 +24,28 @@ const setAppearance = (value: 'light' | 'dark') => {
 withDefaults(
     defineProps<{
         canRegister: boolean;
+        canResetPassword: boolean;
+        status?: string;
+        page?: AppPageProps
+
     }>(),
     {
-        canRegister: true,
+        canRegister: false,
+        canResetPassword: false,
     },
 );
 </script>
 
 <template>
-
     <Head title="Plune Cosmetics | Organic Hair Care">
         <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet" />
         <link
             href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
             rel="stylesheet" />
     </Head>
-
+    <div v-if="status" class="mb-4 text-center text-sm font-medium text-green-600">
+        {{ status }}
+    </div>
     <div
         class="min-h-screen overflow-x-hidden bg-[#f6f8f6] text-[#111813] transition-colors duration-300 dark:bg-[#102216] dark:text-white">
         <div class="flex min-h-screen w-full flex-col">
@@ -57,22 +70,7 @@ withDefaults(
                     </nav>
                 </div>
                 <div class="flex flex-1 items-center justify-end gap-6">
-                    <nav class="hidden items-center gap-3 lg:flex">
-                        <Link v-if="$page.props.auth.user" :href="dashboard()"
-                            class="rounded-xl border border-[#dbe6df] px-4 py-2 text-sm font-semibold transition-colors hover:border-[#13ec5b] dark:border-[#2a3a2e]">
-                            Dashboard
-                        </Link>
-                        <template v-else>
-                            <Link :href="login()"
-                                class="rounded-xl border border-[#dbe6df] px-4 py-2 text-sm font-semibold transition-colors hover:border-[#13ec5b] dark:border-[#2a3a2e]">
-                                Log in
-                            </Link>
-                            <Link v-if="canRegister" :href="register()"
-                                class="rounded-xl border border-[#dbe6df] px-4 py-2 text-sm font-semibold transition-colors hover:border-[#13ec5b] dark:border-[#2a3a2e]">
-                                Register
-                            </Link>
-                        </template>
-                    </nav>
+                    
                     <div
                         class="hidden w-full max-w-xs items-center rounded-xl border border-[#dbe6df] bg-white px-4 py-2 sm:flex dark:border-[#2a3a2e] dark:bg-[#1a2e20]">
                         <span class="material-symbols-outlined mr-2 text-[#61896f]">search</span>
@@ -103,14 +101,14 @@ withDefaults(
                         </div>
                         <button
                             class="flex size-10 items-center justify-center rounded-xl border border-[#dbe6df] bg-white transition-all hover:border-[#13ec5b] dark:border-[#2a3a2e] dark:bg-[#1a2e20]">
-                            <span class="material-symbols-outlined text-lg">shopping_cart</span>
+                            <ShoppingCart class="size-5 text-[#111813] dark:text-white" />
                         </button>
-                        <Sheet>
+                        <Sheet v-if="!$page.props.auth.user">
                             <SheetTrigger as-child>
 
                                 <Button
-                                    class="flex size-10 items-center justify-center rounded-xl border border-[#dbe6df] bg-white transition-all hover:border-[#13ec5b] dark:border-[#2a3a2e] dark:bg-[#1a2e20]">
-                                    <span class="material-symbols-outlined text-lg">person</span>
+                                    class="flex size-10 items-center justify-center rounded-xl border border-[#dbe6df] bg-white hover:bg-white transition-all hover:border-[#13ec5b] dark:border-[#2a3a2e] dark:bg-[#1a2e20]">
+                                    <User class="size-5 text-[#111813] dark:text-white" />
                                 </Button>
                             </SheetTrigger>
                             <SheetContent
@@ -121,22 +119,45 @@ withDefaults(
                                         Ingresa tus credenciales para acceder a tu cuenta.
                                     </SheetDescription>
                                 </SheetHeader>
-                                <Form class="grid flex-1 auto-rows-min gap-6 px-6 py-6" :action="login()" method="get">
+                                <Form class="grid flex-1 auto-rows-min gap-6 px-6 py-6" v-bind="store.form()"
+                                    :reset-on-success="['password']" v-slot="{ errors, processing }">
                                     <div class="grid gap-3">
-                                        <Label class="text-sm font-semibold" for="sheet-login-email">Correo electrónico</Label>
-                                        <Input id="sheet-login-email" name="email" type="email"
+                                        <Label class="text-sm font-semibold" for="email">Correo electrónico</Label>
+                                        <Input id="email" type="email" name="email" required autofocus :tabindex="1"
+                                            autocomplete="email" placeholder="email@example.com"
                                             class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
-                                            placeholder="tucorreo@ejemplo.com" autocomplete="email" required />
+                                            />
+                                        <InputError :message="errors.email" />
+
                                     </div>
                                     <div class="grid gap-3">
-                                        <Label class="text-sm font-semibold" for="sheet-login-password">Contraseña</Label>
-                                        <Input id="sheet-login-password" name="password" type="password"
+                                        <div class="flex items-center justify-between">
+                                            <Label class="text-sm font-semibold" for="password">Contraseña</Label>
+                                            <TextLink v-if="canResetPassword" :href="request()" class="text-sm"
+                                                :tabindex="5">
+                                                Olvidaste tu contraseña?
+                                            </TextLink>
+                                        </div>
+
+                                        <Input id="password" type="password" name="password" required :tabindex="2"
+                                            autocomplete="current-password" placeholder="Password"
                                             class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
-                                            placeholder="Ingresa tu contraseña" autocomplete="current-password" required />
+                                             />
+
+                                        <InputError :message="errors.password" />
+
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <Label for="remember" class="flex items-center space-x-3">
+                                            <Checkbox id="remember" name="remember" :tabindex="3" />
+                                            <span>Recordarme</span>
+                                        </Label>
                                     </div>
                                     <SheetFooter class="gap-3 border-t border-[#dbe6df] pt-6 dark:border-[#2a3a2e]">
-                                        <Button type="submit"
+                                        <Button type="submit"  :tabindex="4" :disabled="processing"
+                                            data-test="login-button"
                                             class="rounded-xl bg-[#13ec5b] font-bold text-[#111813] transition-all hover:-translate-y-0.5 hover:bg-[#13ec5b]/90">
+                                            <Spinner v-if="processing" />
                                             Continuar
                                         </Button>
                                         <SheetClose as-child>
@@ -150,6 +171,18 @@ withDefaults(
                             </SheetContent>
                         </Sheet>
                     </div>
+                    <nav class="hidden items-center gap-3 lg:flex">
+                        <Link v-if="$page.props.auth.user && $page?.props.auth.user.roles[0]?.name == 'Administrador'"
+                            :href="dashboard()"
+                            class="rounded-xl border border-[#dbe6df] px-4 py-2 text-sm font-semibold transition-colors hover:border-[#13ec5b] dark:border-[#2a3a2e]">
+                            Dashboard
+                        </Link>
+                        <Link v-if="$page.props.auth.user && $page?.props.auth.user.roles[0]?.name == 'Cliente'"
+                            :href="dashboard()"
+                            class="rounded-xl border border-[#dbe6df] px-4 py-2 text-sm font-semibold transition-colors hover:border-[#13ec5b] dark:border-[#2a3a2e]">
+                            Mi Cuenta
+                        </Link>
+                    </nav>
                 </div>
             </header>
 
