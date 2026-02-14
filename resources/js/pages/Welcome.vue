@@ -423,29 +423,31 @@ withDefaults(
                 <section class="px-4 pt-10 pb-20">
                     <div
                         class="relative mx-auto max-w-4xl overflow-hidden rounded-3xl bg-[#102216] p-10 text-center md:p-16 dark:bg-[#1a2e20]">
-                        <div class="absolute top-0 right-0 p-8 text-[#13ec5b]/10">
-                            <span class="material-symbols-outlined text-9xl">energy_savings_leaf</span>
-                        </div>
+                        
                         <div class="relative z-10 space-y-8">
                             <h2 class="text-3xl font-black tracking-tight text-white md:text-5xl">
-                                Join the Green Movement
+                                Únete a la comunidad Plune
                             </h2>
                             <p class="mx-auto max-w-lg text-lg text-gray-400">
-                                Get 15% off your first order and stay updated
-                                with our latest organic hair care rituals.
+                                En Plune creemos que la cosmética no es solo belleza,
+                                es una forma consciente de cuidar tu cabello, tu piel
+                                y el planeta. Recibe contenido exclusivo, consejos
+                                naturales y beneficios especiales por ser parte
+                                de nuestra comunidad.
                             </p>
                             <form class="mx-auto flex max-w-md flex-col gap-4 sm:flex-row">
                                 <input
                                     class="flex-1 rounded-xl border-white/20 bg-white/10 px-6 text-white placeholder:text-gray-500 focus:border-[#13ec5b] focus:ring-[#13ec5b]"
-                                    placeholder="Your email address" type="email" />
+                                    placeholder="Tu correo electrónico" type="email" />
                                 <button
                                     class="rounded-xl bg-[#13ec5b] px-8 py-4 font-bold whitespace-nowrap text-[#111813] transition-all hover:bg-[#13ec5b]/90">
-                                    Subscribe
+                                    Quiero ser parte
                                 </button>
                             </form>
                         </div>
                     </div>
                 </section>
+
             </main>
 
             <footer
@@ -464,8 +466,9 @@ withDefaults(
                             </h2>
                         </div>
                         <p class="text-sm leading-relaxed text-[#61896f]">
-                            Botanical hair care rooted in science and nature.
-                            100% vegan, eco-friendly, and handmade.
+                            Cosmética sólida inspirada en la naturaleza.
+                            Hecha a mano, responsable con el planeta
+                            y pensada para el bienestar de tu cabello y tu piel.
                         </p>
                         <div class="flex gap-4">
                             <a class="flex size-10 items-center justify-center rounded-full border border-[#dbe6df] transition-all hover:bg-[#13ec5b] hover:text-[#111813] dark:border-[#2a3a2e]"
@@ -480,55 +483,55 @@ withDefaults(
                     </div>
 
                     <div>
-                        <h4 class="mb-6 font-bold">Shop</h4>
+                        <h4 class="mb-6 font-bold">Tienda</h4>
                         <ul class="space-y-4 text-sm text-[#61896f]">
                             <li>
-                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Hair Shampoo</a>
+                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Champús en barra</a>
                             </li>
                             <li>
-                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Solid Care</a>
+                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Acondicionadores</a>
                             </li>
                             <li>
-                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Gift Sets</a>
+                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Kits y regalos</a>
                             </li>
                             <li>
-                                <a class="transition-colors hover:text-[#13ec5b]" href="#">New Arrivals</a>
+                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Nuevos productos</a>
                             </li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 class="mb-6 font-bold">Support</h4>
+                        <h4 class="mb-6 font-bold">Ayuda</h4>
                         <ul class="space-y-4 text-sm text-[#61896f]">
                             <li>
-                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Shipping Policy</a>
+                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Política de envíos</a>
                             </li>
                             <li>
-                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Returns & Refunds</a>
+                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Cambios y devoluciones</a>
                             </li>
                             <li>
-                                <a class="transition-colors hover:text-[#13ec5b]" href="#">FAQ</a>
+                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Preguntas frecuentes</a>
                             </li>
                             <li>
-                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Track Order</a>
+                                <a class="transition-colors hover:text-[#13ec5b]" href="#">Rastrear pedido</a>
                             </li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 class="mb-6 font-bold">Contact</h4>
+                        <h4 class="mb-6 font-bold">Contacto</h4>
                         <ul class="space-y-4 text-sm text-[#61896f]">
                             <li class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-sm">mail</span>
-                                hello@plune.com
+                                hola@plune.com
                             </li>
                             <li class="flex items-center gap-2">
                                 <span class="material-symbols-outlined text-sm">call</span>
-                                +57 (300) 123-4567
+                                +57 300 123 4567
                             </li>
                             <li class="flex items-start gap-2">
                                 <span class="material-symbols-outlined text-sm">location_on</span>
-                                <span>Calle 100 #15-30, Bogotá</span>
+                                <span>Colombia</span>
                             </li>
                         </ul>
                     </div>
@@ -537,14 +540,15 @@ withDefaults(
                 <div
                     class="mt-16 flex flex-col items-center justify-between gap-4 border-t border-[#dbe6df] pt-8 md:flex-row dark:border-[#2a3a2e]">
                     <p class="text-xs text-[#61896f]">
-                        © 2024 Plune Cosmetics. All rights reserved.
+                        © 2026 Plune. Todos los derechos reservados.
                     </p>
                     <div class="flex gap-8 text-xs text-[#61896f]">
-                        <a class="hover:text-[#13ec5b]" href="#">Privacy Policy</a>
-                        <a class="hover:text-[#13ec5b]" href="#">Terms of Service</a>
+                        <a class="hover:text-[#13ec5b]" href="#">Política de privacidad</a>
+                        <a class="hover:text-[#13ec5b]" href="#">Términos y condiciones</a>
                     </div>
                 </div>
             </footer>
+
         </div>
     </div>
 </template>
