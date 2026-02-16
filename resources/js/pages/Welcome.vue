@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
-import { ChevronsRight, ClipboardPlus, Moon, Search, ShoppingCart, Sun, User } from 'lucide-vue-next';
+import { ChevronsRight, CirclePlus, Heart, MapPin, Phone, Mail, Moon, Search, ShoppingCart, Sun, User } from 'lucide-vue-next';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -323,7 +323,7 @@ withDefaults(
                                 <div class="absolute top-4 right-4">
                                     <button
                                         class="flex size-10 items-center justify-center rounded-full bg-white/80 text-[#111813] backdrop-blur transition-colors hover:bg-white">
-                                        <span class="material-symbols-outlined">favorite</span>
+                                        <Heart class="size-5" />
                                     </button>
                                 </div>
                             </div>
@@ -344,7 +344,7 @@ withDefaults(
 
                                 <Button
                                     class="flex w-full  items-center justify-center gap-2 rounded-xl bg-[#f0f4f2] py-3 font-bold text-[#111813] transition-all hover:bg-[#13ec5b] hover:text-[#111813] dark:bg-[#2a3a2e] dark:text-white">
-                                    <ClipboardPlus class="size-4" />
+                                    <CirclePlus class="size-4" />
                                     Agregar al Carrito
                                 </Button>
                             </div>
@@ -428,7 +428,7 @@ withDefaults(
                             <h2 class="text-3xl font-black tracking-tight text-white md:text-5xl">
                                 Únete a la comunidad Plune
                             </h2>
-                            <p class="mx-auto max-w-lg text-lg text-gray-400">
+                            <p class="max-w text-lg text-gray-400">
                                 En Plune creemos que la cosmética no es solo belleza,
                                 es una forma consciente de cuidar tu cabello, tu piel
                                 y el planeta. Recibe contenido exclusivo, consejos
@@ -522,15 +522,15 @@ withDefaults(
                         <h4 class="mb-6 font-bold">Contacto</h4>
                         <ul class="space-y-4 text-sm text-[#61896f]">
                             <li class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-sm">mail</span>
-                                hola@plune.com
+                                <Mail class="size-4" />
+                                plune2024@gmail.com
                             </li>
                             <li class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-sm">call</span>
-                                +57 300 123 4567
+                                <Phone class="size-4" />
+                                +57 318 509 4016
                             </li>
                             <li class="flex items-start gap-2">
-                                <span class="material-symbols-outlined text-sm">location_on</span>
+                                <MapPin class="size-4" />
                                 <span>Colombia</span>
                             </li>
                         </ul>
@@ -558,6 +558,13 @@ withDefaults(
     font-family: 'Manrope', sans-serif;
 }
 
+.hover\:bg-\[\#13ec5b\] {
+    &:hover {
+        @media (hover: hover) {
+            background-color: #13ec5b;
+        }
+    }
+}
 .material-symbols-outlined {
     font-variation-settings:
         'FILL' 0,
