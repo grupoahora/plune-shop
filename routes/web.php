@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -15,11 +17,16 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/catalogo', function () {
-    return Inertia::render('Catalogo');
+    return Inertia::render('Catalogo', [
+        'categories' => Category::query()->orderBy('sort_order')->get(['id', 'name', 'icon']),
+    ]);
 })->name('catalogo');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('dashboard', [CategoryController::class, 'index'])->name('dashboard');
+    Route::post('dashboard/categorias', [CategoryController::class, 'store'])->name('categories.store');
+    Route::put('dashboard/categorias/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('dashboard/categorias/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+});
 
 require __DIR__.'/settings.php';
