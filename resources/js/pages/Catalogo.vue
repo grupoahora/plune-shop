@@ -6,12 +6,25 @@ import { useAppearance } from '@/composables/useAppearance';
 import WelcomeLayout from '@/layouts/welcome/WelcomeLayout.vue';
 import type { CatalogCategory, CatalogProduct } from '@/types/catalog';
 
-const categories: CatalogCategory[] = [
-    { id: 1, name: 'Champús', icon: 'spa', active: true },
-    { id: 2, name: 'Acondicionadores', icon: 'water_drop' },
-    { id: 3, name: 'Cremas de Peinar', icon: 'brush' },
-    { id: 4, name: 'Tratamientos', icon: 'eco' },
-];
+const props = withDefaults(
+    defineProps<{
+        canResetPassword: boolean;
+        categories?: Array<{
+            id: number;
+            name: string;
+            icon: string;
+        }>;
+    }>(),
+    {
+        canResetPassword: false,
+        categories: () => [],
+    },
+);
+
+const categories: CatalogCategory[] = props.categories.map((category, index) => ({
+    ...category,
+    active: index === 0,
+}));
 
 const products: CatalogProduct[] = [
     {
@@ -81,24 +94,13 @@ const { resolvedAppearance, updateAppearance } = useAppearance();
 const setAppearance = (value: 'light' | 'dark') => {
     updateAppearance(value);
 };
-
-withDefaults(
-    defineProps<{
-        canResetPassword: boolean;
-    }>(),
-    {
-        canResetPassword: false,
-    },
-);
 </script>
 
 <template>
-    <Head title="Catálogo de Productos | Plune">
-       
-    </Head>
+    <Head title="Catálogo de Productos | Plune" />
 
     <WelcomeLayout
-        :can-reset-password="canResetPassword"
+        :can-reset-password="props.canResetPassword"
         :resolved-appearance="resolvedAppearance"
         @set-appearance="setAppearance"
     >
@@ -106,16 +108,21 @@ withDefaults(
             <nav
                 class="mb-8 flex items-center gap-2 text-sm font-medium text-[#61896f] dark:text-primary/60"
             >
-                <a class="transition-colors hover:text-primary" href="#"
-                    >Inicio</a
-                >
-                <span class="material-symbols-outlined text-xs"
-                    >chevron_right</span
-                >
-                <span class="text-[#111813] dark:text-white"
-                    >Catálogo de Cuidado Capilar</span
-                >
+                <a class="transition-colors hover:text-primary" href="#">Inicio</a>
+                <span class="material-symbols-outlined text-xs">chevron_right</span>
+                <span class="text-[#111813] dark:text-white">Catálogo de Cuidado Capilar</span>
             </nav>
+
+            <nav class="mb-8 flex flex-wrap items-center gap-2">
+                <span
+                    v-for="category in categories"
+                    :key="category.id"
+                    class="rounded-full border border-primary/20 px-3 py-1 text-xs font-semibold text-primary"
+                >
+                    {{ category.name }}
+                </span>
+            </nav>
+
             <div class="flex flex-col gap-12 lg:flex-row">
                 <CatalogSidebar :categories="categories" />
                 <CatalogMainContent :products="products" />

@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'cliente@example.com',
         ])->assignRole('Cliente');
         $this->call([
+            CategorySeeder::class,
             ProductSeeder::class,
             OrderSeeder::class,
         ]);
