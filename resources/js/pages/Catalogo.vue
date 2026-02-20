@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
+import { ChevronRight } from 'lucide-vue-next';
 import CatalogMainContent from '@/components/catalog/CatalogMainContent.vue';
 import CatalogSidebar from '@/components/catalog/CatalogSidebar.vue';
 import { useAppearance } from '@/composables/useAppearance';
@@ -21,10 +22,12 @@ const props = withDefaults(
     },
 );
 
-const categories: CatalogCategory[] = props.categories.map((category, index) => ({
-    ...category,
-    active: index === 0,
-}));
+const categories: CatalogCategory[] = props.categories.map(
+    (category, index) => ({
+        ...category,
+        active: index === 0,
+    }),
+);
 
 const products: CatalogProduct[] = [
     {
@@ -108,9 +111,13 @@ const setAppearance = (value: 'light' | 'dark') => {
             <nav
                 class="mb-8 flex items-center gap-2 text-sm font-medium text-[#61896f] dark:text-primary/60"
             >
-                <a class="transition-colors hover:text-primary" href="#">Inicio</a>
-                <span class="material-symbols-outlined text-xs">chevron_right</span>
-                <span class="text-[#111813] dark:text-white">Catálogo de Cuidado Capilar</span>
+                <a class="transition-colors hover:text-primary" href="#"
+                    >Inicio</a
+                >
+                <ChevronRight class="size-4" />
+                <span class="text-[#111813] dark:text-white"
+                    >Catálogo de Cuidado Capilar</span
+                >
             </nav>
 
             <nav class="mb-8 flex flex-wrap items-center gap-2">
@@ -134,21 +141,5 @@ const setAppearance = (value: 'light' | 'dark') => {
 <style scoped>
 :global(body) {
     font-family: 'Manrope', sans-serif;
-}
-
-.material-symbols-outlined {
-    font-variation-settings:
-        'FILL' 0,
-        'wght' 400,
-        'GRAD' 0,
-        'opsz' 24;
-}
-
-.filled-icon {
-    font-variation-settings:
-        'FILL' 1,
-        'wght' 400,
-        'GRAD' 0,
-        'opsz' 24;
 }
 </style>

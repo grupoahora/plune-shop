@@ -1,9 +1,28 @@
 <script setup lang="ts">
+import {
+    Droplets,
+    Flower2,
+    Leaf,
+    type LucideIcon,
+    Sparkles,
+    Waves,
+} from 'lucide-vue-next';
 import type { CatalogCategory } from '@/types/catalog';
 
 defineProps<{
     categories: CatalogCategory[];
 }>();
+
+const categoryIcons: Record<string, LucideIcon> = {
+    spa: Flower2,
+    water_drop: Droplets,
+    brush: Waves,
+    eco: Leaf,
+};
+
+const getCategoryIcon = (iconName: string): LucideIcon => {
+    return categoryIcons[iconName] ?? Sparkles;
+};
 </script>
 
 <template>
@@ -11,9 +30,7 @@ defineProps<{
         <div class="sticky top-28 space-y-8">
             <div>
                 <h3 class="mb-6 flex items-center gap-2 text-lg font-bold">
-                    <span class="material-symbols-outlined text-primary"
-                        >filter_list</span
-                    >
+                    <Sparkles class="size-5 text-primary" />
                     Categorías
                 </h3>
                 <div class="flex flex-col gap-2">
@@ -28,20 +45,24 @@ defineProps<{
                         ]"
                         href="#"
                     >
-                        <span
+                        <component
+                            :is="getCategoryIcon(category.icon)"
                             :class="[
-                                'material-symbols-outlined',
-                                category.active ? 'filled-icon text-primary' : '',
+                                'size-5',
+                                category.active
+                                    ? 'text-primary'
+                                    : 'text-current',
                             ]"
-                            >{{ category.icon }}</span
-                        >
+                        />
                         <span>{{ category.name }}</span>
                     </a>
                 </div>
             </div>
 
             <div class="rounded-2xl border border-primary/10 bg-primary/5 p-6">
-                <p class="mb-2 text-xs font-bold uppercase tracking-widest text-primary">
+                <p
+                    class="mb-2 text-xs font-bold tracking-widest text-primary uppercase"
+                >
                     Elección Sostenible
                 </p>
                 <h4 class="mb-2 font-bold">Recarga y Ahorra</h4>
