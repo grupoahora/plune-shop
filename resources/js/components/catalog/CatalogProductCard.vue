@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Heart, ShoppingCart, Star } from 'lucide-vue-next';
 import type { CatalogProduct } from '@/types/catalog';
 
 defineProps<{
@@ -25,7 +26,7 @@ defineProps<{
                 class="absolute top-4 right-4 flex size-8 items-center justify-center rounded-full bg-white/80 text-[#111813] opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100"
                 type="button"
             >
-                <span class="material-symbols-outlined text-lg">favorite</span>
+                <Heart class="size-4" />
             </button>
         </div>
 
@@ -39,16 +40,18 @@ defineProps<{
                 {{ product.name }}
             </h3>
             <div class="mb-4 flex items-center gap-1 text-orange-400">
-                <span
+                <Star
                     v-for="star in 5"
                     :key="star"
                     :class="[
-                        'material-symbols-outlined text-sm',
-                        star <= product.rating ? 'filled-icon' : '',
+                        'size-4',
+                        star <= product.rating
+                            ? 'fill-current text-orange-400'
+                            : 'fill-transparent text-orange-300',
                     ]"
-                    >star</span
-                >
-                <span class="ml-1 text-xs font-bold text-[#61896f] dark:text-primary/40"
+                />
+                <span
+                    class="ml-1 text-xs font-bold text-[#61896f] dark:text-primary/40"
                     >({{ product.reviews }})</span
                 >
             </div>
@@ -58,9 +61,7 @@ defineProps<{
                     class="flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-[#111813] transition-colors hover:bg-[#0fd952]"
                     type="button"
                 >
-                    <span class="material-symbols-outlined text-sm"
-                        >add_shopping_cart</span
-                    >
+                    <ShoppingCart class="size-4" />
                     Agregar al carrito
                 </button>
             </div>

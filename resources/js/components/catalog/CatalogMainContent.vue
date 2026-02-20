@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import CatalogProductCard from '@/components/catalog/CatalogProductCard.vue';
 import type { CatalogProduct } from '@/types/catalog';
 
@@ -20,13 +21,11 @@ defineProps<{
                 </p>
             </div>
             <button
-                class="flex items-center gap-2 rounded-lg border border-[#f0f4f2] bg-white px-4 py-2 text-sm font-bold shadow-sm dark:border-white/10 dark:bg-background-dark"
+                class="dark:bg-background-dark flex items-center gap-2 rounded-lg border border-[#f0f4f2] bg-white px-4 py-2 text-sm font-bold shadow-sm dark:border-white/10"
                 type="button"
             >
                 Ordenar por: Más Vendidos
-                <span class="material-symbols-outlined text-sm"
-                    >keyboard_arrow_down</span
-                >
+                <ChevronDown class="size-4" />
             </button>
         </div>
 
@@ -43,9 +42,10 @@ defineProps<{
                 class="rounded-full border border-primary/10 p-2 transition-colors hover:bg-primary/10"
                 type="button"
             >
-                <span class="material-symbols-outlined">chevron_left</span>
+                <ChevronLeft class="size-5" />
             </button>
-            <span class="rounded-xl bg-primary px-4 py-2 font-bold text-[#111813]"
+            <span
+                class="rounded-xl bg-primary px-4 py-2 font-bold text-[#111813]"
                 >1</span
             >
             <span
@@ -60,7 +60,7 @@ defineProps<{
                 class="rounded-full border border-primary/10 p-2 transition-colors hover:bg-primary/10"
                 type="button"
             >
-                <span class="material-symbols-outlined">chevron_right</span>
+                <ChevronRight class="size-5" />
             </button>
         </div>
     </section>
