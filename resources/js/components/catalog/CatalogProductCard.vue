@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CirclePlus, Heart, Star } from 'lucide-vue-next';
+import { Badge } from '@/components/ui/badge';
 import type { CatalogProduct } from '@/types/catalog';
 
 defineProps<{
@@ -19,11 +20,11 @@ defineProps<{
                 class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105"
             />
 
-            <span
-                class="absolute top-4 left-4 rounded-full bg-primary px-3 py-1 text-[10px] font-bold tracking-tighter text-[#111813] uppercase"
+            <Badge
+                class="absolute top-4 left-4 px-3 py-1 text-[10px] font-bold tracking-tighter uppercase"
             >
                 {{ product.tag }}
-            </span>
+            </Badge>
 
             <button
                 class="absolute top-4 right-4 rounded-full border border-white/60 bg-white/70 p-2 text-[#111813] transition hover:scale-110"
