@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import { FlaskConical, Leaf, PawPrint } from 'lucide-vue-next';
+</script>
+
 <template>
     <section class="px-6 py-4 md:px-20">
         <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -7,7 +11,7 @@
                 <div
                     class="flex size-14 items-center justify-center rounded-xl bg-[#13ec5b]/10 text-[#13ec5b]"
                 >
-                    <span class="material-symbols-outlined text-3xl">eco</span>
+                    <Leaf class="size-8" />
                 </div>
                 <div>
                     <h3 class="text-lg font-bold">100% Orgánico</h3>
@@ -24,7 +28,7 @@
                 <div
                     class="flex size-14 items-center justify-center rounded-xl bg-[#13ec5b]/10 text-[#13ec5b]"
                 >
-                    <span class="material-symbols-outlined text-3xl">pets</span>
+                    <PawPrint class="size-8" />
                 </div>
                 <div>
                     <h3 class="text-lg font-bold">Sin Pruebas Animales</h3>
@@ -41,9 +45,7 @@
                 <div
                     class="flex size-14 items-center justify-center rounded-xl bg-[#13ec5b]/10 text-[#13ec5b]"
                 >
-                    <span class="material-symbols-outlined text-3xl"
-                        >science</span
-                    >
+                    <FlaskConical class="size-8" />
                 </div>
                 <div>
                     <h3 class="text-lg font-bold">Libre de sintéticos</h3>
