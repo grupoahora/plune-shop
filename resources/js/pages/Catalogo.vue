@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import { ChevronRight } from 'lucide-vue-next';
+import { Head } from '@inertiajs/vue3';
+import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import CatalogMainContent from '@/components/catalog/CatalogMainContent.vue';
 import CatalogSidebar from '@/components/catalog/CatalogSidebar.vue';
 import { useAppearance } from '@/composables/useAppearance';
 import WelcomeLayout from '@/layouts/welcome/WelcomeLayout.vue';
 import { home } from '@/routes';
+import { type BreadcrumbItem } from '@/types';
 import type { CatalogCategory, CatalogProduct } from '@/types/catalog';
 
 const props = withDefaults(
@@ -95,6 +96,16 @@ const products: CatalogProduct[] = [
 
 const { resolvedAppearance, updateAppearance } = useAppearance();
 
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Inicio',
+        href: home().url,
+    },
+    {
+        title: 'Catálogo de Cuidado Capilar',
+    },
+];
+
 const setAppearance = (value: 'light' | 'dark') => {
     updateAppearance(value);
 };
@@ -107,12 +118,9 @@ const setAppearance = (value: 'light' | 'dark') => {
     <WelcomeLayout :can-reset-password="props.canResetPassword" :resolved-appearance="resolvedAppearance"
         @set-appearance="setAppearance">
         <main class="flex-1 px-6 py-8 md:px-20 lg:px-40">
-            <nav class="mb-8 flex items-center gap-2 text-sm font-medium text-[#61896f] dark:text-primary/60">
-                <Link class="transition-colors hover:text-primary" :href="home().url">Inicio</Link>
-
-                <ChevronRight class="size-4" />
-                <span class="text-[#111813] dark:text-white">Catálogo de Cuidado Capilar</span>
-            </nav>
+            <div class="mb-8 text-[#61896f] dark:text-primary/60">
+                <Breadcrumbs :breadcrumbs="breadcrumbs" />
+            </div>
 
 
 
