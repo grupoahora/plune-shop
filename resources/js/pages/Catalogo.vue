@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { ChevronRight } from 'lucide-vue-next';
 import CatalogMainContent from '@/components/catalog/CatalogMainContent.vue';
 import CatalogSidebar from '@/components/catalog/CatalogSidebar.vue';
 import { useAppearance } from '@/composables/useAppearance';
 import WelcomeLayout from '@/layouts/welcome/WelcomeLayout.vue';
+import { home } from '@/routes';
 import type { CatalogCategory, CatalogProduct } from '@/types/catalog';
 
 const props = withDefaults(
@@ -100,35 +101,20 @@ const setAppearance = (value: 'light' | 'dark') => {
 </script>
 
 <template>
+
     <Head title="Catálogo de Productos | Plune" />
 
-    <WelcomeLayout
-        :can-reset-password="props.canResetPassword"
-        :resolved-appearance="resolvedAppearance"
-        @set-appearance="setAppearance"
-    >
+    <WelcomeLayout :can-reset-password="props.canResetPassword" :resolved-appearance="resolvedAppearance"
+        @set-appearance="setAppearance">
         <main class="flex-1 px-6 py-8 md:px-20 lg:px-40">
-            <nav
-                class="mb-8 flex items-center gap-2 text-sm font-medium text-[#61896f] dark:text-primary/60"
-            >
-                <a class="transition-colors hover:text-primary" href="#"
-                    >Inicio</a
-                >
+            <nav class="mb-8 flex items-center gap-2 text-sm font-medium text-[#61896f] dark:text-primary/60">
+                <Link class="transition-colors hover:text-primary" :href="home().url">Inicio</Link>
+
                 <ChevronRight class="size-4" />
-                <span class="text-[#111813] dark:text-white"
-                    >Catálogo de Cuidado Capilar</span
-                >
+                <span class="text-[#111813] dark:text-white">Catálogo de Cuidado Capilar</span>
             </nav>
 
-            <nav class="mb-8 flex flex-wrap items-center gap-2">
-                <span
-                    v-for="category in categories"
-                    :key="category.id"
-                    class="rounded-full border border-primary/20 px-3 py-1 text-xs font-semibold text-primary"
-                >
-                    {{ category.name }}
-                </span>
-            </nav>
+
 
             <div class="flex flex-col gap-12 lg:flex-row">
                 <CatalogSidebar :categories="categories" />
