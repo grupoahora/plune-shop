@@ -34,7 +34,7 @@ defineProps<{
                 {{ product.description }}
             </p>
             <button
-                class="flex w-full items-center mt-auto justify-center gap-2 rounded-xl bg-[#f0f4f2] py-3 font-bold text-[#111813] transition-all hover:bg-[#13ec5b] dark:bg-[#2a3a2e] dark:text-white"
+                class="flex w-full items-center mt-auto justify-center gap-2 rounded-xl bg-[#f0f4f2] py-3 font-bold text-[#111813] transition-all dark:hover:bg-[#388e55] hover:bg-[#13ec5b] dark:bg-[#2a3a2e] dark:text-white"
                 type="button">
                 <CirclePlus class="size-4" />
                 Agregar al carrito
