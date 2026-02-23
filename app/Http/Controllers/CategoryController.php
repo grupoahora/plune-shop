@@ -12,7 +12,7 @@ class CategoryController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Dashboard', [
+        return Inertia::render('categories/Index', [
             'categories' => Category::query()->orderBy('sort_order')->get(['id', 'name', 'icon', 'sort_order']),
         ]);
     }
