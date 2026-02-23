@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3';
 import {
+    type ColumnFiltersState,
     FlexRender,
+    type SortingState,
     createColumnHelper,
     getCoreRowModel,
+    getFilteredRowModel,
+    getSortedRowModel,
     useVueTable,
 } from '@tanstack/vue-table';
 import { h, ref } from 'vue';
@@ -54,6 +58,8 @@ const createSheetOpen = ref(false);
 const editSheetOpen = ref(false);
 const deleteDialogOpen = ref(false);
 const selectedCategory = ref<Category | null>(null);
+const sorting = ref<SortingState>([]);
+const columnFilters = ref<ColumnFiltersState>([]);
 
 const createForm = useForm({
     name: '',
@@ -120,15 +126,42 @@ const columnHelper = createColumnHelper<Category>();
 
 const columns = [
     columnHelper.accessor('name', {
-        header: 'Nombre',
+        header: () =>
+            h(
+                Button,
+                {
+                    class: 'px-0',
+                    variant: 'ghost',
+                    onClick: () => table.getColumn('name')?.toggleSorting(),
+                },
+                () => 'Nombre',
+            ),
         cell: (info) => info.getValue(),
     }),
     columnHelper.accessor('icon', {
-        header: 'Icono',
+        header: () =>
+            h(
+                Button,
+                {
+                    class: 'px-0',
+                    variant: 'ghost',
+                    onClick: () => table.getColumn('icon')?.toggleSorting(),
+                },
+                () => 'Icono',
+            ),
         cell: (info) => info.getValue(),
     }),
     columnHelper.accessor('sort_order', {
-        header: 'Orden',
+        header: () =>
+            h(
+                Button,
+                {
+                    class: 'px-0',
+                    variant: 'ghost',
+                    onClick: () => table.getColumn('sort_order')?.toggleSorting(),
+                },
+                () => 'Orden',
+            ),
         cell: (info) => info.getValue(),
     }),
     columnHelper.display({
@@ -163,7 +196,29 @@ const table = useVueTable({
         return props.categories;
     },
     columns,
+    state: {
+        get sorting() {
+            return sorting.value;
+        },
+        get columnFilters() {
+            return columnFilters.value;
+        },
+    },
+    onSortingChange: (updaterOrValue) => {
+        sorting.value =
+            typeof updaterOrValue === 'function'
+                ? updaterOrValue(sorting.value)
+                : updaterOrValue;
+    },
+    onColumnFiltersChange: (updaterOrValue) => {
+        columnFilters.value =
+            typeof updaterOrValue === 'function'
+                ? updaterOrValue(columnFilters.value)
+                : updaterOrValue;
+    },
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
 });
 </script>
 
@@ -248,6 +303,14 @@ const table = useVueTable({
                             </form>
                         </SheetContent>
                     </Sheet>
+                </div>
+
+                <div class="mb-4 max-w-sm">
+                    <Input
+                        :model-value="(table.getColumn('name')?.getFilterValue() as string) ?? ''"
+                        placeholder="Buscar por nombre..."
+                        @update:model-value="table.getColumn('name')?.setFilterValue($event)"
+                    />
                 </div>
 
                 <div class="overflow-x-auto">
