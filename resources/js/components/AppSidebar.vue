@@ -13,9 +13,10 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { dashboard } from '@/routes';
+import categories from '@/routes/categories';
 import { type NavItem } from '@/types';
 import AppLogo from './AppLogo.vue';
-import { dashboard } from '@/routes';
 
 const mainNavItems: NavItem[] = [
     {
@@ -25,7 +26,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Categorías',
-        href: '/dashboard/categorias',
+        href: categories.index(),
         icon: Tags,
     },
 ];
