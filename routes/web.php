@@ -21,9 +21,12 @@ Route::get('/catalogo', function () {
         'categories' => Category::query()->orderBy('sort_order')->get(['id', 'name', 'icon']),
     ]);
 })->name('catalogo');
+Route::get('dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', [CategoryController::class, 'index'])->name('dashboard');
+    Route::get('dashboard/categorias', [CategoryController::class, 'index'])->name('dashboard');
     Route::post('dashboard/categorias', [CategoryController::class, 'store'])->name('categories.store');
     Route::put('dashboard/categorias/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('dashboard/categorias/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
