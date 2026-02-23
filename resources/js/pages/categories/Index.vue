@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import {
+    FlexRender,
+    createColumnHelper,
+    getCoreRowModel,
+    useVueTable,
+} from '@tanstack/vue-table';
+import { h, ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,8 +29,8 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
+import { dashboard } from '@/routes';
 
 interface Category {
     id: number;
@@ -109,6 +115,56 @@ const submitDelete = () => {
         },
     });
 };
+
+const columnHelper = createColumnHelper<Category>();
+
+const columns = [
+    columnHelper.accessor('name', {
+        header: 'Nombre',
+        cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('icon', {
+        header: 'Icono',
+        cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('sort_order', {
+        header: 'Orden',
+        cell: (info) => info.getValue(),
+    }),
+    columnHelper.display({
+        id: 'actions',
+        header: () => h('div', { class: 'text-right' }, 'Acciones'),
+        cell: ({ row }) =>
+            h('div', { class: 'flex justify-end gap-2' }, [
+                h(
+                    Button,
+                    {
+                        size: 'sm',
+                        variant: 'outline',
+                        onClick: () => openEdit(row.original),
+                    },
+                    () => 'Editar',
+                ),
+                h(
+                    Button,
+                    {
+                        size: 'sm',
+                        variant: 'destructive',
+                        onClick: () => openDelete(row.original),
+                    },
+                    () => 'Eliminar',
+                ),
+            ]),
+    }),
+];
+
+const table = useVueTable({
+    get data() {
+        return props.categories;
+    },
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+});
 </script>
 
 <template>
@@ -116,8 +172,12 @@ const submitDelete = () => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-1 flex-col gap-4 rounded-xl p-4">
-            <div class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border">
-                <div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+            <div
+                class="rounded-xl border border-sidebar-border/70 p-6 dark:border-sidebar-border"
+            >
+                <div
+                    class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center"
+                >
                     <div>
                         <h2 class="text-xl font-bold">Categorías</h2>
                         <p class="text-sm text-muted-foreground">
@@ -137,17 +197,32 @@ const submitDelete = () => {
                                 </SheetDescription>
                             </SheetHeader>
 
-                            <form class="grid gap-4 py-4" @submit.prevent="submitCreate">
+                            <form
+                                class="grid gap-4 py-4"
+                                @submit.prevent="submitCreate"
+                            >
                                 <div class="grid gap-2">
                                     <Label for="create-name">Nombre</Label>
-                                    <Input id="create-name" v-model="createForm.name" />
-                                    <InputError :message="createForm.errors.name" />
+                                    <Input
+                                        id="create-name"
+                                        v-model="createForm.name"
+                                    />
+                                    <InputError
+                                        :message="createForm.errors.name"
+                                    />
                                 </div>
 
                                 <div class="grid gap-2">
-                                    <Label for="create-icon">Icono (Material Symbol)</Label>
-                                    <Input id="create-icon" v-model="createForm.icon" />
-                                    <InputError :message="createForm.errors.icon" />
+                                    <Label for="create-icon"
+                                        >Icono (Material Symbol)</Label
+                                    >
+                                    <Input
+                                        id="create-icon"
+                                        v-model="createForm.icon"
+                                    />
+                                    <InputError
+                                        :message="createForm.errors.icon"
+                                    />
                                 </div>
 
                                 <div class="grid gap-2">
@@ -158,11 +233,17 @@ const submitDelete = () => {
                                         min="0"
                                         type="number"
                                     />
-                                    <InputError :message="createForm.errors.sort_order" />
+                                    <InputError
+                                        :message="createForm.errors.sort_order"
+                                    />
                                 </div>
 
                                 <SheetFooter>
-                                    <Button :disabled="createForm.processing" type="submit">Guardar</Button>
+                                    <Button
+                                        :disabled="createForm.processing"
+                                        type="submit"
+                                        >Guardar</Button
+                                    >
                                 </SheetFooter>
                             </form>
                         </SheetContent>
@@ -172,31 +253,44 @@ const submitDelete = () => {
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead>
-                            <tr class="border-b text-left">
-                                <th class="py-3">Nombre</th>
-                                <th class="py-3">Icono</th>
-                                <th class="py-3">Orden</th>
-                                <th class="py-3 text-right">Acciones</th>
+                            <tr
+                                v-for="headerGroup in table.getHeaderGroups()"
+                                :key="headerGroup.id"
+                                class="border-b text-left"
+                            >
+                                <th
+                                    v-for="header in headerGroup.headers"
+                                    :key="header.id"
+                                    class="py-3"
+                                >
+                                    <FlexRender
+                                        v-if="!header.isPlaceholder"
+                                        :render="header.column.columnDef.header"
+                                        :props="header.getContext()"
+                                    />
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr
-                                v-for="category in props.categories"
-                                :key="category.id"
+                                v-for="row in table.getRowModel().rows"
+                                :key="row.id"
                                 class="border-b border-sidebar-border/60"
                             >
-                                <td class="py-3 font-medium">{{ category.name }}</td>
-                                <td class="py-3">{{ category.icon }}</td>
-                                <td class="py-3">{{ category.sort_order }}</td>
-                                <td class="py-3 text-right">
-                                    <div class="flex justify-end gap-2">
-                                        <Button size="sm" variant="outline" @click="openEdit(category)">
-                                            Editar
-                                        </Button>
-                                        <Button size="sm" variant="destructive" @click="openDelete(category)">
-                                            Eliminar
-                                        </Button>
-                                    </div>
+                                <td
+                                    v-for="cell in row.getVisibleCells()"
+                                    :key="cell.id"
+                                    class="py-3"
+                                    :class="
+                                        cell.column.id === 'name'
+                                            ? 'font-medium'
+                                            : ''
+                                    "
+                                >
+                                    <FlexRender
+                                        :render="cell.column.columnDef.cell"
+                                        :props="cell.getContext()"
+                                    />
                                 </td>
                             </tr>
                         </tbody>
@@ -239,7 +333,9 @@ const submitDelete = () => {
                     </div>
 
                     <SheetFooter>
-                        <Button :disabled="editForm.processing" type="submit">Guardar cambios</Button>
+                        <Button :disabled="editForm.processing" type="submit"
+                            >Guardar cambios</Button
+                        >
                     </SheetFooter>
                 </form>
             </SheetContent>
@@ -256,8 +352,14 @@ const submitDelete = () => {
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button variant="outline" @click="deleteDialogOpen = false">Cancelar</Button>
-                    <Button :disabled="deleteForm.processing" variant="destructive" @click="submitDelete">
+                    <Button variant="outline" @click="deleteDialogOpen = false"
+                        >Cancelar</Button
+                    >
+                    <Button
+                        :disabled="deleteForm.processing"
+                        variant="destructive"
+                        @click="submitDelete"
+                    >
                         Confirmar borrado
                     </Button>
                 </DialogFooter>
