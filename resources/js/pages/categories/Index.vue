@@ -353,15 +353,10 @@ const loadMore = () => {
 
                 <div class="mt-4 flex items-center justify-between gap-4">
                     <p class="text-sm text-muted-foreground">
-                        Mostrando {{ categories.length }} de
-                        {{ categoriesTotal }} categorías.
+                        Mostrando {{ categories.length }} de {{ categoriesTotal }} categorías.
                     </p>
 
-                    <Button
-                        v-if="canLoadMore"
-                        variant="outline"
-                        @click="loadMore"
-                    >
+                    <Button v-if="canLoadMore" variant="outline" @click="loadMore">
                         Ver más
                     </Button>
                 </div>
