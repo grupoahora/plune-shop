@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Categories\CategoryUndoManager;
+use App\Actions\Categories\GetCategoryCursorPage;
 use App\Http\Requests\CategoryUndoDeletionRequest;
 use App\Models\Category;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,22 +14,25 @@ use Inertia\Response;
 
 class CategoryController extends Controller
 {
-    public function __construct(private CategoryUndoManager $categoryUndoManager) {}
+    public function __construct(
+        private CategoryUndoManager $categoryUndoManager,
+        private GetCategoryCursorPage $getCategoryCursorPage,
+    ) {}
 
-    public function index(Request $request): Response
+    public function index(): Response
     {
-        $requestedLimit = $request->integer('limit', 10);
-        $limit = max(10, $requestedLimit);
-        $totalCategories = Category::query()->count();
+        $categoryPage = $this->getCategoryCursorPage->execute(null);
 
-        return Inertia::render('categories/Index', [
-            'categories' => Category::query()
-                ->orderBy('sort_order')
-                ->limit($limit)
-                ->get(['id', 'name', 'icon', 'sort_order']),
-            'categoriesTotal' => $totalCategories,
-            'currentLimit' => min($limit, $totalCategories),
-        ]);
+        return Inertia::render('categories/Index', $categoryPage);
+    }
+
+    public function cursor(Request $request): JsonResponse
+    {
+        $categoryPage = $this->getCategoryCursorPage->execute(
+            $request->string('cursor')->toString() ?: null,
+        );
+
+        return response()->json($categoryPage);
     }
 
     public function store(Request $request): RedirectResponse

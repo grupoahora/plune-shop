@@ -23,7 +23,7 @@ test('authenticated users can visit categories index', function () {
     );
 });
 
-test('categories index loads 10 records by default and can load 5 more on demand', function () {
+test('categories index uses cursor pagination with 10 initial records and 5 additional records', function () {
     $user = User::factory()->create();
 
     Category::factory()->count(20)->create();
@@ -36,19 +36,20 @@ test('categories index loads 10 records by default and can load 5 more on demand
         ->component('categories/Index')
         ->has('categories', 10)
         ->where('categoriesTotal', 20)
-        ->where('currentLimit', 10)
+        ->where('nextCursor', fn ($cursor) => is_string($cursor) && $cursor !== '')
     );
 
-    $expandedResponse = $this->actingAs($user)->get(route('categories.index', ['limit' => 15]));
+    $nextCursor = data_get($defaultResponse->viewData('page'), 'props.nextCursor');
 
-    $expandedResponse->assertOk();
+    expect($nextCursor)->toBeString();
 
-    $expandedResponse->assertInertia(fn (Assert $page) => $page
-        ->component('categories/Index')
-        ->has('categories', 15)
-        ->where('categoriesTotal', 20)
-        ->where('currentLimit', 15)
-    );
+    $nextPageResponse = $this->actingAs($user)->get(route('categories.cursor', ['cursor' => $nextCursor]));
+
+    $nextPageResponse->assertOk();
+
+    $nextPageResponse->assertJsonCount(5, 'categories');
+    $nextPageResponse->assertJsonPath('categoriesTotal', 20);
+    $nextPageResponse->assertJson(fn ($json) => $json->whereType('nextCursor', 'string|null')->etc());
 });
 
 test('authenticated users can undo category creation', function () {

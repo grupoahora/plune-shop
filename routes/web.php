@@ -27,6 +27,7 @@ Route::get('dashboard', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/categorias', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('dashboard/categorias/cursor', [CategoryController::class, 'cursor'])->name('categories.cursor');
     Route::post('dashboard/categorias', [CategoryController::class, 'store'])->name('categories.store');
     Route::put('dashboard/categorias/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('dashboard/categorias/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
