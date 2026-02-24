@@ -12,37 +12,15 @@ import {
 } from '@tanstack/vue-table';
 import { ChevronsUpDown } from 'lucide-vue-next';
 import { h, ref } from 'vue';
-import InputError from '@/components/InputError.vue';
+import CreateCategorySheet from '@/components/categories/CreateCategorySheet.vue';
+import DeleteCategoryDialog from '@/components/categories/DeleteCategoryDialog.vue';
+import EditCategorySheet from '@/components/categories/EditCategorySheet.vue';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from '@/components/ui/sheet';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
+import type { Category } from '@/pages/categories/types';
 import { type BreadcrumbItem } from '@/types';
-
-interface Category {
-    id: number;
-    name: string;
-    icon: string;
-    sort_order: number;
-}
 
 const props = defineProps<{
     categories: Category[];
@@ -231,69 +209,13 @@ const table = useVueTable({
                         </p>
                     </div>
 
-                    <Sheet v-model:open="createSheetOpen">
-                        <SheetTrigger as-child>
-                            <Button>Crear categoría</Button>
-                        </SheetTrigger>
-                        <SheetContent>
-                            <SheetHeader>
-                                <SheetTitle>Nueva categoría</SheetTitle>
-                                <SheetDescription>
-                                    Agrega una nueva categoría para el catálogo.
-                                </SheetDescription>
-                            </SheetHeader>
-
-                            <form
-                                class="grid gap-4 py-4"
-                                @submit.prevent="submitCreate"
-                            >
-                                <div class="grid gap-2">
-                                    <Label for="create-name">Nombre</Label>
-                                    <Input
-                                        id="create-name"
-                                        v-model="createForm.name"
-                                    />
-                                    <InputError
-                                        :message="createForm.errors.name"
-                                    />
-                                </div>
-
-                                <div class="grid gap-2">
-                                    <Label for="create-icon"
-                                        >Icono (Material Symbol)</Label
-                                    >
-                                    <Input
-                                        id="create-icon"
-                                        v-model="createForm.icon"
-                                    />
-                                    <InputError
-                                        :message="createForm.errors.icon"
-                                    />
-                                </div>
-
-                                <div class="grid gap-2">
-                                    <Label for="create-order">Orden</Label>
-                                    <Input
-                                        id="create-order"
-                                        v-model.number="createForm.sort_order"
-                                        min="0"
-                                        type="number"
-                                    />
-                                    <InputError
-                                        :message="createForm.errors.sort_order"
-                                    />
-                                </div>
-
-                                <SheetFooter>
-                                    <Button
-                                        :disabled="createForm.processing"
-                                        type="submit"
-                                        >Guardar</Button
-                                    >
-                                </SheetFooter>
-                            </form>
-                        </SheetContent>
-                    </Sheet>
+                    <CreateCategorySheet
+                        v-model:open="createSheetOpen"
+                        :errors="createForm.errors"
+                        :form="createForm"
+                        :processing="createForm.processing"
+                        @submit="submitCreate"
+                    />
                 </div>
 
                 <div class="mb-4 max-w-sm">
@@ -353,71 +275,19 @@ const table = useVueTable({
             </div>
         </div>
 
-        <Sheet v-model:open="editSheetOpen">
-            <SheetContent>
-                <SheetHeader>
-                    <SheetTitle>Editar categoría</SheetTitle>
-                    <SheetDescription>
-                        Actualiza la información de la categoría.
-                    </SheetDescription>
-                </SheetHeader>
+        <EditCategorySheet
+            v-model:open="editSheetOpen"
+            :errors="editForm.errors"
+            :form="editForm"
+            :processing="editForm.processing"
+            @submit="submitEdit"
+        />
 
-                <form class="grid gap-4 py-4" @submit.prevent="submitEdit">
-                    <div class="grid gap-2">
-                        <Label for="edit-name">Nombre</Label>
-                        <Input id="edit-name" v-model="editForm.name" />
-                        <InputError :message="editForm.errors.name" />
-                    </div>
-
-                    <div class="grid gap-2">
-                        <Label for="edit-icon">Icono (Material Symbol)</Label>
-                        <Input id="edit-icon" v-model="editForm.icon" />
-                        <InputError :message="editForm.errors.icon" />
-                    </div>
-
-                    <div class="grid gap-2">
-                        <Label for="edit-order">Orden</Label>
-                        <Input
-                            id="edit-order"
-                            v-model.number="editForm.sort_order"
-                            min="0"
-                            type="number"
-                        />
-                        <InputError :message="editForm.errors.sort_order" />
-                    </div>
-
-                    <SheetFooter>
-                        <Button :disabled="editForm.processing" type="submit"
-                            >Guardar cambios</Button
-                        >
-                    </SheetFooter>
-                </form>
-            </SheetContent>
-        </Sheet>
-
-        <Dialog v-model:open="deleteDialogOpen">
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>¿Eliminar categoría?</DialogTitle>
-                    <DialogDescription>
-                        Esta acción eliminará
-                        <strong>{{ selectedCategory?.name }}</strong>
-                        de forma permanente.
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                    <Button variant="outline" @click="deleteDialogOpen = false"
-                        >Cancelar</Button
-                    >
-                    <Button
-                        :disabled="deleteForm.processing"
-                        variant="destructive"
-                        @click="submitDelete"
-                    >
-                        Confirmar borrado
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+        <DeleteCategoryDialog
+            v-model:open="deleteDialogOpen"
+            :category-name="selectedCategory?.name ?? null"
+            :processing="deleteForm.processing"
+            @confirm="submitDelete"
+        />
     </AppLayout>
 </template>
