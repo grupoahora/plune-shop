@@ -83,9 +83,12 @@ const showToast = () => {
         ? {
               label: 'Deshacer',
               onClick: () => {
-                  useForm({ undo_token: toastPayload.undoToken }).post('/dashboard/categorias/deshacer', {
-                      preserveScroll: true,
-                  });
+                  useForm({ undo_token: toastPayload.undoToken }).post(
+                      '/dashboard/categorias/deshacer',
+                      {
+                          preserveScroll: true,
+                      },
+                  );
               },
           }
         : undefined;
@@ -282,20 +285,22 @@ const loadMore = () => {
                         </p>
                     </div>
 
-                    <CreateCategorySheet
-                        v-model:open="createSheetOpen"
-                        :errors="createForm.errors"
-                        :form="createForm"
-                        :processing="createForm.processing"
-                        @submit="submitCreate"
-                    />
+                    <Button @click="createSheetOpen = true">
+                        Crear categoría
+                    </Button>
                 </div>
 
                 <div class="mb-4 max-w-sm">
                     <Input
-                        :model-value="(table.getColumn('name')?.getFilterValue() as string) ?? ''"
+                        :model-value="
+                            (table
+                                .getColumn('name')
+                                ?.getFilterValue() as string) ?? ''
+                        "
                         placeholder="Buscar por nombre..."
-                        @update:model-value="table.getColumn('name')?.setFilterValue($event)"
+                        @update:model-value="
+                            table.getColumn('name')?.setFilterValue($event)
+                        "
                     />
                 </div>
 
@@ -358,7 +363,17 @@ const loadMore = () => {
             </div>
         </div>
 
+        <CreateCategorySheet
+            v-if="createSheetOpen"
+            v-model:open="createSheetOpen"
+            :errors="createForm.errors"
+            :form="createForm"
+            :processing="createForm.processing"
+            @submit="submitCreate"
+        />
+
         <EditCategorySheet
+            v-if="editSheetOpen"
             v-model:open="editSheetOpen"
             :errors="editForm.errors"
             :form="editForm"
@@ -367,6 +382,7 @@ const loadMore = () => {
         />
 
         <DeleteCategoryDialog
+            v-if="deleteDialogOpen"
             v-model:open="deleteDialogOpen"
             :category-name="selectedCategory?.name ?? null"
             :processing="deleteForm.processing"
