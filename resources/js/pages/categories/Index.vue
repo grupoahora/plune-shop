@@ -39,7 +39,7 @@ interface Category {
 const props = defineProps<{
     categories: Category[];
     categoriesTotal: number;
-    currentLimit: number;
+    nextCursor: string | null;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -71,6 +71,27 @@ const editForm = useForm({
 const deleteForm = useForm({});
 
 const page = usePage<AppPageProps>();
+
+
+const loadedCategories = ref<Category[]>([...props.categories]);
+const nextCursor = ref<string | null>(props.nextCursor);
+const loadingMoreCategories = ref(false);
+
+watch(
+    () => props.categories,
+    (categories) => {
+        if (!loadingMoreCategories.value) {
+            loadedCategories.value = [...categories];
+        }
+    },
+);
+
+watch(
+    () => props.nextCursor,
+    (cursor) => {
+        nextCursor.value = cursor;
+    },
+);
 
 const showToast = () => {
     const toastPayload = page.props.toast;
@@ -219,7 +240,7 @@ const columns = [
 
 const table = useVueTable({
     get data() {
-        return props.categories;
+        return loadedCategories.value;
     },
     columns,
     state: {
@@ -247,21 +268,33 @@ const table = useVueTable({
     getSortedRowModel: getSortedRowModel(),
 });
 
-const canLoadMore = computed(() => props.currentLimit < props.categoriesTotal);
+const canLoadMore = computed(() => nextCursor.value !== null);
 
 const loadMore = () => {
-    if (!canLoadMore.value) {
+    if (!canLoadMore.value || !nextCursor.value) {
         return;
     }
 
+    loadingMoreCategories.value = true;
+
     router.get(
         '/dashboard/categorias',
-        { limit: props.currentLimit + 5 },
+        { cursor: nextCursor.value },
         {
             preserveScroll: true,
             preserveState: true,
             replace: true,
-            only: ['categories', 'categoriesTotal', 'currentLimit'],
+            only: ['categories', 'nextCursor'],
+            onSuccess: (pageResponse) => {
+                const fetchedCategories = pageResponse.props.categories as Category[];
+                const fetchedCursor = pageResponse.props.nextCursor as string | null;
+
+                loadedCategories.value = [...loadedCategories.value, ...fetchedCategories];
+                nextCursor.value = fetchedCursor;
+            },
+            onFinish: () => {
+                loadingMoreCategories.value = false;
+            },
         },
     );
 };
@@ -353,7 +386,7 @@ const loadMore = () => {
 
                 <div class="mt-4 flex items-center justify-between gap-4">
                     <p class="text-sm text-muted-foreground">
-                        Mostrando {{ categories.length }} de {{ categoriesTotal }} categorías.
+                        Mostrando {{ loadedCategories.length }} de {{ categoriesTotal }} categorías.
                     </p>
 
                     <Button v-if="canLoadMore" variant="outline" @click="loadMore">

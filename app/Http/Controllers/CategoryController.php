@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Categories\CategoryUndoManager;
+use App\Actions\Categories\GetCategoryCursorPage;
 use App\Http\Requests\CategoryUndoDeletionRequest;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
@@ -12,22 +13,18 @@ use Inertia\Response;
 
 class CategoryController extends Controller
 {
-    public function __construct(private CategoryUndoManager $categoryUndoManager) {}
+    public function __construct(
+        private CategoryUndoManager $categoryUndoManager,
+        private GetCategoryCursorPage $getCategoryCursorPage,
+    ) {}
 
     public function index(Request $request): Response
     {
-        $requestedLimit = $request->integer('limit', 10);
-        $limit = max(10, $requestedLimit);
-        $totalCategories = Category::query()->count();
+        $categoryPage = $this->getCategoryCursorPage->execute(
+            $request->string('cursor')->toString() ?: null,
+        );
 
-        return Inertia::render('categories/Index', [
-            'categories' => Category::query()
-                ->orderBy('sort_order')
-                ->limit($limit)
-                ->get(['id', 'name', 'icon', 'sort_order']),
-            'categoriesTotal' => $totalCategories,
-            'currentLimit' => min($limit, $totalCategories),
-        ]);
+        return Inertia::render('categories/Index', $categoryPage);
     }
 
     public function store(Request $request): RedirectResponse
