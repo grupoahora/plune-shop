@@ -2,6 +2,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
+import 'vue-sonner/style.css';
 import '../css/app.css';
 import { initializeTheme } from './composables/useAppearance';
 
@@ -24,5 +25,4 @@ createInertiaApp({
     },
 });
 
-// This will set light / dark mode on page load...
 initializeTheme();

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Categories\CategoryDeletionUndoManager;
+use App\Http\Requests\CategoryUndoDeletionRequest;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -10,6 +12,8 @@ use Inertia\Response;
 
 class CategoryController extends Controller
 {
+    public function __construct(private CategoryDeletionUndoManager $categoryDeletionUndoManager) {}
+
     public function index(): Response
     {
         return Inertia::render('categories/Index', [
@@ -43,10 +47,41 @@ class CategoryController extends Controller
         return back();
     }
 
-    public function destroy(Category $category): RedirectResponse
+    public function destroy(Request $request, Category $category): RedirectResponse
     {
+        $undoToken = $this->categoryDeletionUndoManager->storeDeletedCategory($request->session(), $category);
+
         $category->delete();
 
-        return back();
+        return back()->with('toast', [
+            'type' => 'warning',
+            'title' => 'Categoría eliminada',
+            'description' => 'Puedes deshacer esta acción.',
+            'undoToken' => $undoToken,
+        ]);
+    }
+
+    public function undoDestroy(CategoryUndoDeletionRequest $request): RedirectResponse
+    {
+        $deletedCategory = $this->categoryDeletionUndoManager->consumeDeletedCategory(
+            $request->session(),
+            $request->string('undo_token')->toString(),
+        );
+
+        if (! is_array($deletedCategory)) {
+            return back()->with('toast', [
+                'type' => 'error',
+                'title' => 'No se pudo deshacer',
+                'description' => 'La acción de deshacer ya expiró o no es válida.',
+            ]);
+        }
+
+        Category::query()->create($deletedCategory);
+
+        return back()->with('toast', [
+            'type' => 'success',
+            'title' => 'Categoría restaurada',
+            'description' => 'La categoría fue restaurada correctamente.',
+        ]);
     }
 }
