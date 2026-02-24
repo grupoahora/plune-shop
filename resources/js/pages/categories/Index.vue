@@ -10,6 +10,7 @@ import {
     getSortedRowModel,
     useVueTable,
 } from '@tanstack/vue-table';
+import { ChevronsUpDown } from 'lucide-vue-next';
 import { h, ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -33,8 +34,8 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
+import { dashboard } from '@/routes';
 
 interface Category {
     id: number;
@@ -124,44 +125,34 @@ const submitDelete = () => {
 
 const columnHelper = createColumnHelper<Category>();
 
+const sortableHeader = (label: string, columnId: keyof Category) => {
+    return h(
+        Button,
+        {
+            class: 'px-0',
+            variant: 'ghost',
+            onClick: () => table.getColumn(columnId)?.toggleSorting(),
+        },
+        () => [
+            label,
+            h(ChevronsUpDown, {
+                class: 'ml-2 h-4 w-4',
+            }),
+        ],
+    );
+};
+
 const columns = [
     columnHelper.accessor('name', {
-        header: () =>
-            h(
-                Button,
-                {
-                    class: 'px-0',
-                    variant: 'ghost',
-                    onClick: () => table.getColumn('name')?.toggleSorting(),
-                },
-                () => 'Nombre',
-            ),
+        header: () => sortableHeader('Nombre', 'name'),
         cell: (info) => info.getValue(),
     }),
     columnHelper.accessor('icon', {
-        header: () =>
-            h(
-                Button,
-                {
-                    class: 'px-0',
-                    variant: 'ghost',
-                    onClick: () => table.getColumn('icon')?.toggleSorting(),
-                },
-                () => 'Icono',
-            ),
+        header: () => sortableHeader('Icono', 'icon'),
         cell: (info) => info.getValue(),
     }),
     columnHelper.accessor('sort_order', {
-        header: () =>
-            h(
-                Button,
-                {
-                    class: 'px-0',
-                    variant: 'ghost',
-                    onClick: () => table.getColumn('sort_order')?.toggleSorting(),
-                },
-                () => 'Orden',
-            ),
+        header: () => sortableHeader('Orden', 'sort_order'),
         cell: (info) => info.getValue(),
     }),
     columnHelper.display({
