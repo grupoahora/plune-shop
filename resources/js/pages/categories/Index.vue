@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import {
     type ColumnFiltersState,
     FlexRender,
@@ -11,7 +11,8 @@ import {
     useVueTable,
 } from '@tanstack/vue-table';
 import { ChevronsUpDown } from 'lucide-vue-next';
-import { h, ref } from 'vue';
+import { toast } from 'vue-sonner';
+import { h, ref, watch } from 'vue';
 import CreateCategorySheet from '@/components/categories/CreateCategorySheet.vue';
 import DeleteCategoryDialog from '@/components/categories/DeleteCategoryDialog.vue';
 import EditCategorySheet from '@/components/categories/EditCategorySheet.vue';
@@ -19,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
+import { type AppPageProps, type BreadcrumbItem } from '@/types';
 
 interface Category {
     id: number;
@@ -59,6 +60,41 @@ const editForm = useForm({
 });
 
 const deleteForm = useForm({});
+
+
+const page = usePage<AppPageProps>();
+
+const showToast = () => {
+    const toastPayload = page.props.toast;
+
+    if (!toastPayload) {
+        return;
+    }
+
+    const action = toastPayload.undoToken
+        ? {
+              label: 'Deshacer',
+              onClick: () => {
+                  useForm({ undo_token: toastPayload.undoToken }).post('/dashboard/categorias/deshacer', {
+                      preserveScroll: true,
+                  });
+              },
+          }
+        : undefined;
+
+    toast[toastPayload.type](toastPayload.title, {
+        description: toastPayload.description,
+        action,
+    });
+};
+
+watch(
+    () => page.props.toast,
+    () => {
+        showToast();
+    },
+    { immediate: true },
+);
 
 const submitCreate = () => {
     createForm.post('/dashboard/categorias', {

@@ -60,3 +60,34 @@ test('authenticated users can create update and delete categories', function () 
         'id' => $category->id,
     ]);
 });
+
+test('authenticated users can undo a category deletion', function () {
+    $user = User::factory()->create();
+
+    $category = Category::query()->create([
+        'name' => 'Mascarillas',
+        'icon' => 'face',
+        'sort_order' => 4,
+    ]);
+
+    $deleteResponse = $this->actingAs($user)
+        ->delete(route('categories.destroy', $category));
+
+    $deleteResponse->assertRedirect();
+
+    $undoToken = session('toast.undoToken');
+
+    expect($undoToken)->toBeString();
+
+    $this->actingAs($user)
+        ->post(route('categories.undo-destroy'), [
+            'undo_token' => $undoToken,
+        ])
+        ->assertRedirect();
+
+    $this->assertDatabaseHas('categories', [
+        'name' => 'Mascarillas',
+        'icon' => 'face',
+        'sort_order' => 4,
+    ]);
+});
