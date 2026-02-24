@@ -23,6 +23,34 @@ test('authenticated users can visit categories index', function () {
     );
 });
 
+test('categories index loads 10 records by default and can load 5 more on demand', function () {
+    $user = User::factory()->create();
+
+    Category::factory()->count(20)->create();
+
+    $defaultResponse = $this->actingAs($user)->get(route('categories.index'));
+
+    $defaultResponse->assertOk();
+
+    $defaultResponse->assertInertia(fn (Assert $page) => $page
+        ->component('categories/Index')
+        ->has('categories', 10)
+        ->where('categoriesTotal', 20)
+        ->where('currentLimit', 10)
+    );
+
+    $expandedResponse = $this->actingAs($user)->get(route('categories.index', ['limit' => 15]));
+
+    $expandedResponse->assertOk();
+
+    $expandedResponse->assertInertia(fn (Assert $page) => $page
+        ->component('categories/Index')
+        ->has('categories', 15)
+        ->where('categoriesTotal', 20)
+        ->where('currentLimit', 15)
+    );
+});
+
 test('authenticated users can undo category creation', function () {
     $user = User::factory()->create();
 

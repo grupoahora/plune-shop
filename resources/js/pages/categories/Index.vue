@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import {
     type ColumnFiltersState,
     FlexRender,
@@ -12,15 +12,22 @@ import {
 } from '@tanstack/vue-table';
 import { ChevronsUpDown } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
-import { h, ref, watch } from 'vue';
-import CreateCategorySheet from '@/components/categories/CreateCategorySheet.vue';
-import DeleteCategoryDialog from '@/components/categories/DeleteCategoryDialog.vue';
-import EditCategorySheet from '@/components/categories/EditCategorySheet.vue';
+import { computed, defineAsyncComponent, h, ref, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type AppPageProps, type BreadcrumbItem } from '@/types';
+
+const CreateCategorySheet = defineAsyncComponent(
+    () => import('@/components/categories/CreateCategorySheet.vue'),
+);
+const EditCategorySheet = defineAsyncComponent(
+    () => import('@/components/categories/EditCategorySheet.vue'),
+);
+const DeleteCategoryDialog = defineAsyncComponent(
+    () => import('@/components/categories/DeleteCategoryDialog.vue'),
+);
 
 interface Category {
     id: number;
@@ -31,6 +38,8 @@ interface Category {
 
 const props = defineProps<{
     categories: Category[];
+    categoriesTotal: number;
+    currentLimit: number;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -61,7 +70,6 @@ const editForm = useForm({
 
 const deleteForm = useForm({});
 
-
 const page = usePage<AppPageProps>();
 
 const showToast = () => {
@@ -75,9 +83,12 @@ const showToast = () => {
         ? {
               label: 'Deshacer',
               onClick: () => {
-                  useForm({ undo_token: toastPayload.undoToken }).post('/dashboard/categorias/deshacer', {
-                      preserveScroll: true,
-                  });
+                  useForm({ undo_token: toastPayload.undoToken }).post(
+                      '/dashboard/categorias/deshacer',
+                      {
+                          preserveScroll: true,
+                      },
+                  );
               },
           }
         : undefined;
@@ -115,7 +126,9 @@ const openEdit = (category: Category) => {
 };
 
 const submitEdit = () => {
-    if (!selectedCategory.value) return;
+    if (!selectedCategory.value) {
+        return;
+    }
 
     editForm.put(`/dashboard/categorias/${selectedCategory.value.id}`, {
         preserveScroll: true,
@@ -132,7 +145,9 @@ const openDelete = (category: Category) => {
 };
 
 const submitDelete = () => {
-    if (!selectedCategory.value) return;
+    if (!selectedCategory.value) {
+        return;
+    }
 
     deleteForm.delete(`/dashboard/categorias/${selectedCategory.value.id}`, {
         preserveScroll: true,
@@ -231,6 +246,25 @@ const table = useVueTable({
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
 });
+
+const canLoadMore = computed(() => props.currentLimit < props.categoriesTotal);
+
+const loadMore = () => {
+    if (!canLoadMore.value) {
+        return;
+    }
+
+    router.get(
+        '/dashboard/categorias',
+        { limit: props.currentLimit + 5 },
+        {
+            preserveScroll: true,
+            preserveState: true,
+            replace: true,
+            only: ['categories', 'categoriesTotal', 'currentLimit'],
+        },
+    );
+};
 </script>
 
 <template>
@@ -251,20 +285,22 @@ const table = useVueTable({
                         </p>
                     </div>
 
-                    <CreateCategorySheet
-                        v-model:open="createSheetOpen"
-                        :errors="createForm.errors"
-                        :form="createForm"
-                        :processing="createForm.processing"
-                        @submit="submitCreate"
-                    />
+                    <Button @click="createSheetOpen = true">
+                        Crear categoría
+                    </Button>
                 </div>
 
                 <div class="mb-4 max-w-sm">
                     <Input
-                        :model-value="(table.getColumn('name')?.getFilterValue() as string) ?? ''"
+                        :model-value="
+                            (table
+                                .getColumn('name')
+                                ?.getFilterValue() as string) ?? ''
+                        "
                         placeholder="Buscar por nombre..."
-                        @update:model-value="table.getColumn('name')?.setFilterValue($event)"
+                        @update:model-value="
+                            table.getColumn('name')?.setFilterValue($event)
+                        "
                     />
                 </div>
 
@@ -314,10 +350,35 @@ const table = useVueTable({
                         </tbody>
                     </table>
                 </div>
+
+                <div class="mt-4 flex items-center justify-between gap-4">
+                    <p class="text-sm text-muted-foreground">
+                        Mostrando {{ categories.length }} de
+                        {{ categoriesTotal }} categorías.
+                    </p>
+
+                    <Button
+                        v-if="canLoadMore"
+                        variant="outline"
+                        @click="loadMore"
+                    >
+                        Ver más
+                    </Button>
+                </div>
             </div>
         </div>
 
+        <CreateCategorySheet
+            v-if="createSheetOpen"
+            v-model:open="createSheetOpen"
+            :errors="createForm.errors"
+            :form="createForm"
+            :processing="createForm.processing"
+            @submit="submitCreate"
+        />
+
         <EditCategorySheet
+            v-if="editSheetOpen"
             v-model:open="editSheetOpen"
             :errors="editForm.errors"
             :form="editForm"
@@ -326,6 +387,7 @@ const table = useVueTable({
         />
 
         <DeleteCategoryDialog
+            v-if="deleteDialogOpen"
             v-model:open="deleteDialogOpen"
             :category-name="selectedCategory?.name ?? null"
             :processing="deleteForm.processing"
