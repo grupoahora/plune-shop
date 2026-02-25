@@ -14,19 +14,14 @@ class CategoryController extends Controller
 {
     public function __construct(private CategoryUndoManager $categoryUndoManager) {}
 
-    public function index(Request $request): Response
+    public function index(): Response
     {
-        $requestedLimit = $request->integer('limit', 10);
-        $limit = max(10, $requestedLimit);
-        $totalCategories = Category::query()->count();
+        $categories = Category::query()
+            ->orderBy('sort_order')
+            ->get(['id', 'name', 'icon', 'sort_order']);
 
         return Inertia::render('categories/Index', [
-            'categories' => Category::query()
-                ->orderBy('sort_order')
-                ->limit($limit)
-                ->get(['id', 'name', 'icon', 'sort_order']),
-            'categoriesTotal' => $totalCategories,
-            'currentLimit' => min($limit, $totalCategories),
+            'categories' => $categories,
         ]);
     }
 
