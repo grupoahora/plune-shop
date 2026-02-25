@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, router, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import {
     type ColumnFiltersState,
     FlexRender,
@@ -38,8 +38,6 @@ interface Category {
 
 const props = defineProps<{
     categories: Category[];
-    categoriesTotal: number;
-    currentLimit: number;
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -55,6 +53,7 @@ const deleteDialogOpen = ref(false);
 const selectedCategory = ref<Category | null>(null);
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
+const visibleCount = ref(10);
 
 const createForm = useForm({
     name: '',
@@ -219,7 +218,7 @@ const columns = [
 
 const table = useVueTable({
     get data() {
-        return props.categories;
+        return props.categories.slice(0, visibleCount.value);
     },
     columns,
     state: {
@@ -247,23 +246,20 @@ const table = useVueTable({
     getSortedRowModel: getSortedRowModel(),
 });
 
-const canLoadMore = computed(() => props.currentLimit < props.categoriesTotal);
+const categoriesTotal = computed(() => props.categories.length);
+
+const visibleCategories = computed(() =>
+    Math.min(visibleCount.value, categoriesTotal.value),
+);
+
+const canLoadMore = computed(() => visibleCount.value < categoriesTotal.value);
 
 const loadMore = () => {
     if (!canLoadMore.value) {
         return;
     }
 
-    router.get(
-        '/dashboard/categorias',
-        { limit: props.currentLimit + 5 },
-        {
-            preserveScroll: true,
-            preserveState: true,
-            replace: true,
-            only: ['categories', 'categoriesTotal', 'currentLimit'],
-        },
-    );
+    visibleCount.value += 5;
 };
 </script>
 
@@ -353,7 +349,7 @@ const loadMore = () => {
 
                 <div class="mt-4 flex items-center justify-between gap-4">
                     <p class="text-sm text-muted-foreground">
-                        Mostrando {{ categories.length }} de {{ categoriesTotal }} categorías.
+                        Mostrando {{ visibleCategories }} de {{ categoriesTotal }} categorías.
                     </p>
 
                     <Button v-if="canLoadMore" variant="outline" @click="loadMore">
