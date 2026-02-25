@@ -2,6 +2,7 @@
 
 use App\Models\Category;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('authenticated users can visit categories index', function () {
@@ -55,6 +56,112 @@ test('categories index always returns all categories ordered by sort order', fun
         ->where('categories.1.name', 'Manos')
         ->where('categories.2.name', 'Corporal')
     );
+});
+
+test('categories index cache is invalidated after category mutations and undo actions', function () {
+    Cache::flush();
+
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('categories.index'))->assertOk();
+
+    expect(Cache::has('categories.index'))->toBeTrue();
+
+    $createResponse = $this->actingAs($user)
+        ->post(route('categories.store'), [
+            'name' => 'Corporal',
+            'icon' => 'spa',
+            'sort_order' => 1,
+        ]);
+
+    $createResponse->assertRedirect();
+
+    expect(Cache::has('categories.index'))->toBeFalse();
+
+    $this->actingAs($user)
+        ->get(route('categories.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('categories.0.name', 'Corporal')
+            ->where('categories.0.icon', 'spa')
+            ->where('categories.0.sort_order', 1)
+        );
+
+    expect(Cache::has('categories.index'))->toBeTrue();
+
+    $category = Category::query()->firstOrFail();
+
+    $updateResponse = $this->actingAs($user)
+        ->put(route('categories.update', $category), [
+            'name' => 'Corporal Premium',
+            'icon' => 'self_improvement',
+            'sort_order' => 2,
+        ]);
+
+    $updateResponse->assertRedirect();
+
+    expect(Cache::has('categories.index'))->toBeFalse();
+
+    $undoUpdateToken = session('toast.undoToken');
+
+    $this->actingAs($user)
+        ->post(route('categories.undo-destroy'), [
+            'undo_token' => $undoUpdateToken,
+        ])
+        ->assertRedirect();
+
+    expect(Cache::has('categories.index'))->toBeFalse();
+
+    $this->actingAs($user)
+        ->get(route('categories.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('categories.0.name', 'Corporal')
+            ->where('categories.0.icon', 'spa')
+            ->where('categories.0.sort_order', 1)
+        );
+
+    $deleteResponse = $this->actingAs($user)->delete(route('categories.destroy', $category));
+
+    $deleteResponse->assertRedirect();
+
+    expect(Cache::has('categories.index'))->toBeFalse();
+
+    $undoDeleteToken = session('toast.undoToken');
+
+    $this->actingAs($user)
+        ->post(route('categories.undo-destroy'), [
+            'undo_token' => $undoDeleteToken,
+        ])
+        ->assertRedirect();
+
+    expect(Cache::has('categories.index'))->toBeFalse();
+
+    $createAgainResponse = $this->actingAs($user)
+        ->post(route('categories.store'), [
+            'name' => 'Facial',
+            'icon' => 'face',
+            'sort_order' => 3,
+        ]);
+
+    $createAgainResponse->assertRedirect();
+
+    $undoCreateToken = session('toast.undoToken');
+
+    $this->actingAs($user)
+        ->post(route('categories.undo-destroy'), [
+            'undo_token' => $undoCreateToken,
+        ])
+        ->assertRedirect();
+
+    expect(Cache::has('categories.index'))->toBeFalse();
+
+    $this->actingAs($user)
+        ->get(route('categories.index'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->has('categories', 1)
+            ->where('categories.0.name', 'Corporal')
+            ->where('categories.0.icon', 'spa')
+            ->where('categories.0.sort_order', 1)
+        );
 });
 
 
