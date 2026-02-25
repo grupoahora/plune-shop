@@ -12,12 +12,14 @@ Route::get('/', function () {
 
     return Inertia::render('Welcome', [
         'canRegister' => Features::enabled(Features::registration()),
+        'canResetPassword' => Features::enabled(Features::resetPasswords()),
         'products' => $products,
     ]);
 })->name('home');
 
 Route::get('/catalogo', function () {
     return Inertia::render('Catalogo', [
+        'canResetPassword' => Features::enabled(Features::resetPasswords()),
         'categories' => Category::query()->orderBy('sort_order')->get(['id', 'name', 'icon']),
     ]);
 })->name('catalogo');
