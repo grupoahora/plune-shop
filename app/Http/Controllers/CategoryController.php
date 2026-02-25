@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Categories\CategoryUndoManager;
 use App\Http\Requests\CategoryUndoDeletionRequest;
 use App\Models\Category;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,13 +13,26 @@ use Inertia\Response;
 
 class CategoryController extends Controller
 {
+    private const INDEX_CACHE_KEY = 'categories.index';
+
     public function __construct(private CategoryUndoManager $categoryUndoManager) {}
 
     public function index(): Response
     {
-        $categories = Category::query()
-            ->orderBy('sort_order')
-            ->get(['id', 'name', 'icon', 'sort_order']);
+        $categories = Cache::remember(self::INDEX_CACHE_KEY, now()->addMinutes(10), function (): array {
+            return Category::query()
+                ->orderBy('sort_order')
+                ->get(['id', 'name', 'icon', 'sort_order'])
+                ->map(function (Category $category): array {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                        'icon' => $category->icon,
+                        'sort_order' => $category->sort_order,
+                    ];
+                })
+                ->all();
+        });
 
         return Inertia::render('categories/Index', [
             'categories' => $categories,
@@ -34,6 +48,7 @@ class CategoryController extends Controller
         ]);
 
         $category = Category::query()->create($validated);
+        $this->forgetCategoriesIndexCache();
 
         $undoToken = $this->categoryUndoManager->storeCreatedCategory($request->session(), $category);
 
@@ -56,6 +71,7 @@ class CategoryController extends Controller
         $undoToken = $this->categoryUndoManager->storeUpdatedCategory($request->session(), $category);
 
         $category->update($validated);
+        $this->forgetCategoriesIndexCache();
 
         return back()->with('toast', [
             'type' => 'success',
@@ -70,6 +86,7 @@ class CategoryController extends Controller
         $undoToken = $this->categoryUndoManager->storeDeletedCategory($request->session(), $category);
 
         $category->delete();
+        $this->forgetCategoriesIndexCache();
 
         return back()->with('toast', [
             'type' => 'warning',
@@ -98,6 +115,7 @@ class CategoryController extends Controller
 
         if ($operation === 'delete' && is_array($undoData['category'] ?? null)) {
             Category::query()->create($undoData['category']);
+            $this->forgetCategoriesIndexCache();
 
             return back()->with('toast', [
                 'type' => 'success',
@@ -111,6 +129,7 @@ class CategoryController extends Controller
 
             if (is_int($categoryId)) {
                 Category::query()->whereKey($categoryId)->delete();
+                $this->forgetCategoriesIndexCache();
 
                 return back()->with('toast', [
                     'type' => 'success',
@@ -125,6 +144,7 @@ class CategoryController extends Controller
 
             if (is_int($categoryId)) {
                 Category::query()->whereKey($categoryId)->update($undoData['category']);
+                $this->forgetCategoriesIndexCache();
 
                 return back()->with('toast', [
                     'type' => 'success',
@@ -139,5 +159,10 @@ class CategoryController extends Controller
             'title' => 'No se pudo deshacer',
             'description' => 'La acción de deshacer ya expiró o no es válida.',
         ]);
+    }
+
+    private function forgetCategoriesIndexCache(): void
+    {
+        Cache::forget(self::INDEX_CACHE_KEY);
     }
 }
