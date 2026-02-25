@@ -11,13 +11,14 @@ import {
     useVueTable,
 } from '@tanstack/vue-table';
 import { ChevronsUpDown } from 'lucide-vue-next';
-import { toast } from 'vue-sonner';
 import { computed, defineAsyncComponent, h, ref, watch } from 'vue';
+import { toast } from 'vue-sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useIncrementalPagination } from '@/composables/useIncrementalPagination';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
 import { type AppPageProps, type BreadcrumbItem } from '@/types';
+import { dashboard } from '@/routes';
 
 const CreateCategorySheet = defineAsyncComponent(
     () => import('@/components/categories/CreateCategorySheet.vue'),
@@ -53,7 +54,6 @@ const deleteDialogOpen = ref(false);
 const selectedCategory = ref<Category | null>(null);
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
-const visibleCount = ref(10);
 
 const createForm = useForm({
     name: '',
@@ -218,7 +218,7 @@ const columns = [
 
 const table = useVueTable({
     get data() {
-        return props.categories.slice(0, visibleCount.value);
+        return props.categories;
     },
     columns,
     state: {
@@ -246,21 +246,21 @@ const table = useVueTable({
     getSortedRowModel: getSortedRowModel(),
 });
 
-const categoriesTotal = computed(() => props.categories.length);
+const {
+    allItems: filteredRows,
+    visibleItems: visibleRows,
+    canLoadMore,
+    loadMore,
+} = useIncrementalPagination(() => table.getRowModel().rows, {
+    initialCount: 10,
+    incrementCount: 5,
+});
 
-const visibleCategories = computed(() =>
-    Math.min(visibleCount.value, categoriesTotal.value),
-);
+const visibleCategories = computed(() => visibleRows.value.length);
 
-const canLoadMore = computed(() => visibleCount.value < categoriesTotal.value);
+const categoriesTotal = computed(() => filteredRows.value.length);
 
-const loadMore = () => {
-    if (!canLoadMore.value) {
-        return;
-    }
-
-    visibleCount.value += 5;
-};
+const hasCategories = computed(() => table.getRowModel().rows.length > 0);
 </script>
 
 <template>
@@ -323,7 +323,7 @@ const loadMore = () => {
                         </thead>
                         <tbody>
                             <tr
-                                v-for="row in table.getRowModel().rows"
+                                v-for="row in visibleRows"
                                 :key="row.id"
                                 class="border-b border-sidebar-border/60"
                             >
@@ -343,16 +343,30 @@ const loadMore = () => {
                                     />
                                 </td>
                             </tr>
+
+                            <tr v-if="!hasCategories">
+                                <td
+                                    :colspan="columns.length"
+                                    class="py-6 text-center text-muted-foreground"
+                                >
+                                    No hay categorías disponibles.
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="mt-4 flex items-center justify-between gap-4">
                     <p class="text-sm text-muted-foreground">
-                        Mostrando {{ visibleCategories }} de {{ categoriesTotal }} categorías.
+                        Mostrando {{ visibleCategories }} de
+                        {{ categoriesTotal }} categorías.
                     </p>
 
-                    <Button v-if="canLoadMore" variant="outline" @click="loadMore">
+                    <Button
+                        v-if="canLoadMore"
+                        variant="outline"
+                        @click="loadMore"
+                    >
                         Ver más
                     </Button>
                 </div>
