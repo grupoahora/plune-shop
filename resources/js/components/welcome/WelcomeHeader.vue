@@ -21,6 +21,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { dashboard } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import { store as registerStore } from '@/routes/register';
 
 defineProps<{
     canResetPassword: boolean;
@@ -238,6 +239,170 @@ const emit = defineEmits<{
                                         >Cancelar</Button
                                     >
                                 </SheetClose>
+                                <div
+                                    class="w-full text-center text-sm text-[#61896f] dark:text-[#a1b8a9]"
+                                >
+                                    ¿No tienes una cuenta?
+                                    <Sheet>
+                                        <SheetTrigger as-child>
+                                            <button
+                                                class="font-semibold text-[#13ec5b] transition-colors hover:text-[#13ec5b]/80"
+                                                type="button"
+                                            >
+                                                Regístrate
+                                            </button>
+                                        </SheetTrigger>
+                                        <SheetContent
+                                            class="border-[#dbe6df] bg-[#f6f8f6] text-[#111813] sm:max-w-md dark:border-[#2a3a2e] dark:bg-[#102216] dark:text-white"
+                                        >
+                                            <SheetHeader
+                                                class="space-y-2 border-b border-[#dbe6df] px-6 pb-4 dark:border-[#2a3a2e]"
+                                            >
+                                                <SheetTitle
+                                                    class="text-2xl font-extrabold tracking-tight"
+                                                >
+                                                    Crear cuenta
+                                                </SheetTitle>
+                                                <SheetDescription
+                                                    class="text-sm text-[#61896f] dark:text-[#a1b8a9]"
+                                                >
+                                                    Regístrate para comprar y
+                                                    gestionar tus pedidos.
+                                                </SheetDescription>
+                                            </SheetHeader>
+
+                                            <Form
+                                                v-bind="registerStore.form()"
+                                                v-slot="{ errors, processing }"
+                                                :reset-on-success="[
+                                                    'password',
+                                                    'password_confirmation',
+                                                ]"
+                                                class="grid flex-1 auto-rows-min gap-6 px-6 py-6"
+                                            >
+                                                <div class="grid gap-3">
+                                                    <Label
+                                                        class="text-sm font-semibold"
+                                                        for="register-name"
+                                                    >
+                                                        Nombre completo
+                                                    </Label>
+                                                    <Input
+                                                        id="register-name"
+                                                        :tabindex="1"
+                                                        autocomplete="name"
+                                                        autofocus
+                                                        class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                                        name="name"
+                                                        placeholder="Nombre completo"
+                                                        required
+                                                        type="text"
+                                                    />
+                                                    <InputError
+                                                        :message="errors.name"
+                                                    />
+                                                </div>
+
+                                                <div class="grid gap-3">
+                                                    <Label
+                                                        class="text-sm font-semibold"
+                                                        for="register-email"
+                                                    >
+                                                        Correo electrónico
+                                                    </Label>
+                                                    <Input
+                                                        id="register-email"
+                                                        :tabindex="2"
+                                                        autocomplete="email"
+                                                        class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                                        name="email"
+                                                        placeholder="email@example.com"
+                                                        required
+                                                        type="email"
+                                                    />
+                                                    <InputError
+                                                        :message="errors.email"
+                                                    />
+                                                </div>
+
+                                                <div class="grid gap-3">
+                                                    <Label
+                                                        class="text-sm font-semibold"
+                                                        for="register-password"
+                                                    >
+                                                        Contraseña
+                                                    </Label>
+                                                    <Input
+                                                        id="register-password"
+                                                        :tabindex="3"
+                                                        autocomplete="new-password"
+                                                        class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                                        name="password"
+                                                        placeholder="Contraseña"
+                                                        required
+                                                        type="password"
+                                                    />
+                                                    <InputError
+                                                        :message="
+                                                            errors.password
+                                                        "
+                                                    />
+                                                </div>
+
+                                                <div class="grid gap-3">
+                                                    <Label
+                                                        class="text-sm font-semibold"
+                                                        for="register-password-confirmation"
+                                                    >
+                                                        Confirmar contraseña
+                                                    </Label>
+                                                    <Input
+                                                        id="register-password-confirmation"
+                                                        :tabindex="4"
+                                                        autocomplete="new-password"
+                                                        class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                                        name="password_confirmation"
+                                                        placeholder="Confirma tu contraseña"
+                                                        required
+                                                        type="password"
+                                                    />
+                                                    <InputError
+                                                        :message="
+                                                            errors.password_confirmation
+                                                        "
+                                                    />
+                                                </div>
+
+                                                <SheetFooter
+                                                    class="gap-3 border-t border-[#dbe6df] pt-6 dark:border-[#2a3a2e]"
+                                                >
+                                                    <Button
+                                                        :tabindex="5"
+                                                        class="w-full rounded-xl bg-[#13ec5b] py-3 font-bold text-[#111813] transition-all hover:bg-[#13ec5b]/90"
+                                                        type="submit"
+                                                    >
+                                                        <Spinner
+                                                            v-if="processing"
+                                                            class="h-4 w-4 animate-spin"
+                                                        />
+                                                        <span v-else
+                                                            >Crear cuenta</span
+                                                        >
+                                                    </Button>
+                                                    <SheetClose as-child>
+                                                        <Button
+                                                            class="w-full rounded-xl border border-[#dbe6df] bg-white py-3 font-semibold text-[#111813] hover:border-[#13ec5b] dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                                            type="button"
+                                                            variant="outline"
+                                                        >
+                                                            Cancelar
+                                                        </Button>
+                                                    </SheetClose>
+                                                </SheetFooter>
+                                            </Form>
+                                        </SheetContent>
+                                    </Sheet>
+                                </div>
                             </SheetFooter>
                         </Form>
                     </SheetContent>
