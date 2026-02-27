@@ -16,13 +16,13 @@ defineProps<{
                     Nuestros Productos
                 </h2>
                 <p
-                    class="text-lg font-medium text-[#61896f] dark:text-[#a1b8a9]"
+                    class="text-lg font-medium text-[#6C3483] dark:text-[#D2B4DE]"
                 >
                     Cuidadosamente elaborados para cada tipo de cabello.
                 </p>
             </div>
             <a
-                class="flex items-center gap-2 font-bold text-[#13ec5b] hover:underline"
+                class="flex items-center gap-2 font-bold text-[#884EA0] hover:underline"
                 href="#"
             >
                 Ver todos

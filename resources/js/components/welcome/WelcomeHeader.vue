@@ -35,11 +35,11 @@ const emit = defineEmits<{
 
 <template>
     <header
-        class="sticky top-0 z-50 flex items-center justify-between border-b border-solid border-[#dbe6df] bg-[#f6f8f6] px-6 py-4 whitespace-nowrap lg:px-20 dark:border-[#2a3a2e] dark:bg-[#102216]"
+        class="sticky top-0 z-50 flex items-center justify-between border-b border-solid border-[#D2B4DE] bg-[#F8F3FB] px-6 py-4 whitespace-nowrap lg:px-20 dark:border-[#5D3C73] dark:bg-[#2A1535]"
     >
         <div class="flex items-center gap-12">
             <div class="flex items-center gap-3">
-                <div class="size-8 text-[#13ec5b]">
+                <div class="size-8 text-[#884EA0]">
                     <svg
                         fill="currentColor"
                         viewBox="0 0 48 48"
@@ -54,17 +54,17 @@ const emit = defineEmits<{
             </div>
             <nav class="hidden items-center gap-10 md:flex">
                 <a
-                    class="text-sm font-semibold transition-colors hover:text-[#13ec5b]"
+                    class="text-sm font-semibold transition-colors hover:text-[#884EA0]"
                     href="#"
                     >Tienda</a
                 >
                 <a
-                    class="text-sm font-semibold transition-colors hover:text-[#13ec5b]"
+                    class="text-sm font-semibold transition-colors hover:text-[#884EA0]"
                     href="#"
                     >Nosotros</a
                 >
                 <a
-                    class="text-sm font-semibold transition-colors hover:text-[#13ec5b]"
+                    class="text-sm font-semibold transition-colors hover:text-[#884EA0]"
                     href="#"
                     >Contacto</a
                 >
@@ -73,11 +73,11 @@ const emit = defineEmits<{
 
         <div class="flex flex-1 items-center justify-end gap-6">
             <div
-                class="hidden w-full max-w-xs items-center rounded-xl border border-[#dbe6df] bg-white px-4 py-2 sm:flex dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                class="hidden w-full max-w-xs items-center rounded-xl border border-[#D2B4DE] bg-white px-4 py-2 sm:flex dark:border-[#5D3C73] dark:bg-[#3B2249]"
             >
-                <Search class="size-4 text-[#61896f]" />
+                <Search class="size-4 text-[#6C3483]" />
                 <input
-                    class="w-full border-none bg-transparent text-sm placeholder:text-[#61896f] focus:ring-0"
+                    class="w-full border-none bg-transparent text-sm placeholder:text-[#6C3483] focus:ring-0"
                     placeholder="Buscar Champoo...."
                     type="text"
                 />
@@ -85,14 +85,14 @@ const emit = defineEmits<{
 
             <div class="flex gap-3">
                 <div
-                    class="inline-flex items-center gap-1 rounded-xl border border-[#dbe6df] bg-white p-1 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                    class="inline-flex items-center gap-1 rounded-xl border border-[#D2B4DE] bg-white p-1 dark:border-[#5D3C73] dark:bg-[#3B2249]"
                 >
                     <button
                         :class="[
                             'flex size-8 items-center justify-center rounded-lg transition-all',
                             resolvedAppearance === 'light'
-                                ? 'bg-[#f0f4f2] text-[#111813] dark:bg-[#2a3a2e] dark:text-white'
-                                : 'text-[#61896f] hover:bg-[#f0f4f2] dark:text-[#a1b8a9] dark:hover:bg-[#2a3a2e]',
+                                ? 'bg-[#EFE3F5] text-[#2B1338] dark:bg-[#5D3C73] dark:text-white'
+                                : 'text-[#6C3483] hover:bg-[#EFE3F5] dark:text-[#D2B4DE] dark:hover:bg-[#5D3C73]',
                         ]"
                         aria-label="Cambiar a modo claro"
                         type="button"
@@ -104,8 +104,8 @@ const emit = defineEmits<{
                         :class="[
                             'flex size-8 items-center justify-center rounded-lg transition-all',
                             resolvedAppearance === 'dark'
-                                ? 'bg-[#f0f4f2] text-[#111813] dark:bg-[#2a3a2e] dark:text-white'
-                                : 'text-[#61896f] hover:bg-[#f0f4f2] dark:text-[#a1b8a9] dark:hover:bg-[#2a3a2e]',
+                                ? 'bg-[#EFE3F5] text-[#2B1338] dark:bg-[#5D3C73] dark:text-white'
+                                : 'text-[#6C3483] hover:bg-[#EFE3F5] dark:text-[#D2B4DE] dark:hover:bg-[#5D3C73]',
                         ]"
                         aria-label="Cambiar a modo oscuro"
                         type="button"
@@ -116,36 +116,36 @@ const emit = defineEmits<{
                 </div>
 
                 <button
-                    class="flex size-10 items-center justify-center rounded-xl border border-[#dbe6df] bg-white transition-all hover:border-[#13ec5b] dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                    class="flex size-10 items-center justify-center rounded-xl border border-[#D2B4DE] bg-white transition-all hover:border-[#884EA0] dark:border-[#5D3C73] dark:bg-[#3B2249]"
                     type="button"
                 >
                     <ShoppingCart
-                        class="size-5 text-[#111813] dark:text-white"
+                        class="size-5 text-[#2B1338] dark:text-white"
                     />
                 </button>
 
                 <Sheet v-if="!$page.props.auth.user">
                     <SheetTrigger as-child>
                         <Button
-                            class="flex size-10 items-center justify-center rounded-xl border border-[#dbe6df] bg-white transition-all hover:border-[#13ec5b] hover:bg-white dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                            class="flex size-10 items-center justify-center rounded-xl border border-[#D2B4DE] bg-white transition-all hover:border-[#884EA0] hover:bg-white dark:border-[#5D3C73] dark:bg-[#3B2249]"
                         >
                             <User
-                                class="size-5 text-[#111813] dark:text-white"
+                                class="size-5 text-[#2B1338] dark:text-white"
                             />
                         </Button>
                     </SheetTrigger>
                     <SheetContent
-                        class="border-[#dbe6df] bg-[#f6f8f6] text-[#111813] sm:max-w-md dark:border-[#2a3a2e] dark:bg-[#102216] dark:text-white"
+                        class="border-[#D2B4DE] bg-[#F8F3FB] text-[#2B1338] sm:max-w-md dark:border-[#5D3C73] dark:bg-[#2A1535] dark:text-white"
                     >
                         <SheetHeader
-                            class="space-y-2 border-b border-[#dbe6df] px-6 pb-4 dark:border-[#2a3a2e]"
+                            class="space-y-2 border-b border-[#D2B4DE] px-6 pb-4 dark:border-[#5D3C73]"
                         >
                             <SheetTitle
                                 class="text-2xl font-extrabold tracking-tight"
                                 >Iniciar sesión</SheetTitle
                             >
                             <SheetDescription
-                                class="text-sm text-[#61896f] dark:text-[#a1b8a9]"
+                                class="text-sm text-[#6C3483] dark:text-[#D2B4DE]"
                             >
                                 Ingresa tus credenciales para acceder a tu
                                 cuenta.
@@ -166,7 +166,7 @@ const emit = defineEmits<{
                                     :tabindex="1"
                                     autocomplete="email"
                                     autofocus
-                                    class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                    class="rounded-xl border-[#D2B4DE] bg-white focus-visible:border-[#884EA0] focus-visible:ring-[#884EA0]/30 dark:border-[#5D3C73] dark:bg-[#3B2249]"
                                     name="email"
                                     placeholder="email@example.com"
                                     required
@@ -194,7 +194,7 @@ const emit = defineEmits<{
                                     id="password"
                                     :tabindex="2"
                                     autocomplete="current-password"
-                                    class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                    class="rounded-xl border-[#D2B4DE] bg-white focus-visible:border-[#884EA0] focus-visible:ring-[#884EA0]/30 dark:border-[#5D3C73] dark:bg-[#3B2249]"
                                     name="password"
                                     placeholder="Password"
                                     required
@@ -218,11 +218,11 @@ const emit = defineEmits<{
                             </div>
 
                             <SheetFooter
-                                class="gap-3 border-t border-[#dbe6df] pt-6 dark:border-[#2a3a2e]"
+                                class="gap-3 border-t border-[#D2B4DE] pt-6 dark:border-[#5D3C73]"
                             >
                                 <Button
                                     :tabindex="4"
-                                    class="w-full rounded-xl bg-[#13ec5b] py-3 font-bold text-[#111813] transition-all hover:bg-[#13ec5b]/90"
+                                    class="w-full rounded-xl bg-[#884EA0] py-3 font-bold text-[#2B1338] transition-all hover:bg-[#884EA0]/90"
                                     type="submit"
                                 >
                                     <Spinner
@@ -233,30 +233,30 @@ const emit = defineEmits<{
                                 </Button>
                                 <SheetClose as-child>
                                     <Button
-                                        class="w-full rounded-xl border border-[#dbe6df] bg-white py-3 font-semibold text-[#111813] hover:border-[#13ec5b] dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                        class="w-full rounded-xl border border-[#D2B4DE] bg-white py-3 font-semibold text-[#2B1338] hover:border-[#884EA0] dark:border-[#5D3C73] dark:bg-[#3B2249]"
                                         type="button"
                                         variant="outline"
                                         >Cancelar</Button
                                     >
                                 </SheetClose>
                                 <div
-                                    class="w-full text-center text-sm text-[#61896f] dark:text-[#a1b8a9]"
+                                    class="w-full text-center text-sm text-[#6C3483] dark:text-[#D2B4DE]"
                                 >
                                     ¿No tienes una cuenta?
                                     <Sheet>
                                         <SheetTrigger as-child>
                                             <button
-                                                class="font-semibold text-[#13ec5b] transition-colors hover:text-[#13ec5b]/80"
+                                                class="font-semibold text-[#884EA0] transition-colors hover:text-[#884EA0]/80"
                                                 type="button"
                                             >
                                                 Regístrate
                                             </button>
                                         </SheetTrigger>
                                         <SheetContent
-                                            class="border-[#dbe6df] bg-[#f6f8f6] text-[#111813] sm:max-w-md dark:border-[#2a3a2e] dark:bg-[#102216] dark:text-white"
+                                            class="border-[#D2B4DE] bg-[#F8F3FB] text-[#2B1338] sm:max-w-md dark:border-[#5D3C73] dark:bg-[#2A1535] dark:text-white"
                                         >
                                             <SheetHeader
-                                                class="space-y-2 border-b border-[#dbe6df] px-6 pb-4 dark:border-[#2a3a2e]"
+                                                class="space-y-2 border-b border-[#D2B4DE] px-6 pb-4 dark:border-[#5D3C73]"
                                             >
                                                 <SheetTitle
                                                     class="text-2xl font-extrabold tracking-tight"
@@ -264,7 +264,7 @@ const emit = defineEmits<{
                                                     Crear cuenta
                                                 </SheetTitle>
                                                 <SheetDescription
-                                                    class="text-sm text-[#61896f] dark:text-[#a1b8a9]"
+                                                    class="text-sm text-[#6C3483] dark:text-[#D2B4DE]"
                                                 >
                                                     Regístrate para comprar y
                                                     gestionar tus pedidos.
@@ -292,7 +292,7 @@ const emit = defineEmits<{
                                                         :tabindex="1"
                                                         autocomplete="name"
                                                         autofocus
-                                                        class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                                        class="rounded-xl border-[#D2B4DE] bg-white focus-visible:border-[#884EA0] focus-visible:ring-[#884EA0]/30 dark:border-[#5D3C73] dark:bg-[#3B2249]"
                                                         name="name"
                                                         placeholder="Nombre completo"
                                                         required
@@ -314,7 +314,7 @@ const emit = defineEmits<{
                                                         id="register-email"
                                                         :tabindex="2"
                                                         autocomplete="email"
-                                                        class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                                        class="rounded-xl border-[#D2B4DE] bg-white focus-visible:border-[#884EA0] focus-visible:ring-[#884EA0]/30 dark:border-[#5D3C73] dark:bg-[#3B2249]"
                                                         name="email"
                                                         placeholder="email@example.com"
                                                         required
@@ -336,7 +336,7 @@ const emit = defineEmits<{
                                                         id="register-password"
                                                         :tabindex="3"
                                                         autocomplete="new-password"
-                                                        class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                                        class="rounded-xl border-[#D2B4DE] bg-white focus-visible:border-[#884EA0] focus-visible:ring-[#884EA0]/30 dark:border-[#5D3C73] dark:bg-[#3B2249]"
                                                         name="password"
                                                         placeholder="Contraseña"
                                                         required
@@ -360,7 +360,7 @@ const emit = defineEmits<{
                                                         id="register-password-confirmation"
                                                         :tabindex="4"
                                                         autocomplete="new-password"
-                                                        class="rounded-xl border-[#dbe6df] bg-white focus-visible:border-[#13ec5b] focus-visible:ring-[#13ec5b]/30 dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                                        class="rounded-xl border-[#D2B4DE] bg-white focus-visible:border-[#884EA0] focus-visible:ring-[#884EA0]/30 dark:border-[#5D3C73] dark:bg-[#3B2249]"
                                                         name="password_confirmation"
                                                         placeholder="Confirma tu contraseña"
                                                         required
@@ -374,11 +374,11 @@ const emit = defineEmits<{
                                                 </div>
 
                                                 <SheetFooter
-                                                    class="gap-3 border-t border-[#dbe6df] pt-6 dark:border-[#2a3a2e]"
+                                                    class="gap-3 border-t border-[#D2B4DE] pt-6 dark:border-[#5D3C73]"
                                                 >
                                                     <Button
                                                         :tabindex="5"
-                                                        class="w-full rounded-xl bg-[#13ec5b] py-3 font-bold text-[#111813] transition-all hover:bg-[#13ec5b]/90"
+                                                        class="w-full rounded-xl bg-[#884EA0] py-3 font-bold text-[#2B1338] transition-all hover:bg-[#884EA0]/90"
                                                         type="submit"
                                                     >
                                                         <Spinner
@@ -391,7 +391,7 @@ const emit = defineEmits<{
                                                     </Button>
                                                     <SheetClose as-child>
                                                         <Button
-                                                            class="w-full rounded-xl border border-[#dbe6df] bg-white py-3 font-semibold text-[#111813] hover:border-[#13ec5b] dark:border-[#2a3a2e] dark:bg-[#1a2e20]"
+                                                            class="w-full rounded-xl border border-[#D2B4DE] bg-white py-3 font-semibold text-[#2B1338] hover:border-[#884EA0] dark:border-[#5D3C73] dark:bg-[#3B2249]"
                                                             type="button"
                                                             variant="outline"
                                                         >
@@ -416,7 +416,7 @@ const emit = defineEmits<{
                         $page?.props.auth.user.roles[0]?.name == 'Administrador'
                     "
                     :href="dashboard()"
-                    class="rounded-xl border border-[#dbe6df] px-4 py-2 text-sm font-semibold transition-colors hover:border-[#13ec5b] dark:border-[#2a3a2e]"
+                    class="rounded-xl border border-[#D2B4DE] px-4 py-2 text-sm font-semibold transition-colors hover:border-[#884EA0] dark:border-[#5D3C73]"
                     >Dashboard</Link
                 >
                 <Link
@@ -425,7 +425,7 @@ const emit = defineEmits<{
                         $page?.props.auth.user.roles[0]?.name == 'Cliente'
                     "
                     :href="dashboard()"
-                    class="rounded-xl border border-[#dbe6df] px-4 py-2 text-sm font-semibold transition-colors hover:border-[#13ec5b] dark:border-[#2a3a2e]"
+                    class="rounded-xl border border-[#D2B4DE] px-4 py-2 text-sm font-semibold transition-colors hover:border-[#884EA0] dark:border-[#5D3C73]"
                     >Mi Cuenta</Link
                 >
             </nav>

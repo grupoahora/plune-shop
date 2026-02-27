@@ -36,7 +36,7 @@ withDefaults(
 
     <div
         v-if="status"
-        class="mb-4 text-center text-sm font-medium text-green-600"
+        class="mb-4 text-center text-sm font-medium text-[#6C3483] dark:text-[#BB8FCE]"
     >
         {{ status }}
     </div>
@@ -55,6 +55,6 @@ withDefaults(
 
 <style scoped>
 :global(body) {
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Public Sans', sans-serif;
 }
 </style>
