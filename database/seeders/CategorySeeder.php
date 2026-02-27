@@ -12,14 +12,14 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i=0; $i < 1000; $i++) { 
+        for ($i = 0; $i < 1000; $i++) {
             $categories = [
-                ['name' => 'Champús'.$i, 'icon' => 'spa', 'sort_order' => 1],
-                ['name' => 'Acondicionadores'.$i, 'icon' => 'water_drop', 'sort_order' => 2],
-                ['name' => 'Cremas de Peinar'.$i, 'icon' => 'brush', 'sort_order' => 3],
-                ['name' => 'Tratamientos'.$i, 'icon' => 'eco', 'sort_order' => 4],
+                ['name' => 'Champús'.$i, 'icon' => 'Flower2', 'sort_order' => 1],
+                ['name' => 'Acondicionadores'.$i, 'icon' => 'Droplets', 'sort_order' => 2],
+                ['name' => 'Cremas de Peinar'.$i, 'icon' => 'Waves', 'sort_order' => 3],
+                ['name' => 'Tratamientos'.$i, 'icon' => 'Leaf', 'sort_order' => 4],
             ];
-            # code...
+
             DB::table('categories')->insert($categories);
         }
     }

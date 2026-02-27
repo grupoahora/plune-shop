@@ -26,8 +26,12 @@ defineProps<{
     </div>
 
     <div class="grid gap-2">
-        <Label :for="`${idPrefix}-icon`">Icono (Material Symbol)</Label>
-        <Input :id="`${idPrefix}-icon`" v-model="form.icon" />
+        <Label :for="`${idPrefix}-icon`">Icono (Lucide)</Label>
+        <Input
+            :id="`${idPrefix}-icon`"
+            v-model="form.icon"
+            placeholder="Ejemplo: Flower2"
+        />
         <InputError :message="errors.icon" />
     </div>
 

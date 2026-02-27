@@ -57,7 +57,7 @@ const columnFilters = ref<ColumnFiltersState>([]);
 
 const createForm = useForm({
     name: '',
-    icon: 'spa',
+    icon: 'Flower2',
     sort_order: 0,
 });
 

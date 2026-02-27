@@ -1,27 +1,16 @@
 <script setup lang="ts">
-import {
-    Droplets,
-    Flower2,
-    Leaf,
-    type LucideIcon,
-    Sparkles,
-    Waves,
-} from 'lucide-vue-next';
+import * as LucideIcons from 'lucide-vue-next';
+import { type LucideIcon, Sparkles } from 'lucide-vue-next';
 import type { CatalogCategory } from '@/types/catalog';
 
 defineProps<{
     categories: CatalogCategory[];
 }>();
 
-const categoryIcons: Record<string, LucideIcon> = {
-    spa: Flower2,
-    water_drop: Droplets,
-    brush: Waves,
-    eco: Leaf,
-};
-
 const getCategoryIcon = (iconName: string): LucideIcon => {
-    return categoryIcons[iconName] ?? Sparkles;
+    const icon = LucideIcons[iconName as keyof typeof LucideIcons];
+
+    return (icon as LucideIcon | undefined) ?? Sparkles;
 };
 </script>
 
