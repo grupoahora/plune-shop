@@ -1,28 +1,14 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
-use App\Models\Category;
-use App\Models\Product;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    $products = Product::all();
-
-    return Inertia::render('Welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-        'canResetPassword' => Features::enabled(Features::resetPasswords()),
-        'products' => $products,
-    ]);
-})->name('home');
-
-Route::get('/catalogo', function () {
-    return Inertia::render('Catalogo', [
-        'canResetPassword' => Features::enabled(Features::resetPasswords()),
-        'categories' => Category::query()->orderBy('sort_order')->get(['id', 'name', 'icon']),
-    ]);
-})->name('catalogo');
+Route::get('/', [ProductController::class, 'home'])->name('home');
+Route::get('/catalogo', [ProductController::class, 'index'])->name('catalogo');
+Route::get('/productos/buscar', [ProductController::class, 'search'])->name('products.search');
+Route::get('/productos/{product}', [ProductController::class, 'show'])->name('products.show');
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

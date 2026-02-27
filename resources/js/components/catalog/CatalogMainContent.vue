@@ -1,17 +1,42 @@
 <script setup lang="ts">
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { Link, router } from '@inertiajs/vue3';
+import {
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
+    Search,
+} from 'lucide-vue-next';
+import { ref } from 'vue';
 import CatalogProductCard from '@/components/catalog/CatalogProductCard.vue';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import type { CatalogProduct } from '@/types/catalog';
 
-defineProps<{
+const props = defineProps<{
     products: CatalogProduct[];
+    search?: string;
 }>();
+
+const searchTerm = ref(props.search ?? '');
+
+const searchProduct = (): void => {
+    if (searchTerm.value.trim().length < 2) {
+        return;
+    }
+
+    router.get(
+        '/productos/buscar',
+        { search: searchTerm.value.trim() },
+        { preserveState: true },
+    );
+};
 </script>
 
 <template>
     <section class="flex-1">
-        <div class="mb-8 flex items-center justify-between gap-4">
+        <div
+            class="mb-8 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between"
+        >
             <div>
                 <h1 class="mb-2 text-3xl font-extrabold tracking-tight">
                     Catálogo de Productos
@@ -23,6 +48,25 @@ defineProps<{
                     rendimiento encontrados
                 </p>
             </div>
+
+            <form
+                class="flex w-full max-w-xl items-center"
+                @submit.prevent="searchProduct"
+            >
+                <div class="flex w-full items-center">
+                    <Input
+                        v-model="searchTerm"
+                        class="rounded-r-none"
+                        placeholder="Buscar por nombre o código de producto"
+                        type="search"
+                    />
+                    <Button class="rounded-l-none" type="submit">
+                        <Search class="size-4" />
+                        Buscar
+                    </Button>
+                </div>
+            </form>
+
             <Button
                 class="flex items-center gap-2"
                 type="button"
@@ -33,12 +77,31 @@ defineProps<{
             </Button>
         </div>
 
-        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-2">
+        <div
+            v-if="products.length"
+            class="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-2"
+        >
             <CatalogProductCard
                 v-for="product in products"
                 :key="product.id"
                 :product="product"
             />
+        </div>
+
+        <div
+            v-else
+            class="rounded-2xl border border-dashed border-border px-6 py-12 text-center"
+        >
+            <h2 class="text-xl font-bold">Sin resultados</h2>
+            <p class="mt-2 text-muted-foreground">
+                Ajusta tu búsqueda para encontrar el producto ideal.
+            </p>
+            <Link
+                class="mt-4 inline-flex text-sm font-semibold text-primary"
+                href="/catalogo"
+            >
+                Limpiar búsqueda
+            </Link>
         </div>
 
         <div class="mt-16 flex items-center justify-center gap-4">
