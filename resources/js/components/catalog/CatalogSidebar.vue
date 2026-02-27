@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import * as LucideIcons from 'lucide-vue-next';
-import { type LucideIcon, Sparkles } from 'lucide-vue-next';
+import { Sparkles } from 'lucide-vue-next';
+import { defineAsyncComponent } from 'vue';
 import type { CatalogCategory } from '@/types/catalog';
+
+const LazyCatalogIcon = defineAsyncComponent(
+    () => import('@/components/catalog/LazyCatalogIcon.vue'),
+);
+const CatalogSidebarPromoCard = defineAsyncComponent(
+    () => import('@/components/catalog/CatalogSidebarPromoCard.vue'),
+);
 
 defineProps<{
     categories: CatalogCategory[];
 }>();
-
-const getCategoryIcon = (iconName: string): LucideIcon => {
-    const icon = LucideIcons[iconName as keyof typeof LucideIcons];
-
-    return (icon as LucideIcon | undefined) ?? Sparkles;
-};
 </script>
 
 <template>
@@ -34,37 +35,20 @@ const getCategoryIcon = (iconName: string): LucideIcon => {
                         ]"
                         href="#"
                     >
-                        <component
-                            :is="getCategoryIcon(category.icon)"
+                        <LazyCatalogIcon
                             :class="[
-                                'size-5',
                                 category.active
                                     ? 'text-primary'
                                     : 'text-current',
                             ]"
+                            :icon-name="category.icon"
                         />
                         <span>{{ category.name }}</span>
                     </a>
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-primary/10 bg-primary/5 p-6">
-                <p
-                    class="mb-2 text-xs font-bold tracking-widest text-primary uppercase"
-                >
-                    Elección Sostenible
-                </p>
-                <h4 class="mb-2 font-bold">Recarga y Ahorra</h4>
-                <p class="mb-4 text-sm text-muted-foreground dark:text-white/60">
-                    Suscríbete a recargas y obtén un 15% de descuento en tu
-                    rutina orgánica.
-                </p>
-                <a
-                    class="text-sm font-bold underline decoration-primary underline-offset-4"
-                    href="#"
-                    >Saber más</a
-                >
-            </div>
+            <CatalogSidebarPromoCard />
         </div>
     </aside>
 </template>
