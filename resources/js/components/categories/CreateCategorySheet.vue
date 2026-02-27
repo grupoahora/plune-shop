@@ -23,6 +23,7 @@ const props = defineProps<{
     form: CategoryFormData;
     errors: CategoryFormErrors;
     processing: boolean;
+    iconOptions: string[];
 }>();
 
 const emit = defineEmits<{
@@ -49,6 +50,7 @@ const emit = defineEmits<{
                         id-prefix="create"
                         :errors="props.errors"
                         :form="props.form"
+                        :icon-options="props.iconOptions"
                     />
 
                     <SheetFooter>

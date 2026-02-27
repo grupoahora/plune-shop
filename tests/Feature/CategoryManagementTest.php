@@ -10,7 +10,7 @@ test('authenticated users can visit categories index', function () {
 
     Category::query()->create([
         'name' => 'Spa',
-        'icon' => 'spa',
+        'icon' => 'Flower2',
         'sort_order' => 1,
     ]);
 
@@ -21,7 +21,22 @@ test('authenticated users can visit categories index', function () {
     $response->assertInertia(fn (Assert $page) => $page
         ->component('categories/Index')
         ->has('categories', 1)
+        ->where('iconOptions.0', 'Flower2')
     );
+});
+
+test('category icon must be one of the allowed options', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->from(route('categories.index'))
+        ->post(route('categories.store'), [
+            'name' => 'Icono inválido',
+            'icon' => 'NoExiste',
+            'sort_order' => 1,
+        ])
+        ->assertRedirect(route('categories.index'))
+        ->assertSessionHasErrors('icon');
 });
 
 test('categories index always returns all categories ordered by sort order', function () {
@@ -29,19 +44,19 @@ test('categories index always returns all categories ordered by sort order', fun
 
     Category::query()->create([
         'name' => 'Corporal',
-        'icon' => 'spa',
+        'icon' => 'Flower2',
         'sort_order' => 3,
     ]);
 
     Category::query()->create([
         'name' => 'Facial',
-        'icon' => 'face',
+        'icon' => 'Smile',
         'sort_order' => 1,
     ]);
 
     Category::query()->create([
         'name' => 'Manos',
-        'icon' => 'back_hand',
+        'icon' => 'Hand',
         'sort_order' => 2,
     ]);
 
@@ -70,7 +85,7 @@ test('categories index cache is invalidated after category mutations and undo ac
     $createResponse = $this->actingAs($user)
         ->post(route('categories.store'), [
             'name' => 'Corporal',
-            'icon' => 'spa',
+            'icon' => 'Flower2',
             'sort_order' => 1,
         ]);
 
@@ -82,7 +97,7 @@ test('categories index cache is invalidated after category mutations and undo ac
         ->get(route('categories.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->where('categories.0.name', 'Corporal')
-            ->where('categories.0.icon', 'spa')
+            ->where('categories.0.icon', 'Flower2')
             ->where('categories.0.sort_order', 1)
         );
 
@@ -93,7 +108,7 @@ test('categories index cache is invalidated after category mutations and undo ac
     $updateResponse = $this->actingAs($user)
         ->put(route('categories.update', $category), [
             'name' => 'Corporal Premium',
-            'icon' => 'self_improvement',
+            'icon' => 'Leaf',
             'sort_order' => 2,
         ]);
 
@@ -115,7 +130,7 @@ test('categories index cache is invalidated after category mutations and undo ac
         ->get(route('categories.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->where('categories.0.name', 'Corporal')
-            ->where('categories.0.icon', 'spa')
+            ->where('categories.0.icon', 'Flower2')
             ->where('categories.0.sort_order', 1)
         );
 
@@ -138,7 +153,7 @@ test('categories index cache is invalidated after category mutations and undo ac
     $createAgainResponse = $this->actingAs($user)
         ->post(route('categories.store'), [
             'name' => 'Facial',
-            'icon' => 'face',
+            'icon' => 'Smile',
             'sort_order' => 3,
         ]);
 
@@ -159,7 +174,7 @@ test('categories index cache is invalidated after category mutations and undo ac
         ->assertInertia(fn (Assert $page) => $page
             ->has('categories', 1)
             ->where('categories.0.name', 'Corporal')
-            ->where('categories.0.icon', 'spa')
+            ->where('categories.0.icon', 'Flower2')
             ->where('categories.0.sort_order', 1)
         );
 });
@@ -172,7 +187,7 @@ test('category create, update and delete actions are reflected on categories ind
         ->from(route('categories.index'))
         ->post(route('categories.store'), [
             'name' => 'Corporal',
-            'icon' => 'spa',
+            'icon' => 'Flower2',
             'sort_order' => 1,
         ])
         ->assertRedirect(route('categories.index'));
@@ -191,7 +206,7 @@ test('category create, update and delete actions are reflected on categories ind
         ->from(route('categories.index'))
         ->put(route('categories.update', $category), [
             'name' => 'Corporal Premium',
-            'icon' => 'self_improvement',
+            'icon' => 'Leaf',
             'sort_order' => 2,
         ])
         ->assertRedirect(route('categories.index'));
@@ -223,7 +238,7 @@ test('authenticated users can undo category creation', function () {
     $response = $this->actingAs($user)
         ->post(route('categories.store'), [
             'name' => 'Aromaterapia',
-            'icon' => 'spa',
+            'icon' => 'Flower2',
             'sort_order' => 2,
         ]);
 
@@ -251,14 +266,14 @@ test('authenticated users can undo category update', function () {
 
     $category = Category::query()->create([
         'name' => 'Aromaterapia',
-        'icon' => 'spa',
+        'icon' => 'Flower2',
         'sort_order' => 2,
     ]);
 
     $response = $this->actingAs($user)
         ->put(route('categories.update', $category), [
             'name' => 'Aromaterapia Premium',
-            'icon' => 'local_florist',
+            'icon' => 'Flower2',
             'sort_order' => 3,
         ]);
 
@@ -277,7 +292,7 @@ test('authenticated users can undo category update', function () {
     $category->refresh();
 
     expect($category->name)->toBe('Aromaterapia')
-        ->and($category->icon)->toBe('spa')
+        ->and($category->icon)->toBe('Flower2')
         ->and($category->sort_order)->toBe(2);
 });
 
@@ -286,7 +301,7 @@ test('authenticated users can undo a category deletion', function () {
 
     $category = Category::query()->create([
         'name' => 'Mascarillas',
-        'icon' => 'face',
+        'icon' => 'Smile',
         'sort_order' => 4,
     ]);
 
@@ -307,7 +322,7 @@ test('authenticated users can undo a category deletion', function () {
 
     $this->assertDatabaseHas('categories', [
         'name' => 'Mascarillas',
-        'icon' => 'face',
+        'icon' => 'Smile',
         'sort_order' => 4,
     ]);
 });
