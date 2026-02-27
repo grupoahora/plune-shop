@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Form, Link } from '@inertiajs/vue3';
+import { Form, Link, router } from '@inertiajs/vue3';
 import { Moon, Search, ShoppingCart, Sun, User } from 'lucide-vue-next';
+import { ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,16 @@ defineProps<{
 const emit = defineEmits<{
     setAppearance: [value: 'light' | 'dark'];
 }>();
+
+const searchTerm = ref('');
+
+const searchProduct = (): void => {
+    if (searchTerm.value.trim().length < 2) {
+        return;
+    }
+
+    router.get('/productos/buscar', { search: searchTerm.value.trim() });
+};
 </script>
 
 <template>
@@ -72,16 +83,26 @@ const emit = defineEmits<{
         </div>
 
         <div class="flex flex-1 items-center justify-end gap-6">
-            <div
-                class="hidden w-full max-w-xs items-center rounded-xl border border-border bg-white px-4 py-2 sm:flex dark:border-border dark:bg-card"
+            <form
+                class="hidden w-full max-w-sm items-center sm:flex"
+                @submit.prevent="searchProduct"
             >
-                <Search class="size-4 text-muted-foreground" />
-                <input
-                    class="w-full border-none bg-transparent text-sm placeholder:text-muted-foreground focus:ring-0"
-                    placeholder="Buscar Champoo...."
-                    type="text"
-                />
-            </div>
+                <div class="flex w-full items-center">
+                    <Input
+                        v-model="searchTerm"
+                        class="rounded-r-none"
+                        placeholder="Buscar producto"
+                        type="search"
+                    />
+                    <Button
+                        class="rounded-l-none"
+                        type="submit"
+                        variant="outline"
+                    >
+                        <Search class="size-4" />
+                    </Button>
+                </div>
+            </form>
 
             <div class="flex gap-3">
                 <div
