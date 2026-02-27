@@ -14,7 +14,7 @@
         >
             <div class="max-w-2xl space-y-6">
                 <span
-                    class="inline-block rounded-full border border-[#13ec5b]/30 bg-[#13ec5b]/20 px-4 py-1.5 text-xs font-bold tracking-widest text-[#13ec5b] uppercase"
+                    class="inline-block rounded-full border border-[#884EA0]/30 bg-[#884EA0]/20 px-4 py-1.5 text-xs font-bold tracking-widest text-[#884EA0] uppercase"
                 >
                     Champú de Romero
                 </span>
@@ -36,7 +36,7 @@
 
                 <div class="flex flex-wrap gap-4 pt-4">
                     <button
-                        class="rounded-xl bg-[#13ec5b] px-8 py-4 font-bold text-[#111813] shadow-lg shadow-[#13ec5b]/20 transition-all hover:-translate-y-1 hover:bg-[#13ec5b]/90"
+                        class="rounded-xl bg-[#884EA0] px-8 py-4 font-bold text-[#2B1338] shadow-lg shadow-[#884EA0]/20 transition-all hover:-translate-y-1 hover:bg-[#884EA0]/90"
                     >
                         Comprar ahora
                     </button>

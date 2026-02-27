@@ -14,7 +14,7 @@ const emit = defineEmits<{
 
 <template>
     <div
-        class="min-h-screen overflow-x-hidden bg-[#f6f8f6] text-[#111813] transition-colors duration-300 dark:bg-[#102216] dark:text-white"
+        class="min-h-screen overflow-x-hidden bg-[#F8F3FB] text-[#2B1338] transition-colors duration-300 dark:bg-[#2A1535] dark:text-white"
     >
         <div class="flex min-h-screen w-full flex-col">
             <WelcomeHeader
