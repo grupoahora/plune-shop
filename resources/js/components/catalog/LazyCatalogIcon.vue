@@ -1,25 +1,12 @@
 <script setup lang="ts">
-import { Sparkles } from 'lucide-vue-next';
-import { shallowRef, watch } from 'vue';
+import { computed } from 'vue';
+import { resolveCategoryIcon } from '@/lib/category-icons';
 
 const props = defineProps<{
     iconName: string;
 }>();
 
-const iconComponent = shallowRef(Sparkles);
-
-watch(
-    () => props.iconName,
-    async () => {
-        const icons = await import('lucide-vue-next');
-        const icon = icons[props.iconName as keyof typeof icons];
-
-        iconComponent.value = (icon as typeof Sparkles | undefined) ?? Sparkles;
-    },
-    {
-        immediate: true,
-    },
-);
+const iconComponent = computed(() => resolveCategoryIcon(props.iconName));
 </script>
 
 <template>

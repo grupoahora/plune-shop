@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Categories\CategoryUndoManager;
 use App\Http\Requests\CategoryUndoDeletionRequest;
 use App\Models\Category;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,6 +20,8 @@ class CategoryController extends Controller
 
     public function index(): Response
     {
+        $allowedIcons = config('categories.allowed_icons', []);
+
         $categories = Cache::remember(self::INDEX_CACHE_KEY, now()->addMinutes(10), function (): array {
             return Category::query()
                 ->orderBy('sort_order')
@@ -36,6 +39,7 @@ class CategoryController extends Controller
 
         return Inertia::render('categories/Index', [
             'categories' => $categories,
+            'iconOptions' => $allowedIcons,
         ]);
     }
 
@@ -43,7 +47,7 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:categories,name'],
-            'icon' => ['required', 'string', 'max:255'],
+            'icon' => ['required', 'string', 'max:255', Rule::in(config('categories.allowed_icons', []))],
             'sort_order' => ['required', 'integer', 'min:0'],
         ]);
 
@@ -64,7 +68,7 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:categories,name,'.$category->id],
-            'icon' => ['required', 'string', 'max:255'],
+            'icon' => ['required', 'string', 'max:255', Rule::in(config('categories.allowed_icons', []))],
             'sort_order' => ['required', 'integer', 'min:0'],
         ]);
 

@@ -39,6 +39,7 @@ interface Category {
 
 const props = defineProps<{
     categories: Category[];
+    iconOptions: string[];
 }>();
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -378,6 +379,7 @@ const hasCategories = computed(() => table.getRowModel().rows.length > 0);
             v-model:open="createSheetOpen"
             :errors="createForm.errors"
             :form="createForm"
+            :icon-options="props.iconOptions"
             :processing="createForm.processing"
             @submit="submitCreate"
         />
@@ -387,6 +389,7 @@ const hasCategories = computed(() => table.getRowModel().rows.length > 0);
             v-model:open="editSheetOpen"
             :errors="editForm.errors"
             :form="editForm"
+            :icon-options="props.iconOptions"
             :processing="editForm.processing"
             @submit="submitEdit"
         />
