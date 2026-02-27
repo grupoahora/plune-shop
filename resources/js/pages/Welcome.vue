@@ -36,7 +36,7 @@ withDefaults(
 
     <div
         v-if="status"
-        class="mb-4 text-center text-sm font-medium text-[#6C3483] dark:text-[#BB8FCE]"
+        class="mb-4 text-center text-sm font-medium text-muted-foreground dark:text-primary"
     >
         {{ status }}
     </div>
