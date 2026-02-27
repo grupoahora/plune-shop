@@ -15,13 +15,13 @@ defineProps<{
                 <h1 class="mb-2 text-3xl font-extrabold tracking-tight">
                     Catálogo de Productos
                 </h1>
-                <p class="font-medium text-[#61896f] dark:text-primary/40">
+                <p class="font-medium text-muted-foreground dark:text-primary/40">
                     {{ products.length }} productos naturales de alto
                     rendimiento encontrados
                 </p>
             </div>
             <button
-                class="dark:bg-background-dark flex items-center gap-2 rounded-lg border border-[#f0f4f2] bg-white px-4 py-2 text-sm font-bold shadow-sm dark:border-white/10"
+                class="dark:bg-card flex items-center gap-2 rounded-lg border border-border bg-white px-4 py-2 text-sm font-bold shadow-sm dark:border-white/10"
                 type="button"
             >
                 Ordenar por: Más Vendidos
@@ -45,7 +45,7 @@ defineProps<{
                 <ChevronLeft class="size-5" />
             </button>
             <span
-                class="rounded-xl bg-primary px-4 py-2 font-bold text-[#111813]"
+                class="rounded-xl bg-primary px-4 py-2 font-bold text-foreground"
                 >1</span
             >
             <span

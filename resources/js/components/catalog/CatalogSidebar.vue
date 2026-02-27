@@ -29,8 +29,8 @@ const getCategoryIcon = (iconName: string): LucideIcon => {
                         :class="[
                             'group flex items-center gap-3 rounded-xl px-4 py-3 transition-all',
                             category.active
-                                ? 'bg-primary/10 font-semibold text-[#111813] dark:text-white'
-                                : 'text-[#61896f] hover:bg-white hover:text-primary dark:text-primary/40 dark:hover:bg-white/5',
+                                ? 'bg-primary/10 font-semibold text-foreground dark:text-white'
+                                : 'text-muted-foreground hover:bg-white hover:text-primary dark:text-primary/40 dark:hover:bg-white/5',
                         ]"
                         href="#"
                     >
@@ -55,7 +55,7 @@ const getCategoryIcon = (iconName: string): LucideIcon => {
                     Elección Sostenible
                 </p>
                 <h4 class="mb-2 font-bold">Recarga y Ahorra</h4>
-                <p class="mb-4 text-sm text-[#61896f] dark:text-white/60">
+                <p class="mb-4 text-sm text-muted-foreground dark:text-white/60">
                     Suscríbete a recargas y obtén un 15% de descuento en tu
                     rutina orgánica.
                 </p>

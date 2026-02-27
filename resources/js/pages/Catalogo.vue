@@ -118,7 +118,7 @@ const setAppearance = (value: 'light' | 'dark') => {
     <WelcomeLayout :can-reset-password="props.canResetPassword" :resolved-appearance="resolvedAppearance"
         @set-appearance="setAppearance">
         <main class="flex-1 px-6 py-8 md:px-20 lg:px-40">
-            <div class="mb-8 text-[#61896f] dark:text-primary/60">
+            <div class="mb-8 text-muted-foreground dark:text-primary/60">
                 <Breadcrumbs :breadcrumbs="breadcrumbs" />
             </div>
 

@@ -4,12 +4,12 @@ import { Mail, MapPin, Phone } from 'lucide-vue-next';
 
 <template>
     <footer
-        class="border-t border-[#D2B4DE] bg-white px-6 py-16 md:px-20 dark:border-[#5D3C73] dark:bg-[#24112D]"
+        class="border-t border-border bg-white px-6 py-16 md:px-20 dark:border-border dark:bg-background"
     >
         <div class="grid grid-cols-1 gap-12 md:grid-cols-4">
             <div class="space-y-6">
                 <div class="flex items-center gap-3">
-                    <div class="size-6 text-[#884EA0]">
+                    <div class="size-6 text-primary">
                         <svg
                             fill="currentColor"
                             viewBox="0 0 48 48"
@@ -22,7 +22,7 @@ import { Mail, MapPin, Phone } from 'lucide-vue-next';
                     </div>
                     <h2 class="text-xl font-bold tracking-tight">Plune</h2>
                 </div>
-                <p class="text-sm leading-relaxed text-[#6C3483]">
+                <p class="text-sm leading-relaxed text-muted-foreground">
                     Cosmética sólida inspirada en la naturaleza. Hecha a mano,
                     responsable con el planeta y pensada para el bienestar de tu
                     cabello y tu piel.
@@ -31,31 +31,31 @@ import { Mail, MapPin, Phone } from 'lucide-vue-next';
 
             <div>
                 <h4 class="mb-6 font-bold">Tienda</h4>
-                <ul class="space-y-4 text-sm text-[#6C3483]">
+                <ul class="space-y-4 text-sm text-muted-foreground">
                     <li>
                         <a
-                            class="transition-colors hover:text-[#884EA0]"
+                            class="transition-colors hover:text-primary"
                             href="#"
                             >Champús en barra</a
                         >
                     </li>
                     <li>
                         <a
-                            class="transition-colors hover:text-[#884EA0]"
+                            class="transition-colors hover:text-primary"
                             href="#"
                             >Acondicionadores</a
                         >
                     </li>
                     <li>
                         <a
-                            class="transition-colors hover:text-[#884EA0]"
+                            class="transition-colors hover:text-primary"
                             href="#"
                             >Kits y regalos</a
                         >
                     </li>
                     <li>
                         <a
-                            class="transition-colors hover:text-[#884EA0]"
+                            class="transition-colors hover:text-primary"
                             href="#"
                             >Nuevos productos</a
                         >
@@ -65,31 +65,31 @@ import { Mail, MapPin, Phone } from 'lucide-vue-next';
 
             <div>
                 <h4 class="mb-6 font-bold">Ayuda</h4>
-                <ul class="space-y-4 text-sm text-[#6C3483]">
+                <ul class="space-y-4 text-sm text-muted-foreground">
                     <li>
                         <a
-                            class="transition-colors hover:text-[#884EA0]"
+                            class="transition-colors hover:text-primary"
                             href="#"
                             >Política de envíos</a
                         >
                     </li>
                     <li>
                         <a
-                            class="transition-colors hover:text-[#884EA0]"
+                            class="transition-colors hover:text-primary"
                             href="#"
                             >Cambios y devoluciones</a
                         >
                     </li>
                     <li>
                         <a
-                            class="transition-colors hover:text-[#884EA0]"
+                            class="transition-colors hover:text-primary"
                             href="#"
                             >Preguntas frecuentes</a
                         >
                     </li>
                     <li>
                         <a
-                            class="transition-colors hover:text-[#884EA0]"
+                            class="transition-colors hover:text-primary"
                             href="#"
                             >Rastrear pedido</a
                         >
@@ -99,7 +99,7 @@ import { Mail, MapPin, Phone } from 'lucide-vue-next';
 
             <div>
                 <h4 class="mb-6 font-bold">Contacto</h4>
-                <ul class="space-y-4 text-sm text-[#6C3483]">
+                <ul class="space-y-4 text-sm text-muted-foreground">
                     <li class="flex items-center gap-2">
                         <Mail class="size-4" /> plune2024@gmail.com
                     </li>
@@ -114,16 +114,16 @@ import { Mail, MapPin, Phone } from 'lucide-vue-next';
         </div>
 
         <div
-            class="mt-16 flex flex-col items-center justify-between gap-4 border-t border-[#D2B4DE] pt-8 md:flex-row dark:border-[#5D3C73]"
+            class="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row dark:border-border"
         >
-            <p class="text-xs text-[#6C3483]">
+            <p class="text-xs text-muted-foreground">
                 © 2026 Plune. Todos los derechos reservados.
             </p>
-            <div class="flex gap-8 text-xs text-[#6C3483]">
-                <a class="hover:text-[#884EA0]" href="#"
+            <div class="flex gap-8 text-xs text-muted-foreground">
+                <a class="hover:text-primary" href="#"
                     >Política de privacidad</a
                 >
-                <a class="hover:text-[#884EA0]" href="#"
+                <a class="hover:text-primary" href="#"
                     >Términos y condiciones</a
                 >
             </div>
