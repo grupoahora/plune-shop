@@ -5,7 +5,7 @@
         >
             <div class="relative z-10 space-y-8">
                 <h2
-                    class="text-3xl font-black tracking-tight text-white md:text-5xl"
+                    class="text-3xl font-black tracking-tight text-primary dark:text-white md:text-5xl"
                 >
                     Únete a la comunidad Plune
                 </h2>
