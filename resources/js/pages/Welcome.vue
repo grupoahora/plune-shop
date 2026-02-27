@@ -53,8 +53,3 @@ withDefaults(
     </WelcomeLayout>
 </template>
 
-<style scoped>
-:global(body) {
-    font-family: 'Public Sans', sans-serif;
-}
-</style>

@@ -5,9 +5,9 @@ import CatalogMainContent from '@/components/catalog/CatalogMainContent.vue';
 import CatalogSidebar from '@/components/catalog/CatalogSidebar.vue';
 import { useAppearance } from '@/composables/useAppearance';
 import WelcomeLayout from '@/layouts/welcome/WelcomeLayout.vue';
-import { home } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import type { CatalogCategory, CatalogProduct } from '@/types/catalog';
+import { home } from '@/routes';
 
 const props = withDefaults(
     defineProps<{
@@ -132,8 +132,3 @@ const setAppearance = (value: 'light' | 'dark') => {
     </WelcomeLayout>
 </template>
 
-<style scoped>
-:global(body) {
-    font-family: 'Manrope', sans-serif;
-}
-</style>
