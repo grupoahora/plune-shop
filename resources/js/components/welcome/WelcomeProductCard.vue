@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
     <div
-        class="group flex flex-col  gap-5 rounded-2xl border border-border bg-white p-2 transition-all hover:-translate-y-2 dark:border-border dark:bg-card">
+        class="group flex flex-col gap-5 rounded-2xl bg-card p-2 shadow-md shadow-primary/10 transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-primary/20 dark:bg-card dark:shadow-black/30">
         <div class="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-background">
             <img alt="Producto Plune"
                 class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -34,7 +34,7 @@ defineProps<{
                 {{ product.description }}
             </p>
             <button
-                class="flex w-full items-center mt-auto justify-center gap-2 rounded-xl bg-muted py-3 font-bold text-foreground transition-all dark:hover:bg-primary hover:bg-primary dark:bg-card dark:text-white"
+                class="mt-auto flex w-full items-center justify-center gap-2 rounded-xl bg-muted py-3 font-bold text-foreground transition-all hover:bg-primary dark:bg-accent dark:text-white dark:hover:bg-primary"
                 type="button">
                 <CirclePlus class="size-4" />
                 Agregar al carrito
