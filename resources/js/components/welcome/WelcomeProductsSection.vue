@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ChevronsRight } from 'lucide-vue-next';
-import WelcomeProductCard from '@/components/welcome/WelcomeProductCard.vue';
-import type { Product } from '@/types';
+import type { CatalogProduct } from '@/types/catalog';
+import CatalogProductCard from '../catalog/CatalogProductCard.vue';
 
 defineProps<{
-    products: Product[];
+    products: CatalogProduct[];
 }>();
 </script>
 
@@ -31,11 +31,7 @@ defineProps<{
         </div>
 
         <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <WelcomeProductCard
-                v-for="product in products"
-                :key="product.id"
-                :product="product"
-            />
+            <CatalogProductCard v-for="product in products" :key="product.id" :product="product" />
         </div>
     </section>
 </template>

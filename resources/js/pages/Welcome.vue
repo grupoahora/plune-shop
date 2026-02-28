@@ -7,6 +7,7 @@ import WelcomeSubscribeSection from '@/components/welcome/WelcomeSubscribeSectio
 import { useAppearance } from '@/composables/useAppearance';
 import WelcomeLayout from '@/layouts/welcome/WelcomeLayout.vue';
 import type { AppPageProps, Product } from '@/types';
+import type { CatalogProduct } from '@/types/catalog';
 
 const { resolvedAppearance, updateAppearance } = useAppearance();
 
@@ -14,19 +15,21 @@ const setAppearance = (value: 'light' | 'dark') => {
     updateAppearance(value);
 };
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         canRegister: boolean;
         canResetPassword: boolean;
         status?: string;
         page?: AppPageProps;
-        products: Product[];
+        products: CatalogProduct[];
+        allProducts: Product[];
     }>(),
     {
         canRegister: true,
         canResetPassword: false,
     },
 );
+const allproducts: Product[] = props.allProducts as Product[];
 </script>
 
 <template>
@@ -44,7 +47,7 @@ withDefaults(
     <WelcomeLayout
         :can-reset-password="canResetPassword"
         :resolved-appearance="resolvedAppearance"
-        :products="products"
+        :products="allproducts"
         @set-appearance="setAppearance"
     >
         <WelcomeHeroSection />

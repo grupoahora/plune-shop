@@ -75,7 +75,7 @@ defineProps<{
                 </div>
 
                 <button
-                    class="mt-auto flex w-full items-center justify-center gap-2 rounded-xl bg-muted py-3 font-bold text-foreground transition-all hover:bg-primary dark:bg-accent dark:text-white dark:hover:bg-primary"
+                    class="mt-auto flex w-full items-center justify-center gap-2 rounded-xl bg-muted py-3 font-bold text-foreground transition-all hover:bg-secondary dark:bg-secondary dark:text-white dark:hover:bg-primary"
                     type="button"
                 >
                     <CirclePlus class="size-4" />

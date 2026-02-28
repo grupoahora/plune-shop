@@ -15,10 +15,19 @@ class ProductController extends Controller
 {
     public function home(): Response
     {
+        $allProducts = Product::query()->where('status', true)->get();
+        $products = Product::query()
+            ->with('images')
+            ->where('status', true)
+            ->orderBy('name')
+            ->get()
+            ->map(fn(Product $product): array => $this->catalogProductData($product))
+            ->all();
         return Inertia::render('Welcome', [
             'canRegister' => Features::enabled(Features::registration()),
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
-            'products' => Product::query()->where('status', true)->get(),
+            'products' => $products,
+            'allProducts' => $allProducts,
         ]);
     }
 
