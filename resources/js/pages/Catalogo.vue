@@ -61,6 +61,7 @@ const setAppearance = (value: 'light' | 'dark'): void => {
 
     <WelcomeLayout
         :can-reset-password="props.canResetPassword"
+        :products="props.products"
         :resolved-appearance="resolvedAppearance"
         @set-appearance="setAppearance"
     >

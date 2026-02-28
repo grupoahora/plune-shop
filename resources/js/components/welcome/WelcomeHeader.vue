@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Form, Link, router } from '@inertiajs/vue3';
 import { Moon, Search, ShoppingCart, Sun, User } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, withDefaults } from 'vue';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -26,11 +26,16 @@ import { store as registerStore } from '@/routes/register';
 import type { Product } from '@/types';
 
 
-const props = defineProps<{
-    canResetPassword: boolean;
-    resolvedAppearance: string;
-    products: Product[];
-}>();
+const props = withDefaults(
+    defineProps<{
+        canResetPassword: boolean;
+        resolvedAppearance: string;
+        products?: Product[];
+    }>(),
+    {
+        products: () => [],
+    },
+);
 
 
 const emit = defineEmits<{

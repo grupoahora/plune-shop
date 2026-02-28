@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import WelcomeFooter from '@/components/welcome/WelcomeFooter.vue';
 import WelcomeHeader from '@/components/welcome/WelcomeHeader.vue';
+import { withDefaults } from 'vue';
 import type { Product } from '@/types';
 
-defineProps<{
-    canResetPassword: boolean;
-    resolvedAppearance: string;
-    products: Product[];
-}>();
+withDefaults(
+    defineProps<{
+        canResetPassword: boolean;
+        resolvedAppearance: string;
+        products?: Product[];
+    }>(),
+    {
+        products: () => [],
+    },
+);
 
 const emit = defineEmits<{
     setAppearance: [value: 'light' | 'dark'];
