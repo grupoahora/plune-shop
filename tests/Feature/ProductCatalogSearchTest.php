@@ -26,6 +26,8 @@ test('catalog page filters products by search term', function () {
             ->component('Catalogo')
             ->has('products', 1)
             ->where('products.0.name', 'Shampoo Hidratante')
+            ->has('allProducts', 2)
+            ->where('allProducts.1.name', 'Shampoo Hidratante')
             ->where('search', 'Shampoo')
         );
 });

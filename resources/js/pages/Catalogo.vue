@@ -5,9 +5,9 @@ import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import CatalogMainContent from '@/components/catalog/CatalogMainContent.vue';
 import { useAppearance } from '@/composables/useAppearance';
 import WelcomeLayout from '@/layouts/welcome/WelcomeLayout.vue';
-import { home } from '@/routes';
 import { type Product, type BreadcrumbItem } from '@/types';
 import type { CatalogCategory, CatalogProduct } from '@/types/catalog';
+import { home } from '@/routes';
 
 const CatalogSidebar = defineAsyncComponent(
     () => import('@/components/catalog/CatalogSidebar.vue'),
@@ -17,6 +17,7 @@ const props = withDefaults(
     defineProps<{
         canResetPassword: boolean;
         products?: CatalogProduct[] | Product[];
+        allProducts?: CatalogProduct[] | Product[];
         search?: string;
         categories?: Array<{
             id: number;
@@ -27,6 +28,7 @@ const props = withDefaults(
     {
         canResetPassword: false,
         products: () => [],
+        allProducts: () => [],
         search: '',
         categories: () => [],
     },
@@ -74,6 +76,7 @@ const setAppearance = (value: 'light' | 'dark'): void => {
                 <CatalogSidebar :categories="categories" />
                 <CatalogMainContent
                     :products="props.products as CatalogProduct[]"
+                    :all-products="props.allProducts as CatalogProduct[]"
                     :search="props.search"
                 />
             </div>
