@@ -26,21 +26,22 @@ class ProductController extends Controller
     {
         $searchTerm = trim((string) $request->query('search', ''));
 
-        $allProducts = Product::query()
+        $allProducts = Product::query()->where('status', true)->get();
+
+        $products = Product::query()
             ->with('images')
             ->where('status', true)
+            ->when($searchTerm !== '', function ($query) use ($searchTerm): void {
+                $query->where(function ($subQuery) use ($searchTerm): void {
+                    $subQuery
+                        ->where('name', 'like', "%{$searchTerm}%")
+                        ->orWhere('product_code', 'like', "%{$searchTerm}%");
+                });
+            })
             ->orderBy('name')
             ->get()
-            ->map(fn (Product $product): array => $this->catalogProductData($product))
+            ->map(fn(Product $product): array => $this->catalogProductData($product))
             ->all();
-
-        $products = $searchTerm === ''
-            ? $allProducts
-            : array_values(array_filter(
-                $allProducts,
-                fn (array $product): bool => str_contains(strtolower($product['name']), strtolower($searchTerm))
-                    || str_contains(strtolower($product['productCode']), strtolower($searchTerm)),
-            ));
 
         return Inertia::render('Catalogo', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
