@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Form, Link, router } from '@inertiajs/vue3';
 import { Moon, Search, ShoppingCart, Sun, User } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -23,17 +23,43 @@ import { dashboard } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import { store as registerStore } from '@/routes/register';
+import type { Product } from '@/types';
 
-defineProps<{
+
+const props = defineProps<{
     canResetPassword: boolean;
     resolvedAppearance: string;
+    products: Product[];
 }>();
+
 
 const emit = defineEmits<{
     setAppearance: [value: 'light' | 'dark'];
 }>();
 
 const searchTerm = ref('');
+
+
+const suggestedProducts = computed(() => {
+    const trimmedSearchTerm = searchTerm.value.trim();
+
+    if (trimmedSearchTerm.length < 5) {
+        return [];
+    }
+
+    const normalizedSearchTerm = trimmedSearchTerm.toLowerCase();
+
+    return props.products
+        .filter((product) => {
+            return (
+                product.name.toLowerCase().includes(normalizedSearchTerm) ||
+                product.product_code
+                    .toLowerCase()
+                    .includes(normalizedSearchTerm)
+            );
+        })
+        .slice(0, 6);
+});
 
 const searchProduct = (): void => {
     if (searchTerm.value.trim().length < 2) {
@@ -84,7 +110,7 @@ const searchProduct = (): void => {
 
         <div class="flex flex-1 items-center justify-end gap-6">
             <form
-                class="hidden w-full max-w-sm items-center sm:flex"
+                class="relative hidden w-full max-w-sm items-center sm:flex"
                 @submit.prevent="searchProduct"
             >
                 <div class="flex w-full items-center">
@@ -101,6 +127,23 @@ const searchProduct = (): void => {
                     >
                         <Search class="size-4" />
                     </Button>
+                </div>
+
+                <div
+                    v-if="suggestedProducts.length > 0"
+                    class="absolute top-full right-0 left-0 z-20 mt-2 overflow-hidden rounded-xl border border-border bg-background shadow-xl"
+                >
+                    <Link
+                        v-for="product in suggestedProducts"
+                        :key="product.id"
+                        :href="`/productos/${product.id}`"
+                        class="block border-b border-border px-4 py-3 text-sm hover:bg-muted last:border-b-0"
+                    >
+                        <p class="font-semibold">{{ product.name }}</p>
+                        <p class="text-xs text-muted-foreground">
+                            {{ product.product_code }}
+                        </p>
+                    </Link>
                 </div>
             </form>
 
