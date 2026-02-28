@@ -77,7 +77,7 @@ const allProducts: Product[] = props.allProducts as Product[];
                 <CatalogSidebar :categories="categories" />
                 <CatalogMainContent
                     :products="props.products as CatalogProduct[]"
-                    :all-products="props.allProducts as CatalogProduct[]"
+                    
                     :search="props.search"
                 />
             </div>

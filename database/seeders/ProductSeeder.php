@@ -21,6 +21,7 @@ class ProductSeeder extends Seeder
                 'status' => 1,
                 'discount_value' => null,
                 'discount_type' => null,
+                'category_id' => 1,
             ],
             [
                 'name' => 'Champoo Romero',
@@ -30,6 +31,7 @@ class ProductSeeder extends Seeder
                 'status' => 1,
                 'discount_value' => null,
                 'discount_type' => null,
+                'category_id' => 1,
             ],
             [
                 'name' => 'Champoo Jamaica',
@@ -39,6 +41,7 @@ class ProductSeeder extends Seeder
                 'status' => 1,
                 'discount_value' => null,
                 'discount_type' => null,
+                'category_id' => 1,
             ],
             [
                 'name' => 'Crema de Peinar Sólida',
@@ -48,6 +51,7 @@ class ProductSeeder extends Seeder
                 'status' => 1,
                 'discount_value' => null,
                 'discount_type' => null,
+                'category_id' => 2,
             ],
             [
                 'name' => 'Crema de Peinar Preparada',
@@ -57,6 +61,7 @@ class ProductSeeder extends Seeder
                 'status' => 1,
                 'discount_value' => null,
                 'discount_type' => null,
+                'category_id' => 2,
             ],
             [
                 'name' => 'Acondicionador Almendras',
@@ -66,6 +71,7 @@ class ProductSeeder extends Seeder
                 'status' => 1,
                 'discount_value' => null,
                 'discount_type' => null,
+                'category_id' => 3,
             ],
             [
                 'name' => 'Acondicionador Neutro',
@@ -75,6 +81,7 @@ class ProductSeeder extends Seeder
                 'status' => 1,
                 'discount_value' => null,
                 'discount_type' => null,
+                'category_id' => 3,
             ],
             [
                 'name' => 'Tratamiento Capilar Sólido',
@@ -84,6 +91,7 @@ class ProductSeeder extends Seeder
                 'status' => 1,
                 'discount_value' => null,
                 'discount_type' => null,
+                'category_id' => 4,
             ],
             [
                 'name' => 'Tratamiento Capilar Preparado',
@@ -93,6 +101,7 @@ class ProductSeeder extends Seeder
                 'status' => 1,
                 'discount_value' => null,
                 'discount_type' => null,
+                'category_id' => 4,
             ],
         ];
 

@@ -51,7 +51,7 @@ class ProductController extends Controller
             ->get()
             ->map(fn(Product $product): array => $this->catalogProductData($product))
             ->all();
-
+/*         dd($products); */
         return Inertia::render('Catalogo', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'categories' => Category::query()->orderBy('sort_order')->get(['id', 'name', 'icon']),
@@ -87,7 +87,7 @@ class ProductController extends Controller
 
     public function show(Product $product): Response
     {
-        $product->load('images');
+        
         $allProducts = Product::query()->where('status', true)->get();
         return Inertia::render('ProductoDetalle', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
@@ -101,12 +101,13 @@ class ProductController extends Controller
      */
     private function catalogProductData(Product $product): array
     {
+        $product->load('images', 'category', 'tags');
         return [
             'id' => $product->id,
             'name' => $product->name,
             'description' => $product->description,
             'tag' => 'Natural & Orgánico',
-            'category' => 'Cuidado Capilar',
+            'category' => $product->category->name ?? 'Sin categoría',
             'rating' => 5,
             'reviews' => 0,
             'price' => '$'.number_format((float) $product->price_sale, 2),

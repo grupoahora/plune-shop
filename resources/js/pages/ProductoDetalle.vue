@@ -67,7 +67,7 @@ const allproducts: Product[] = props.allproducts as Product[];
                     class="space-y-6 rounded-3xl border border-border bg-card p-8"
                 >
                     <Badge class="w-fit px-4 py-1">{{
-                        props.product.tag
+                        props.product.category
                     }}</Badge>
 
                     <div class="space-y-3">

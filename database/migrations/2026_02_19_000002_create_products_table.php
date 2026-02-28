@@ -22,6 +22,9 @@ return new class extends Migration
             $table->decimal('discount_value', 10, 2)->nullable();
             // discount_type can be 'percentage' or 'fixed'
             $table->enum('discount_type', ['percentage', 'fixed'])->nullable();
+            // Foreign key to categories table
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->timestamps();
         });
     }

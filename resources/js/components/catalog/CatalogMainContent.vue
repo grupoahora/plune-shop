@@ -15,7 +15,6 @@ const CATALOG_PRODUCTS_CACHE_KEY = 'catalog-products-cache';
 
 const props = defineProps<{
     products: CatalogProduct[];
-    allProducts: CatalogProduct[];
     search?: string;
 }>();
 
@@ -40,22 +39,10 @@ const getCachedProducts = (): CatalogProduct[] => {
     }
 };
 
-const updateProductsCache = (products: CatalogProduct[]): void => {
-    if (products.length === 0) {
-        return;
-    }
 
-    window.localStorage.setItem(
-        CATALOG_PRODUCTS_CACHE_KEY,
-        JSON.stringify(products),
-    );
-};
 
 const sourceProducts = computed<CatalogProduct[]>(() => {
-    if (props.allProducts.length > 0) {
-        return props.allProducts;
-    }
-
+    
     const cachedProducts = getCachedProducts();
 
     if (cachedProducts.length > 0) {
@@ -85,17 +72,10 @@ const searchProduct = (): void => {
 };
 
 onMounted(() => {
-    updateProductsCache(props.allProducts);
     searchProduct();
 });
 
-watch(
-    () => props.allProducts,
-    (allProducts) => {
-        updateProductsCache(allProducts);
-    },
-    { deep: true },
-);
+
 
 watch(
     () => props.products,
@@ -104,6 +84,7 @@ watch(
     },
     { deep: true },
 );
+
 </script>
 
 <template>
@@ -128,7 +109,7 @@ watch(
         </div>
 
         <div v-if="displayedProducts.length" class="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-2">
-            <CatalogProductCard v-for="product in displayedProducts" :key="product.id" :product="product" />
+            <CatalogProductCard v-for="product in props.products" :key="product.id" :product="product" />
         </div>
 
         <div v-else class="rounded-2xl border border-dashed border-border px-6 py-12 text-center">

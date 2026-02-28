@@ -12,7 +12,7 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 0; $i < 1; $i++) {
             $categories = [
                 ['name' => 'Champús'.$i, 'icon' => 'Flower2', 'sort_order' => 1],
                 ['name' => 'Acondicionadores'.$i, 'icon' => 'Droplets', 'sort_order' => 2],

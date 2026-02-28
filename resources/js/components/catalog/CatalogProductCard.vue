@@ -4,9 +4,11 @@ import { CirclePlus, Heart, Star } from 'lucide-vue-next';
 import { Badge } from '@/components/ui/badge';
 import type { CatalogProduct } from '@/types/catalog';
 
-defineProps<{
+const props = defineProps<{
     product: CatalogProduct;
 }>();
+console.log(props.product.category);
+
 </script>
 
 <template>
@@ -24,7 +26,7 @@ defineProps<{
             <Badge
                 class="absolute top-4 left-4 px-3 py-1 text-[10px] font-bold tracking-tighter uppercase"
             >
-                {{ product.tag }}
+                {{ props.product.category }}
             </Badge>
 
             <button
@@ -38,20 +40,19 @@ defineProps<{
         <div class="flex flex-1 flex-col justify-between px-4 pb-4">
             <div>
                 <p class="mb-1 text-xs font-semibold text-primary uppercase">
-                    {{ product.category }}
+                    {{ props.product.category}}
                 </p>
-
                 <div class="mb-2 flex items-start justify-between gap-3">
                     <Link
-                        :href="`/productos/${product.id}`"
+                        :href="`/productos/${props.product.id}`"
                         class="text-xl font-bold transition-colors group-hover:text-primary"
                     >
-                        {{ product.name }}
+                        {{ props.product.name }}
                     </Link>
                     <p
                         class="flex items-start text-lg font-extrabold text-foreground dark:text-white"
                     >
-                        {{ product.price }}
+                        {{ props.product.price }}
                     </p>
                 </div>
             </div>
