@@ -4,12 +4,11 @@ import {
     ChevronDown,
     ChevronLeft,
     ChevronRight,
-    Search,
+    
 } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 import CatalogProductCard from '@/components/catalog/CatalogProductCard.vue';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import type { CatalogProduct } from '@/types/catalog';
 
 const CATALOG_PRODUCTS_CACHE_KEY = 'catalog-products-cache';

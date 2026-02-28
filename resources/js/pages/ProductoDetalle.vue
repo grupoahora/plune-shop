@@ -6,13 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useAppearance } from '@/composables/useAppearance';
 import WelcomeLayout from '@/layouts/welcome/WelcomeLayout.vue';
-import type { BreadcrumbItem } from '@/types';
-import type { CatalogProduct } from '@/types/catalog';
 import { catalogo, home } from '@/routes';
+import type { BreadcrumbItem, Product } from '@/types';
+import type { CatalogProduct } from '@/types/catalog';
 
 const props = defineProps<{
     canResetPassword: boolean;
     product: CatalogProduct;
+    allproducts?: CatalogProduct[] | Product[];
 }>();
 
 const { resolvedAppearance, updateAppearance } = useAppearance();
@@ -34,12 +35,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 const setAppearance = (value: 'light' | 'dark'): void => {
     updateAppearance(value);
 };
+const allproducts: Product[] = props.allproducts as Product[];
 </script>
 
 <template>
     <Head :title="`${props.product.name} | Plune`" />
 
     <WelcomeLayout
+        :products="allproducts"
         :can-reset-password="props.canResetPassword"
         :resolved-appearance="resolvedAppearance"
         @set-appearance="setAppearance"

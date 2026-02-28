@@ -79,10 +79,11 @@ class ProductController extends Controller
     public function show(Product $product): Response
     {
         $product->load('images');
-
+        $allProducts = Product::query()->where('status', true)->get();
         return Inertia::render('ProductoDetalle', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'product' => $this->catalogProductData($product),
+            'allproducts' => $allProducts,
         ]);
     }
 
