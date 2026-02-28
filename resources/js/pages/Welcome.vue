@@ -44,6 +44,7 @@ withDefaults(
     <WelcomeLayout
         :can-reset-password="canResetPassword"
         :resolved-appearance="resolvedAppearance"
+        :products="products"
         @set-appearance="setAppearance"
     >
         <WelcomeHeroSection />

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import WelcomeFooter from '@/components/welcome/WelcomeFooter.vue';
 import WelcomeHeader from '@/components/welcome/WelcomeHeader.vue';
+import type { Product } from '@/types';
 
 defineProps<{
     canResetPassword: boolean;
     resolvedAppearance: string;
+    products: Product[];
 }>();
 
 const emit = defineEmits<{
@@ -20,6 +22,7 @@ const emit = defineEmits<{
             <WelcomeHeader
                 :can-reset-password="canResetPassword"
                 :resolved-appearance="resolvedAppearance"
+                :products="products"
                 @set-appearance="emit('setAppearance', $event)"
             />
             <main class="flex-1">

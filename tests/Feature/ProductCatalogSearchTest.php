@@ -30,8 +30,8 @@ test('catalog page filters products by search term', function () {
         );
 });
 
-test('product search endpoint redirects to product detail page', function () {
-    $product = Product::query()->create([
+test('product search endpoint redirects to catalog preserving search term', function () {
+    Product::query()->create([
         'name' => 'Mascarilla Reparadora',
         'description' => 'Producto para prueba de redirección.',
         'price_sale' => 22.00,
@@ -40,5 +40,5 @@ test('product search endpoint redirects to product detail page', function () {
     ]);
 
     $this->get(route('products.search', ['search' => 'Mascarilla']))
-        ->assertRedirect(route('products.show', $product));
+        ->assertRedirect(route('catalogo', ['search' => 'Mascarilla']));
 });

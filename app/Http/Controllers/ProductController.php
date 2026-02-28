@@ -53,18 +53,17 @@ class ProductController extends Controller
     {
         $searchTerm = trim($request->string('search')->toString());
 
-        $product = Product::query()
+        $hasMatchingProducts = Product::query()
             ->where('status', true)
             ->where(function ($query) use ($searchTerm): void {
                 $query
                     ->where('name', 'like', "%{$searchTerm}%")
                     ->orWhere('product_code', 'like', "%{$searchTerm}%");
             })
-            ->orderBy('name')
-            ->first();
+            ->exists();
 
-        if ($product instanceof Product) {
-            return to_route('products.show', $product);
+        if ($hasMatchingProducts) {
+            return to_route('catalogo', ['search' => $searchTerm]);
         }
 
         return to_route('catalogo', ['search' => $searchTerm])->with('toast', [
