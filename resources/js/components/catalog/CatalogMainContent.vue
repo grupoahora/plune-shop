@@ -1,35 +1,110 @@
 <script setup lang="ts">
-import { Link, router } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import {
     ChevronDown,
     ChevronLeft,
     ChevronRight,
     Search,
 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import CatalogProductCard from '@/components/catalog/CatalogProductCard.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { CatalogProduct } from '@/types/catalog';
 
+const CATALOG_PRODUCTS_CACHE_KEY = 'catalog-products-cache';
+
 const props = defineProps<{
     products: CatalogProduct[];
+    allProducts: CatalogProduct[];
     search?: string;
 }>();
 
 const searchTerm = ref(props.search ?? '');
+const displayedProducts = ref<CatalogProduct[]>(props.products);
 
-const searchProduct = (): void => {
-    if (searchTerm.value.trim().length < 2) {
+const getCachedProducts = (): CatalogProduct[] => {
+    const cachedProducts = window.localStorage.getItem(
+        CATALOG_PRODUCTS_CACHE_KEY,
+    );
+
+    if (cachedProducts === null) {
+        return [];
+    }
+
+    try {
+        const parsedProducts = JSON.parse(cachedProducts) as CatalogProduct[];
+
+        return Array.isArray(parsedProducts) ? parsedProducts : [];
+    } catch {
+        return [];
+    }
+};
+
+const updateProductsCache = (products: CatalogProduct[]): void => {
+    if (products.length === 0) {
         return;
     }
 
-    router.get(
-        '/productos/buscar',
-        { search: searchTerm.value.trim() },
-        { preserveState: true },
+    window.localStorage.setItem(
+        CATALOG_PRODUCTS_CACHE_KEY,
+        JSON.stringify(products),
     );
 };
+
+const sourceProducts = computed<CatalogProduct[]>(() => {
+    if (props.allProducts.length > 0) {
+        return props.allProducts;
+    }
+
+    const cachedProducts = getCachedProducts();
+
+    if (cachedProducts.length > 0) {
+        return cachedProducts;
+    }
+
+    return props.products;
+});
+
+const filteredProducts = computed<CatalogProduct[]>(() => {
+    const normalizedSearchTerm = searchTerm.value.trim().toLowerCase();
+
+    if (normalizedSearchTerm === '') {
+        return sourceProducts.value;
+    }
+
+    return sourceProducts.value.filter((product) => {
+        return (
+            product.name.toLowerCase().includes(normalizedSearchTerm) ||
+            product.productCode.toLowerCase().includes(normalizedSearchTerm)
+        );
+    });
+});
+
+const searchProduct = (): void => {
+    displayedProducts.value = filteredProducts.value;
+};
+
+onMounted(() => {
+    updateProductsCache(props.allProducts);
+    searchProduct();
+});
+
+watch(
+    () => props.allProducts,
+    (allProducts) => {
+        updateProductsCache(allProducts);
+    },
+    { deep: true },
+);
+
+watch(
+    () => props.products,
+    () => {
+        searchProduct();
+    },
+    { deep: true },
+);
 </script>
 
 <template>
@@ -44,7 +119,7 @@ const searchProduct = (): void => {
                 <p
                     class="font-medium text-muted-foreground dark:text-primary/40"
                 >
-                    {{ products.length }} productos naturales de alto
+                    {{ displayedProducts.length }} productos naturales de alto
                     rendimiento encontrados
                 </p>
             </div>
@@ -78,11 +153,11 @@ const searchProduct = (): void => {
         </div>
 
         <div
-            v-if="products.length"
+            v-if="displayedProducts.length"
             class="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-2"
         >
             <CatalogProductCard
-                v-for="product in products"
+                v-for="product in displayedProducts"
                 :key="product.id"
                 :product="product"
             />
