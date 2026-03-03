@@ -15,33 +15,19 @@ const props = withDefaults(
     defineProps<{
         categories: CatalogCategory[];
         catalogUrl: string;
-        search?: string;
         selectedCategoryId?: number | null;
     }>(),
     {
-        search: '',
         selectedCategoryId: null,
     },
 );
 
 const buildCatalogUrl = (categoryId: number | null): string => {
-    const query = new URLSearchParams();
-
-    if (props.search.trim() !== '') {
-        query.set('search', props.search.trim());
-    }
-
-    if (categoryId !== null) {
-        query.set('category', String(categoryId));
-    }
-
-    const queryString = query.toString();
-
-    if (queryString === '') {
+    if (categoryId === null) {
         return props.catalogUrl;
     }
 
-    return `${props.catalogUrl}?${queryString}`;
+    return `${props.catalogUrl}?category=${categoryId}`;
 };
 </script>
 

@@ -80,7 +80,6 @@ const allProducts: Product[] = props.allProducts as Product[];
                 <CatalogSidebar
                     :categories="categories"
                     :catalog-url="catalogo().url"
-                    :search="props.search"
                     :selected-category-id="props.selectedCategoryId"
                 />
                 <CatalogMainContent
