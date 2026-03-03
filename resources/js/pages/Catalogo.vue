@@ -5,7 +5,7 @@ import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import CatalogMainContent from '@/components/catalog/CatalogMainContent.vue';
 import { useAppearance } from '@/composables/useAppearance';
 import WelcomeLayout from '@/layouts/welcome/WelcomeLayout.vue';
-import { home } from '@/routes';
+import { catalogo, home } from '@/routes';
 import { type Product, type BreadcrumbItem } from '@/types';
 import type { CatalogCategory, CatalogProduct } from '@/types/catalog';
 
@@ -24,6 +24,7 @@ const props = withDefaults(
             name: string;
             icon: string;
         }>;
+        selectedCategoryId?: number | null;
     }>(),
     {
         canResetPassword: false,
@@ -31,13 +32,14 @@ const props = withDefaults(
         allProducts: () => [],
         search: '',
         categories: () => [],
+        selectedCategoryId: null,
     },
 );
 
 const categories: CatalogCategory[] = props.categories.map(
-    (category, index) => ({
+    (category) => ({
         ...category,
-        active: index === 0,
+        active: category.id === props.selectedCategoryId,
     }),
 );
 
@@ -74,10 +76,14 @@ const allProducts: Product[] = props.allProducts as Product[];
             </div>
 
             <div class="flex flex-col gap-12 lg:flex-row">
-                <CatalogSidebar :categories="categories" />
+                <CatalogSidebar
+                    :categories="categories"
+                    :catalog-url="catalogo().url"
+                    :search="props.search"
+                    :selected-category-id="props.selectedCategoryId"
+                />
                 <CatalogMainContent
                     :products="props.products as CatalogProduct[]"
-                    
                     :search="props.search"
                 />
             </div>

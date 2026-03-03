@@ -34,6 +34,7 @@ class ProductController extends Controller
     public function index(Request $request): Response
     {
         $searchTerm = trim((string) $request->query('search', ''));
+        $selectedCategoryId = $this->resolveSelectedCategoryId($request);
 
         $allProducts = Product::query()->where('status', true)->get();
 
@@ -47,17 +48,21 @@ class ProductController extends Controller
                         ->orWhere('product_code', 'like', "%{$searchTerm}%");
                 });
             })
+            ->when($selectedCategoryId !== null, function ($query) use ($selectedCategoryId): void {
+                $query->where('category_id', $selectedCategoryId);
+            })
             ->orderBy('name')
             ->get()
             ->map(fn(Product $product): array => $this->catalogProductData($product))
             ->all();
-/*         dd($products); */
+
         return Inertia::render('Catalogo', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'categories' => Category::query()->orderBy('sort_order')->get(['id', 'name', 'icon']),
             'products' => $products,
             'allProducts' => $allProducts,
             'search' => $searchTerm,
+            'selectedCategoryId' => $selectedCategoryId,
         ]);
     }
 
@@ -114,5 +119,22 @@ class ProductController extends Controller
             'productCode' => $product->product_code,
             'image' => $product->images->first()->url ?? 'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80',
         ];
+    }
+
+    private function resolveSelectedCategoryId(Request $request): ?int
+    {
+        $requestedCategoryId = $request->query('category');
+
+        if ($requestedCategoryId === null || $requestedCategoryId === '') {
+            return null;
+        }
+
+        $categoryId = filter_var($requestedCategoryId, FILTER_VALIDATE_INT);
+
+        if ($categoryId === false) {
+            return null;
+        }
+
+        return Category::query()->whereKey($categoryId)->exists() ? $categoryId : null;
     }
 }
