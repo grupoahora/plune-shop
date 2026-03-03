@@ -19,12 +19,11 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet';
 import { Spinner } from '@/components/ui/spinner';
+import type { Product } from '@/types';
 import { dashboard } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import { store as registerStore } from '@/routes/register';
-import type { Product } from '@/types';
-
 
 const props = defineProps<{
     canResetPassword: boolean;
@@ -32,13 +31,11 @@ const props = defineProps<{
     products: Product[];
 }>();
 
-
 const emit = defineEmits<{
     setAppearance: [value: 'light' | 'dark'];
 }>();
 
 const searchTerm = ref('');
-
 
 const suggestedProducts = computed(() => {
     const trimmedSearchTerm = searchTerm.value.trim();
@@ -68,6 +65,25 @@ const searchProduct = (): void => {
 
     router.get('/productos/buscar', { search: searchTerm.value.trim() });
 };
+
+const appearanceButtonBaseClass =
+    'flex size-8 items-center justify-center rounded-lg border border-transparent transition-all';
+
+const appearanceButtonClass = (mode: 'light' | 'dark'): string => {
+    const isActive = props.resolvedAppearance === mode;
+
+    if (isActive) {
+        return 'bg-primary/15 text-primary border-primary/40 shadow-sm dark:bg-primary/20 dark:text-primary dark:border-primary/50';
+    }
+
+    return 'text-muted-foreground hover:bg-muted hover:text-foreground dark:text-muted-foreground dark:hover:bg-muted/70 dark:hover:text-white';
+};
+
+const iconButtonClass =
+    'flex size-10 items-center justify-center rounded-xl border border-border bg-white text-foreground transition-all hover:border-primary hover:bg-muted/40 hover:text-primary dark:border-border dark:bg-card dark:text-white dark:hover:border-primary dark:hover:bg-primary/10 dark:hover:text-primary';
+
+const dashboardButtonClass =
+    'rounded-xl border border-border px-4 py-2 text-sm font-semibold transition-all hover:border-primary hover:bg-muted/40 hover:text-primary dark:border-border dark:hover:border-primary dark:hover:bg-primary/10 dark:hover:text-primary';
 </script>
 
 <template>
@@ -137,7 +153,7 @@ const searchProduct = (): void => {
                         v-for="product in suggestedProducts"
                         :key="product.id"
                         :href="`/productos/${product.id}`"
-                        class="block border-b border-border px-4 py-3 text-sm hover:bg-muted last:border-b-0"
+                        class="block border-b border-border px-4 py-3 text-sm last:border-b-0 hover:bg-muted"
                     >
                         <p class="font-semibold">{{ product.name }}</p>
                         <p class="text-xs text-muted-foreground">
@@ -153,10 +169,8 @@ const searchProduct = (): void => {
                 >
                     <button
                         :class="[
-                            'flex size-8 items-center justify-center rounded-lg transition-all',
-                            resolvedAppearance === 'light'
-                                ? 'bg-muted text-foreground dark:bg-card dark:text-white'
-                                : 'text-muted-foreground hover:bg-muted dark:text-muted-foreground dark:hover:bg-card',
+                            appearanceButtonBaseClass,
+                            appearanceButtonClass('light'),
                         ]"
                         aria-label="Cambiar a modo claro"
                         type="button"
@@ -166,10 +180,8 @@ const searchProduct = (): void => {
                     </button>
                     <button
                         :class="[
-                            'flex size-8 items-center justify-center rounded-lg transition-all',
-                            resolvedAppearance === 'dark'
-                                ? 'bg-muted text-foreground dark:bg-card dark:text-white'
-                                : 'text-muted-foreground hover:bg-muted dark:text-muted-foreground dark:hover:bg-card',
+                            appearanceButtonBaseClass,
+                            appearanceButtonClass('dark'),
                         ]"
                         aria-label="Cambiar a modo oscuro"
                         type="button"
@@ -179,23 +191,14 @@ const searchProduct = (): void => {
                     </button>
                 </div>
 
-                <button
-                    class="flex size-10 items-center justify-center rounded-xl border border-border bg-white transition-all hover:border-primary dark:border-border dark:bg-card"
-                    type="button"
-                >
-                    <ShoppingCart
-                        class="size-5 text-foreground dark:text-white"
-                    />
+                <button :class="iconButtonClass" type="button">
+                    <ShoppingCart class="size-5" />
                 </button>
 
                 <Sheet v-if="!$page.props.auth.user">
                     <SheetTrigger as-child>
-                        <Button
-                            class="flex size-10 items-center justify-center rounded-xl border border-border bg-white transition-all hover:border-primary hover:bg-white dark:border-border dark:bg-card"
-                        >
-                            <User
-                                class="size-5 text-foreground dark:text-white"
-                            />
+                        <Button :class="iconButtonClass">
+                            <User class="size-5" />
                         </Button>
                     </SheetTrigger>
                     <SheetContent
@@ -480,7 +483,7 @@ const searchProduct = (): void => {
                         $page?.props.auth.user.roles[0]?.name == 'Administrador'
                     "
                     :href="dashboard()"
-                    class="rounded-xl border border-border px-4 py-2 text-sm font-semibold transition-colors hover:border-primary dark:border-border"
+                    :class="dashboardButtonClass"
                     >Dashboard</Link
                 >
                 <Link
@@ -489,7 +492,7 @@ const searchProduct = (): void => {
                         $page?.props.auth.user.roles[0]?.name == 'Cliente'
                     "
                     :href="dashboard()"
-                    class="rounded-xl border border-border px-4 py-2 text-sm font-semibold transition-colors hover:border-primary dark:border-border"
+                    :class="dashboardButtonClass"
                     >Mi Cuenta</Link
                 >
             </nav>
