@@ -4,7 +4,6 @@ import { Sparkles } from 'lucide-vue-next';
 import { defineAsyncComponent } from 'vue';
 import type { CatalogCategory } from '@/types/catalog';
 
-
 const LazyCatalogIcon = defineAsyncComponent(
     () => import('@/components/catalog/LazyCatalogIcon.vue'),
 );
@@ -12,9 +11,38 @@ const CatalogSidebarPromoCard = defineAsyncComponent(
     () => import('@/components/catalog/CatalogSidebarPromoCard.vue'),
 );
 
-defineProps<{
-    categories: CatalogCategory[];
-}>();
+const props = withDefaults(
+    defineProps<{
+        categories: CatalogCategory[];
+        catalogUrl: string;
+        search?: string;
+        selectedCategoryId?: number | null;
+    }>(),
+    {
+        search: '',
+        selectedCategoryId: null,
+    },
+);
+
+const buildCatalogUrl = (categoryId: number | null): string => {
+    const query = new URLSearchParams();
+
+    if (props.search.trim() !== '') {
+        query.set('search', props.search.trim());
+    }
+
+    if (categoryId !== null) {
+        query.set('category', String(categoryId));
+    }
+
+    const queryString = query.toString();
+
+    if (queryString === '') {
+        return props.catalogUrl;
+    }
+
+    return `${props.catalogUrl}?${queryString}`;
+};
 </script>
 
 <template>
@@ -27,6 +55,18 @@ defineProps<{
                 </h3>
                 <div class="flex flex-col gap-2">
                     <Link
+                        :class="[
+                            'group flex items-center gap-3 rounded-xl px-4 py-3 transition-all',
+                            selectedCategoryId === null
+                                ? 'bg-primary/10 font-semibold text-foreground dark:text-white'
+                                : 'text-muted-foreground hover:bg-white hover:text-primary dark:text-primary/40 dark:hover:bg-white/5',
+                        ]"
+                        :href="buildCatalogUrl(null)"
+                    >
+                        <span>Todas</span>
+                    </Link>
+
+                    <Link
                         v-for="category in categories"
                         :key="category.id"
                         :class="[
@@ -35,7 +75,7 @@ defineProps<{
                                 ? 'bg-primary/10 font-semibold text-foreground dark:text-white'
                                 : 'text-muted-foreground hover:bg-white hover:text-primary dark:text-primary/40 dark:hover:bg-white/5',
                         ]"
-                        href="#"
+                        :href="buildCatalogUrl(category.id)"
                     >
                         <LazyCatalogIcon
                             :class="[
