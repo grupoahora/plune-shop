@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { defineAsyncComponent } from 'vue';
-import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import CatalogMainContent from '@/components/catalog/CatalogMainContent.vue';
 import { useAppearance } from '@/composables/useAppearance';
+import LayoutCatalogo from '@/layouts/LayoutCatalogo.vue';
 import WelcomeLayout from '@/layouts/welcome/WelcomeLayout.vue';
-import { catalogo, home } from '@/routes';
 import { type Product, type BreadcrumbItem } from '@/types';
 import type { CatalogCategory, CatalogProduct } from '@/types/catalog';
-
-const CatalogSidebar = defineAsyncComponent(
-    () => import('@/components/catalog/CatalogSidebar.vue'),
-);
+import { home } from '@/routes';
 
 const props = withDefaults(
     defineProps<{
@@ -36,12 +31,10 @@ const props = withDefaults(
     },
 );
 
-const categories: CatalogCategory[] = props.categories.map(
-    (category) => ({
-        ...category,
-        active: category.id === props.selectedCategoryId,
-    }),
-);
+const categories: CatalogCategory[] = props.categories.map((category) => ({
+    ...category,
+    active: category.id === props.selectedCategoryId,
+}));
 
 const { resolvedAppearance, updateAppearance } = useAppearance();
 
@@ -58,6 +51,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const setAppearance = (value: 'light' | 'dark'): void => {
     updateAppearance(value);
 };
+
 const allProducts: Product[] = props.allProducts as Product[];
 </script>
 
@@ -71,22 +65,17 @@ const allProducts: Product[] = props.allProducts as Product[];
         @set-appearance="setAppearance"
     >
         <main class="flex-1 px-6 py-8 md:px-20 lg:px-40">
-            <div class="mb-8 text-muted-foreground dark:text-primary/60">
-                <Breadcrumbs :breadcrumbs="breadcrumbs" />
-            </div>
-
-            <div class="flex flex-col gap-12 lg:flex-row">
-                <CatalogSidebar
-                    :categories="categories"
-                    :catalog-url="catalogo().url"
-                    :search="props.search"
-                    :selected-category-id="props.selectedCategoryId"
-                />
+            <LayoutCatalogo
+                :categories="categories"
+                :search="props.search"
+                :selected-category-id="props.selectedCategoryId"
+                :breadcrumbs="breadcrumbs"
+            >
                 <CatalogMainContent
                     :products="props.products as CatalogProduct[]"
                     :search="props.search"
                 />
-            </div>
+            </LayoutCatalogo>
         </main>
     </WelcomeLayout>
 </template>

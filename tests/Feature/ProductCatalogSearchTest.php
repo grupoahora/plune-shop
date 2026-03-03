@@ -101,5 +101,7 @@ test('catalog page filters products by selected category', function () {
             ->has('products', 1)
             ->where('products.0.name', 'Shampoo Reparador')
             ->where('selectedCategoryId', $hairCareCategory->id)
+            ->has('categories', 2)
+            ->where('categories.0.name', 'Cuidado capilar')
         );
 });
