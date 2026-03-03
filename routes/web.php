@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DashboardProductController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -19,6 +20,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('dashboard/categorias/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('dashboard/categorias/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
     Route::post('dashboard/categorias/deshacer', [CategoryController::class, 'undoDestroy'])->name('categories.undo-destroy');
+
+    Route::get('dashboard/productos', [DashboardProductController::class, 'index'])->name('dashboard.products.index');
+    Route::post('dashboard/productos', [DashboardProductController::class, 'store'])->name('dashboard.products.store');
+    Route::put('dashboard/productos/{product}', [DashboardProductController::class, 'update'])->name('dashboard.products.update');
+    Route::delete('dashboard/productos/{product}', [DashboardProductController::class, 'destroy'])->name('dashboard.products.destroy');
 });
 
 require __DIR__.'/settings.php';
