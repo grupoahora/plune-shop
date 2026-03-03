@@ -105,6 +105,49 @@ test('catalog page filters products by selected category', function () {
 });
 
 
+
+test('catalog category filter ignores search term when both are present', function () {
+    $targetCategory = Category::query()->create([
+        'name' => 'Capilar',
+        'icon' => 'sparkles',
+        'sort_order' => 1,
+    ]);
+
+    $otherCategory = Category::query()->create([
+        'name' => 'Facial',
+        'icon' => 'leaf',
+        'sort_order' => 2,
+    ]);
+
+    Product::query()->create([
+        'name' => 'Crema capilar nutritiva',
+        'description' => 'Producto de categoría objetivo.',
+        'price_sale' => 20.00,
+        'product_code' => 'PLN-CP-20',
+        'status' => true,
+        'category_id' => $targetCategory->id,
+    ]);
+
+    Product::query()->create([
+        'name' => 'Shampoo buscado',
+        'description' => 'Producto que coincide por búsqueda en otra categoría.',
+        'price_sale' => 21.00,
+        'product_code' => 'PLN-SB-21',
+        'status' => true,
+        'category_id' => $otherCategory->id,
+    ]);
+
+    $this->get(route('catalogo', ['category' => $targetCategory->id, 'search' => 'Shampoo']))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Catalogo')
+            ->has('products', 1)
+            ->where('products.0.name', 'Crema capilar nutritiva')
+            ->where('selectedCategoryId', $targetCategory->id)
+            ->where('search', '')
+        );
+});
+
 test('catalog category filter uses partial inertia payload when requested', function () {
     $firstCategory = Category::query()->create([
         'name' => 'Capilar',

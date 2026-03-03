@@ -33,8 +33,12 @@ class ProductController extends Controller
 
     public function index(Request $request): Response
     {
-        $searchTerm = trim((string) $request->query('search', ''));
         $selectedCategoryId = $this->resolveSelectedCategoryId($request);
+        $searchTerm = trim((string) $request->query('search', ''));
+
+        if ($selectedCategoryId !== null) {
+            $searchTerm = '';
+        }
 
         $products = Product::query()
             ->with('images')

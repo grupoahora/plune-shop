@@ -58,6 +58,14 @@ onMounted(() => {
 
 
 watch(
+    () => props.search,
+    (newSearchTerm) => {
+        searchTerm.value = newSearchTerm ?? '';
+        searchProduct();
+    },
+);
+
+watch(
     () => props.products,
     () => {
         searchProduct();
