@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { defineAsyncComponent } from 'vue';
+import { computed } from 'vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import CatalogMainContent from '@/components/catalog/CatalogMainContent.vue';
 import { useAppearance } from '@/composables/useAppearance';
 import WelcomeLayout from '@/layouts/welcome/WelcomeLayout.vue';
-import { catalogo, home } from '@/routes';
 import { type Product, type BreadcrumbItem } from '@/types';
 import type { CatalogCategory, CatalogProduct } from '@/types/catalog';
+import { catalogo, home } from '@/routes';
 
 const CatalogSidebar = defineAsyncComponent(
     () => import('@/components/catalog/CatalogSidebar.vue'),
@@ -36,11 +37,11 @@ const props = withDefaults(
     },
 );
 
-const categories: CatalogCategory[] = props.categories.map(
-    (category) => ({
+const categories = computed<CatalogCategory[]>(() =>
+    props.categories.map((category) => ({
         ...category,
         active: category.id === props.selectedCategoryId,
-    }),
+    })),
 );
 
 const { resolvedAppearance, updateAppearance } = useAppearance();
