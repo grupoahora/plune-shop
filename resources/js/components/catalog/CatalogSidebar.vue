@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
 import { Sparkles } from 'lucide-vue-next';
 import { defineAsyncComponent } from 'vue';
 import type { CatalogCategory } from '@/types/catalog';
+
 
 const LazyCatalogIcon = defineAsyncComponent(
     () => import('@/components/catalog/LazyCatalogIcon.vue'),
@@ -24,7 +26,7 @@ defineProps<{
                     Categorías
                 </h3>
                 <div class="flex flex-col gap-2">
-                    <a
+                    <Link
                         v-for="category in categories"
                         :key="category.id"
                         :class="[
@@ -44,7 +46,7 @@ defineProps<{
                             :icon-name="category.icon"
                         />
                         <span>{{ category.name }}</span>
-                    </a>
+                    </Link>
                 </div>
             </div>
 
