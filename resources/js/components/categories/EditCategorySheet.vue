@@ -28,6 +28,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (event: 'update:open', value: boolean): void;
+    (event: 'update:name', value: string): void;
+    (event: 'update:icon', value: string): void;
+    (event: 'update:sortOrder', value: number): void;
     (event: 'submit'): void;
 }>();
 </script>
@@ -49,6 +52,9 @@ const emit = defineEmits<{
                         :errors="props.errors"
                         :form="props.form"
                         :icon-options="props.iconOptions"
+                        @update:icon="emit('update:icon', $event)"
+                        @update:name="emit('update:name', $event)"
+                        @update:sort-order="emit('update:sortOrder', $event)"
                     />
 
                     <SheetFooter>

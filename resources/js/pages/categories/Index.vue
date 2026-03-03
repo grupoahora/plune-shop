@@ -382,6 +382,9 @@ const hasCategories = computed(() => table.getRowModel().rows.length > 0);
             :icon-options="props.iconOptions"
             :processing="createForm.processing"
             @submit="submitCreate"
+            @update:icon="createForm.icon = $event"
+            @update:name="createForm.name = $event"
+            @update:sort-order="createForm.sort_order = $event"
         />
 
         <EditCategorySheet
@@ -392,6 +395,9 @@ const hasCategories = computed(() => table.getRowModel().rows.length > 0);
             :icon-options="props.iconOptions"
             :processing="editForm.processing"
             @submit="submitEdit"
+            @update:icon="editForm.icon = $event"
+            @update:name="editForm.name = $event"
+            @update:sort-order="editForm.sort_order = $event"
         />
 
         <DeleteCategoryDialog

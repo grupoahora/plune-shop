@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { resolveCategoryIcon } from '@/lib/category-icons';
@@ -13,58 +15,77 @@ type CategoryFormData = {
 
 type CategoryFormErrors = Partial<Record<keyof CategoryFormData, string>>;
 
-defineProps<{
+const props = defineProps<{
     form: CategoryFormData;
     errors: CategoryFormErrors;
     idPrefix: string;
     iconOptions: string[];
 }>();
+
+const emit = defineEmits<{
+    (event: 'update:name', value: string): void;
+    (event: 'update:icon', value: string): void;
+    (event: 'update:sortOrder', value: number): void;
+}>();
 </script>
 
 <template>
-    <div class="grid gap-2">
-        <Label :for="`${idPrefix}-name`">Nombre</Label>
-        <Input
-            :id="`${idPrefix}-name`"
-            v-model="form.name"
-            type="text"
-        />
-        <InputError :message="errors.name" />
-    </div>
+    <Card>
+        <CardHeader>
+            <CardTitle>Información de categoría</CardTitle>
+        </CardHeader>
+        <CardContent class="grid gap-4">
+            <div class="grid gap-2">
+                <Label :for="`${props.idPrefix}-name`">Nombre</Label>
+                <Input
+                    :id="`${props.idPrefix}-name`"
+                    :model-value="props.form.name"
+                    type="text"
+                    @update:model-value="emit('update:name', $event)"
+                />
+                <InputError :message="props.errors.name" />
+            </div>
 
-    <div class="grid gap-2">
-        <Label :for="`${idPrefix}-icon`">Icono (permitidos)</Label>
-        <div
-            :id="`${idPrefix}-icon`"
-            class="grid max-h-56 grid-cols-2 gap-2 overflow-y-auto rounded-md border border-input p-2 sm:grid-cols-3"
-        >
-            <button
-                v-for="iconName in iconOptions"
-                :key="iconName"
-                :class="cn(
-                    'flex items-center gap-2 rounded-md border px-2 py-1.5 text-left text-xs transition-colors',
-                    form.icon === iconName
-                        ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-border hover:bg-muted/60',
-                )"
-                type="button"
-                @click="form.icon = iconName"
-            >
-                <component :is="resolveCategoryIcon(iconName)" class="size-4" />
-                <span class="truncate">{{ iconName }}</span>
-            </button>
-        </div>
-        <InputError :message="errors.icon" />
-    </div>
+            <div class="grid gap-2">
+                <Label :for="`${props.idPrefix}-icon`">Icono (permitidos)</Label>
+                <div
+                    :id="`${props.idPrefix}-icon`"
+                    class="grid max-h-56 grid-cols-2 gap-2 overflow-y-auto rounded-md border border-input p-2 sm:grid-cols-3"
+                >
+                    <Button
+                        v-for="iconName in props.iconOptions"
+                        :key="iconName"
+                        :class="cn(
+                            'h-auto justify-start gap-2 px-2 py-1.5 text-left text-xs',
+                            props.form.icon === iconName
+                                ? 'border-primary bg-primary/10 text-primary hover:bg-primary/20'
+                                : 'hover:bg-muted/60',
+                        )"
+                        :variant="props.form.icon === iconName ? 'outline' : 'ghost'"
+                        type="button"
+                        @click="emit('update:icon', iconName)"
+                    >
+                        <component
+                            :is="resolveCategoryIcon(iconName)"
+                            class="size-4"
+                        />
+                        <span class="truncate">{{ iconName }}</span>
+                    </Button>
+                </div>
+                <InputError :message="props.errors.icon" />
+            </div>
 
-    <div class="grid gap-2">
-        <Label :for="`${idPrefix}-order`">Orden</Label>
-        <Input
-            :id="`${idPrefix}-order`"
-            v-model.number="form.sort_order"
-            min="0"
-            type="number"
-        />
-        <InputError :message="errors.sort_order" />
-    </div>
+            <div class="grid gap-2">
+                <Label :for="`${props.idPrefix}-order`">Orden</Label>
+                <Input
+                    :id="`${props.idPrefix}-order`"
+                    :model-value="props.form.sort_order"
+                    min="0"
+                    type="number"
+                    @update:model-value="emit('update:sortOrder', Number($event || 0))"
+                />
+                <InputError :message="props.errors.sort_order" />
+            </div>
+        </CardContent>
+    </Card>
 </template>
