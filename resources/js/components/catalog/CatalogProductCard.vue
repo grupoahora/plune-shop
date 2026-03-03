@@ -7,8 +7,11 @@ import type { CatalogProduct } from '@/types/catalog';
 const props = defineProps<{
     product: CatalogProduct;
 }>();
-console.log(props.product.category);
 
+const fallbackProductImage =
+    'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80';
+
+const productImage = props.product.image || fallbackProductImage;
 </script>
 
 <template>
@@ -19,7 +22,7 @@ console.log(props.product.category);
             class="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-muted"
         >
             <div
-                :style="{ backgroundImage: `url('${product.image}')` }"
+                :style="{ backgroundImage: `url('${productImage}')` }"
                 class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105"
             />
 
@@ -44,11 +47,18 @@ console.log(props.product.category);
                 </p>
                 <div class="mb-2 flex items-start justify-between gap-3">
                     <Link
+                        v-if="props.product.id"
                         :href="`/productos/${props.product.id}`"
                         class="text-xl font-bold transition-colors group-hover:text-primary"
                     >
                         {{ props.product.name }}
                     </Link>
+                    <p
+                        v-else
+                        class="text-xl font-bold"
+                    >
+                        {{ props.product.name }}
+                    </p>
                     <p
                         class="flex items-start text-lg font-extrabold text-foreground dark:text-white"
                     >

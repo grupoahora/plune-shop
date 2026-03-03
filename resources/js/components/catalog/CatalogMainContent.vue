@@ -11,8 +11,6 @@ import CatalogProductCard from '@/components/catalog/CatalogProductCard.vue';
 import { Button } from '@/components/ui/button';
 import type { CatalogProduct } from '@/types/catalog';
 
-const CATALOG_PRODUCTS_CACHE_KEY = 'catalog-products-cache';
-
 const props = defineProps<{
     products: CatalogProduct[];
     search?: string;
@@ -21,35 +19,10 @@ const props = defineProps<{
 const searchTerm = ref(props.search ?? '');
 const displayedProducts = ref<CatalogProduct[]>(props.products);
 
-const getCachedProducts = (): CatalogProduct[] => {
-    const cachedProducts = window.localStorage.getItem(
-        CATALOG_PRODUCTS_CACHE_KEY,
-    );
-
-    if (cachedProducts === null) {
-        return [];
-    }
-
-    try {
-        const parsedProducts = JSON.parse(cachedProducts) as CatalogProduct[];
-
-        return Array.isArray(parsedProducts) ? parsedProducts : [];
-    } catch {
-        return [];
-    }
-};
-
-
-
 const sourceProducts = computed<CatalogProduct[]>(() => {
-    
-    const cachedProducts = getCachedProducts();
-
-    if (cachedProducts.length > 0) {
-        return cachedProducts;
-    }
-
-    return props.products;
+    return props.products.filter((product) => {
+        return product.id !== undefined && product.id !== null;
+    });
 });
 
 const filteredProducts = computed<CatalogProduct[]>(() => {
