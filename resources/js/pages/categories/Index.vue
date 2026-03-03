@@ -17,8 +17,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useIncrementalPagination } from '@/composables/useIncrementalPagination';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { type AppPageProps, type BreadcrumbItem } from '@/types';
 import { dashboard } from '@/routes';
+import { type AppPageProps, type BreadcrumbItem } from '@/types';
 
 const CreateCategorySheet = defineAsyncComponent(
     () => import('@/components/categories/CreateCategorySheet.vue'),

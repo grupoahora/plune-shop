@@ -38,14 +38,14 @@ const emit = defineEmits<{
 <template>
     <Sheet :open="props.open" @update:open="emit('update:open', $event)">
         <SheetContent>
-            <SheetHeader>
+            <SheetHeader class="pb-0">
                 <SheetTitle>Editar categoría</SheetTitle>
                 <SheetDescription>
                     Actualiza la información de la categoría.
                 </SheetDescription>
             </SheetHeader>
 
-            <div class="mt-6 rounded-lg border border-border/80 bg-muted/20 p-4">
+            <div class="mt-0 rounded-lg border border-border/80 bg-muted/20 p-4">
                 <form class="grid gap-4" @submit.prevent="emit('submit')">
                     <CategoryFormFields
                         id-prefix="edit"
