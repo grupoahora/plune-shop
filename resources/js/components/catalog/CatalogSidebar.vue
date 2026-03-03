@@ -2,6 +2,16 @@
 import { Link } from '@inertiajs/vue3';
 import { Sparkles } from 'lucide-vue-next';
 import { defineAsyncComponent } from 'vue';
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from '@/components/ui/sidebar';
 import type { CatalogCategory } from '@/types/catalog';
 
 const LazyCatalogIcon = defineAsyncComponent(
@@ -46,51 +56,63 @@ const buildCatalogUrl = (categoryId: number | null): string => {
 </script>
 
 <template>
-    <aside class="w-full flex-shrink-0 lg:w-64">
-        <div class="sticky top-28 space-y-8">
-            <div>
-                <h3 class="mb-6 flex items-center gap-2 text-lg font-bold">
+    <Sidebar
+        collapsible="none"
+        class="hidden h-fit border-none bg-transparent lg:flex lg:w-64"
+    >
+        <SidebarContent class="gap-8">
+            <SidebarGroup>
+                <SidebarGroupLabel class="mb-4 flex items-center gap-2 px-0 text-base font-bold text-foreground">
                     <Sparkles class="size-5 text-primary" />
                     Categorías
-                </h3>
-                <div class="flex flex-col gap-2">
-                    <Link
-                        :class="[
-                            'group flex items-center gap-3 rounded-xl px-4 py-3 transition-all',
-                            selectedCategoryId === null
-                                ? 'bg-primary/10 font-semibold text-foreground dark:text-white'
-                                : 'text-muted-foreground hover:bg-white hover:text-primary dark:text-primary/40 dark:hover:bg-white/5',
-                        ]"
-                        :href="buildCatalogUrl(null)"
-                    >
-                        <span>Todas</span>
-                    </Link>
+                </SidebarGroupLabel>
 
-                    <Link
-                        v-for="category in categories"
-                        :key="category.id"
-                        :class="[
-                            'group flex items-center gap-3 rounded-xl px-4 py-3 transition-all',
-                            category.active
-                                ? 'bg-primary/10 font-semibold text-foreground dark:text-white'
-                                : 'text-muted-foreground hover:bg-white hover:text-primary dark:text-primary/40 dark:hover:bg-white/5',
-                        ]"
-                        :href="buildCatalogUrl(category.id)"
-                    >
-                        <LazyCatalogIcon
-                            :class="[
-                                category.active
-                                    ? 'text-primary'
-                                    : 'text-current',
-                            ]"
-                            :icon-name="category.icon"
-                        />
-                        <span>{{ category.name }}</span>
-                    </Link>
-                </div>
-            </div>
+                <SidebarGroupContent>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <SidebarMenuButton
+                                as-child
+                                :class="[
+                                    'h-auto rounded-xl px-4 py-3 text-sm',
+                                    selectedCategoryId === null
+                                        ? 'bg-primary/10 font-semibold text-foreground dark:text-white'
+                                        : 'text-muted-foreground hover:bg-white hover:text-primary dark:text-primary/40 dark:hover:bg-white/5',
+                                ]"
+                            >
+                                <Link :href="buildCatalogUrl(null)">
+                                    <span>Todas</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+
+                        <SidebarMenuItem v-for="category in categories" :key="category.id">
+                            <SidebarMenuButton
+                                as-child
+                                :class="[
+                                    'h-auto rounded-xl px-4 py-3 text-sm',
+                                    category.active
+                                        ? 'bg-primary/10 font-semibold text-foreground dark:text-white'
+                                        : 'text-muted-foreground hover:bg-white hover:text-primary dark:text-primary/40 dark:hover:bg-white/5',
+                                ]"
+                            >
+                                <Link :href="buildCatalogUrl(category.id)">
+                                    <LazyCatalogIcon
+                                        :class="[
+                                            category.active
+                                                ? 'text-primary'
+                                                : 'text-current',
+                                        ]"
+                                        :icon-name="category.icon"
+                                    />
+                                    <span>{{ category.name }}</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarGroupContent>
+            </SidebarGroup>
 
             <CatalogSidebarPromoCard />
-        </div>
-    </aside>
+        </SidebarContent>
+    </Sidebar>
 </template>
