@@ -103,3 +103,49 @@ test('catalog page filters products by selected category', function () {
             ->where('selectedCategoryId', $hairCareCategory->id)
         );
 });
+
+
+test('catalog category filter uses partial inertia payload when requested', function () {
+    $firstCategory = Category::query()->create([
+        'name' => 'Capilar',
+        'icon' => 'sparkles',
+        'sort_order' => 1,
+    ]);
+
+    $secondCategory = Category::query()->create([
+        'name' => 'Facial',
+        'icon' => 'leaf',
+        'sort_order' => 2,
+    ]);
+
+    Product::query()->create([
+        'name' => 'Shampoo Diario',
+        'description' => 'Producto capilar para prueba parcial.',
+        'price_sale' => 18.00,
+        'product_code' => 'PLN-CA-10',
+        'status' => true,
+        'category_id' => $firstCategory->id,
+    ]);
+
+    Product::query()->create([
+        'name' => 'Gel Limpiador',
+        'description' => 'Producto facial para prueba parcial.',
+        'price_sale' => 17.00,
+        'product_code' => 'PLN-FA-10',
+        'status' => true,
+        'category_id' => $secondCategory->id,
+    ]);
+
+    $response = $this->withHeaders([
+        'X-Inertia' => 'true',
+        'X-Inertia-Partial-Component' => 'Catalogo',
+        'X-Inertia-Partial-Data' => 'products,search,selectedCategoryId',
+    ])->get(route('catalogo', ['category' => $firstCategory->id]));
+
+    $response
+        ->assertOk()
+        ->assertJsonPath('props.selectedCategoryId', $firstCategory->id)
+        ->assertJsonPath('props.products.0.name', 'Shampoo Diario')
+        ->assertJsonMissingPath('props.categories')
+        ->assertJsonMissingPath('props.allProducts');
+});

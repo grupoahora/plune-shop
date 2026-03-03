@@ -62,6 +62,9 @@ const buildCatalogUrl = (categoryId: number | null): string => {
                                 : 'text-muted-foreground hover:bg-white hover:text-primary dark:text-primary/40 dark:hover:bg-white/5',
                         ]"
                         :href="buildCatalogUrl(null)"
+                        :only="['products', 'search', 'selectedCategoryId']"
+                        preserve-scroll
+                        preserve-state
                     >
                         <span>Todas</span>
                     </Link>
@@ -76,6 +79,9 @@ const buildCatalogUrl = (categoryId: number | null): string => {
                                 : 'text-muted-foreground hover:bg-white hover:text-primary dark:text-primary/40 dark:hover:bg-white/5',
                         ]"
                         :href="buildCatalogUrl(category.id)"
+                        :only="['products', 'search', 'selectedCategoryId']"
+                        preserve-scroll
+                        preserve-state
                     >
                         <LazyCatalogIcon
                             :class="[

@@ -36,8 +36,6 @@ class ProductController extends Controller
         $searchTerm = trim((string) $request->query('search', ''));
         $selectedCategoryId = $this->resolveSelectedCategoryId($request);
 
-        $allProducts = Product::query()->where('status', true)->get();
-
         $products = Product::query()
             ->with('images')
             ->where('status', true)
@@ -58,9 +56,9 @@ class ProductController extends Controller
 
         return Inertia::render('Catalogo', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
-            'categories' => Category::query()->orderBy('sort_order')->get(['id', 'name', 'icon']),
+            'categories' => fn () => Category::query()->orderBy('sort_order')->get(['id', 'name', 'icon']),
             'products' => $products,
-            'allProducts' => $allProducts,
+            'allProducts' => fn () => Product::query()->where('status', true)->get(),
             'search' => $searchTerm,
             'selectedCategoryId' => $selectedCategoryId,
         ]);
