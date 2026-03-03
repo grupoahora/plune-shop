@@ -60,9 +60,16 @@ const filteredProducts = computed<CatalogProduct[]>(() => {
     }
 
     return sourceProducts.value.filter((product) => {
+        const normalizedProductName = (product.name ?? '')
+            .toString()
+            .toLowerCase();
+        const normalizedProductCode = (product.productCode ?? '')
+            .toString()
+            .toLowerCase();
+
         return (
-            product.name.toLowerCase().includes(normalizedSearchTerm) ||
-            product.productCode.toLowerCase().includes(normalizedSearchTerm)
+            normalizedProductName.includes(normalizedSearchTerm) ||
+            normalizedProductCode.includes(normalizedSearchTerm)
         );
     });
 });
@@ -109,7 +116,7 @@ watch(
         </div>
 
         <div v-if="displayedProducts.length" class="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-2">
-            <CatalogProductCard v-for="product in props.products" :key="product.id" :product="product" />
+            <CatalogProductCard v-for="product in displayedProducts" :key="product.id" :product="product" />
         </div>
 
         <div v-else class="rounded-2xl border border-dashed border-border px-6 py-12 text-center">
