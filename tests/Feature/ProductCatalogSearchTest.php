@@ -26,6 +26,8 @@ test('catalog page filters products by search term', function () {
             ->component('Catalogo')
             ->has('products', 1)
             ->where('products.0.name', 'Shampoo Hidratante')
+            ->where('products.0.productCode', 'PLN-SH-01')
+            ->where('products.0.image', 'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80')
             ->has('allProducts', 2)
             ->where('allProducts.1.name', 'Shampoo Hidratante')
             ->where('search', 'Shampoo')

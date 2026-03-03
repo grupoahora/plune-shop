@@ -11,8 +11,6 @@ import CatalogProductCard from '@/components/catalog/CatalogProductCard.vue';
 import { Button } from '@/components/ui/button';
 import type { CatalogProduct } from '@/types/catalog';
 
-const CATALOG_PRODUCTS_CACHE_KEY = 'catalog-products-cache';
-
 const props = defineProps<{
     products: CatalogProduct[];
     search?: string;
@@ -21,35 +19,10 @@ const props = defineProps<{
 const searchTerm = ref(props.search ?? '');
 const displayedProducts = ref<CatalogProduct[]>(props.products);
 
-const getCachedProducts = (): CatalogProduct[] => {
-    const cachedProducts = window.localStorage.getItem(
-        CATALOG_PRODUCTS_CACHE_KEY,
-    );
-
-    if (cachedProducts === null) {
-        return [];
-    }
-
-    try {
-        const parsedProducts = JSON.parse(cachedProducts) as CatalogProduct[];
-
-        return Array.isArray(parsedProducts) ? parsedProducts : [];
-    } catch {
-        return [];
-    }
-};
-
-
-
 const sourceProducts = computed<CatalogProduct[]>(() => {
-    
-    const cachedProducts = getCachedProducts();
-
-    if (cachedProducts.length > 0) {
-        return cachedProducts;
-    }
-
-    return props.products;
+    return props.products.filter((product) => {
+        return product.id !== undefined && product.id !== null;
+    });
 });
 
 const filteredProducts = computed<CatalogProduct[]>(() => {
@@ -60,9 +33,16 @@ const filteredProducts = computed<CatalogProduct[]>(() => {
     }
 
     return sourceProducts.value.filter((product) => {
+        const normalizedProductName = (product.name ?? '')
+            .toString()
+            .toLowerCase();
+        const normalizedProductCode = (product.productCode ?? '')
+            .toString()
+            .toLowerCase();
+
         return (
-            product.name.toLowerCase().includes(normalizedSearchTerm) ||
-            product.productCode.toLowerCase().includes(normalizedSearchTerm)
+            normalizedProductName.includes(normalizedSearchTerm) ||
+            normalizedProductCode.includes(normalizedSearchTerm)
         );
     });
 });
@@ -109,7 +89,7 @@ watch(
         </div>
 
         <div v-if="displayedProducts.length" class="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-2">
-            <CatalogProductCard v-for="product in props.products" :key="product.id" :product="product" />
+            <CatalogProductCard v-for="product in displayedProducts" :key="product.id" :product="product" />
         </div>
 
         <div v-else class="rounded-2xl border border-dashed border-border px-6 py-12 text-center">
