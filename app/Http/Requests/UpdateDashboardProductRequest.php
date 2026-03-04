@@ -50,4 +50,11 @@ class UpdateDashboardProductRequest extends FormRequest
             'category_id.exists' => 'La categoría seleccionada no es válida.',
         ];
     }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->input('image') === '') {
+            $this->merge(['image' => null]);
+        }
+    }
 }

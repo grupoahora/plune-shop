@@ -66,6 +66,8 @@ test('product create, update and delete actions are reflected on dashboard produ
 
     $product = Product::query()->firstOrFail();
 
+    expect($product->images()->first()?->url)->toBe('https://cdn.example.com/crema-hidratante.jpg');
+
     $this->actingAs($user)
         ->get(route('dashboard.products.index'))
         ->assertInertia(fn (Assert $page) => $page
@@ -100,6 +102,8 @@ test('product create, update and delete actions are reflected on dashboard produ
             ->where('products.0.category_name', 'Facial')
             ->where('products.0.status', false)
         );
+
+    expect($product->fresh()->images()->first()?->url)->toBe('https://cdn.example.com/crema-hidratante-plus.jpg');
 
     $this->actingAs($user)
         ->from(route('dashboard.products.index'))
@@ -157,4 +161,47 @@ test('dashboard products store validates image as a valid url', function () {
         ])
         ->assertRedirect(route('dashboard.products.index'))
         ->assertSessionHasErrors('image');
+});
+
+
+test('dashboard products update allows clearing product image', function () {
+    $user = User::factory()->create();
+
+    $category = Category::query()->create([
+        'name' => 'Corporal',
+        'icon' => 'Flower2',
+        'sort_order' => 1,
+    ]);
+
+    $product = Product::query()->create([
+        'name' => 'Aceite corporal',
+        'description' => 'Texto',
+        'product_code' => 'PRD-3300',
+        'price_sale' => 19.90,
+        'status' => true,
+        'discount_value' => null,
+        'discount_type' => null,
+        'category_id' => $category->id,
+    ]);
+
+    $product->images()->create([
+        'url' => 'https://cdn.example.com/aceite-corporal.jpg',
+    ]);
+
+    $this->actingAs($user)
+        ->from(route('dashboard.products.index'))
+        ->put(route('dashboard.products.update', $product), [
+            'name' => 'Aceite corporal',
+            'description' => 'Texto',
+            'product_code' => 'PRD-3300',
+            'image' => '',
+            'price_sale' => 19.90,
+            'status' => true,
+            'discount_value' => null,
+            'discount_type' => null,
+            'category_id' => $category->id,
+        ])
+        ->assertRedirect(route('dashboard.products.index'));
+
+    expect($product->fresh()->images()->exists())->toBeFalse();
 });
