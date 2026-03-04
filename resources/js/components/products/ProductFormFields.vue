@@ -15,6 +15,7 @@ type ProductFormData = {
     name: string;
     description: string;
     product_code: string;
+    image: string;
     price_sale: number;
     category_id: number | null;
     status: boolean;
@@ -33,6 +34,7 @@ const emit = defineEmits<{
     (event: 'update:name', value: string): void;
     (event: 'update:description', value: string): void;
     (event: 'update:productCode', value: string): void;
+    (event: 'update:image', value: string): void;
     (event: 'update:priceSale', value: number): void;
     (event: 'update:categoryId', value: number): void;
     (event: 'update:status', value: boolean): void;
@@ -51,7 +53,7 @@ const emit = defineEmits<{
                     :id="`${idPrefix}-name`"
                     :model-value="form.name"
                     type="text"
-                    @update:model-value="emit('update:name', $event)"
+                    @update:model-value="emit('update:name', String($event))"
                 />
                 <InputError :message="errors.name" />
             </div>
@@ -62,9 +64,21 @@ const emit = defineEmits<{
                     :id="`${idPrefix}-description`"
                     :model-value="form.description"
                     type="text"
-                    @update:model-value="emit('update:description', $event)"
+                    @update:model-value="emit('update:description', String($event))"
                 />
                 <InputError :message="errors.description" />
+            </div>
+
+            <div class="grid gap-2">
+                <Label :for="`${idPrefix}-image`">URL de imagen</Label>
+                <Input
+                    :id="`${idPrefix}-image`"
+                    :model-value="form.image"
+                    placeholder="https://..."
+                    type="url"
+                    @update:model-value="emit('update:image', String($event))"
+                />
+                <InputError :message="errors.image" />
             </div>
 
             <div class="grid gap-2 sm:grid-cols-2 sm:gap-4">
@@ -74,7 +88,7 @@ const emit = defineEmits<{
                         :id="`${idPrefix}-code`"
                         :model-value="form.product_code"
                         type="text"
-                        @update:model-value="emit('update:productCode', $event)"
+                        @update:model-value="emit('update:productCode', String($event))"
                     />
                     <InputError :message="errors.product_code" />
                 </div>

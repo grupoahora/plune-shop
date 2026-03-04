@@ -11,13 +11,17 @@ test('catalog page filters products by search term', function () {
         'sort_order' => 1,
     ]);
 
-    Product::query()->create([
+    $shampoo = Product::query()->create([
         'name' => 'Shampoo Hidratante',
         'description' => 'Producto de prueba para hidratación.',
         'price_sale' => 19.90,
         'product_code' => 'PLN-SH-01',
         'status' => true,
         'category_id' => $category->id,
+    ]);
+
+    $shampoo->images()->create([
+        'url' => 'https://cdn.example.com/shampoo-hidratante.jpg',
     ]);
 
     Product::query()->create([
@@ -36,7 +40,7 @@ test('catalog page filters products by search term', function () {
             ->has('products', 1)
             ->where('products.0.name', 'Shampoo Hidratante')
             ->where('products.0.productCode', 'PLN-SH-01')
-            ->where('products.0.image', 'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80')
+            ->where('products.0.image', 'https://cdn.example.com/shampoo-hidratante.jpg')
             ->has('allProducts', 2)
             ->where('allProducts.1.name', 'Shampoo Hidratante')
             ->where('search', 'Shampoo')

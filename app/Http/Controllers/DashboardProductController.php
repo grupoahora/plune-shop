@@ -19,7 +19,7 @@ class DashboardProductController extends Controller
     {
         $products = Cache::remember(self::INDEX_CACHE_KEY, now()->addMinutes(10), function (): array {
             return Product::query()
-                ->with('category:id,name')
+                ->with(['category:id,name', 'images:id,url,imageable_id,imageable_type'])
                 ->orderBy('name')
                 ->get(['id', 'name', 'description', 'product_code', 'price_sale', 'status', 'category_id'])
                 ->map(function (Product $product): array {
@@ -28,6 +28,7 @@ class DashboardProductController extends Controller
                         'name' => $product->name,
                         'description' => $product->description,
                         'product_code' => $product->product_code,
+                        'image' => $product->images->first()?->url,
                         'price_sale' => (float) $product->price_sale,
                         'status' => (bool) $product->status,
                         'category_id' => $product->category_id,
@@ -45,7 +46,13 @@ class DashboardProductController extends Controller
 
     public function store(StoreDashboardProductRequest $request): RedirectResponse
     {
-        Product::query()->create($request->validated());
+        $validatedData = $request->validated();
+        $imageUrl = $validatedData['image'] ?? null;
+
+        unset($validatedData['image']);
+
+        $product = Product::query()->create($validatedData);
+        $this->syncProductImage($product, $imageUrl);
         $this->forgetProductsIndexCache();
 
         return back()->with('toast', [
@@ -57,7 +64,13 @@ class DashboardProductController extends Controller
 
     public function update(UpdateDashboardProductRequest $request, Product $product): RedirectResponse
     {
-        $product->update($request->validated());
+        $validatedData = $request->validated();
+        $imageUrl = $validatedData['image'] ?? null;
+
+        unset($validatedData['image']);
+
+        $product->update($validatedData);
+        $this->syncProductImage($product, $imageUrl);
         $this->forgetProductsIndexCache();
 
         return back()->with('toast', [
@@ -82,5 +95,28 @@ class DashboardProductController extends Controller
     private function forgetProductsIndexCache(): void
     {
         Cache::forget(self::INDEX_CACHE_KEY);
+    }
+
+    private function syncProductImage(Product $product, ?string $imageUrl): void
+    {
+        if ($imageUrl === null) {
+            $product->images()->delete();
+
+            return;
+        }
+
+        $existingImage = $product->images()->first();
+
+        if ($existingImage === null) {
+            $product->images()->create([
+                'url' => $imageUrl,
+            ]);
+
+            return;
+        }
+
+        $existingImage->update([
+            'url' => $imageUrl,
+        ]);
     }
 }
