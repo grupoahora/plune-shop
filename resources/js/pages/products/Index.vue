@@ -17,8 +17,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useIncrementalPagination } from '@/composables/useIncrementalPagination';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
 import { type AppPageProps, type BreadcrumbItem } from '@/types';
+import { dashboard } from '@/routes';
 
 const CreateProductSheet = defineAsyncComponent(
     () => import('@/components/products/CreateProductSheet.vue'),
@@ -35,6 +35,7 @@ interface Product {
     name: string;
     description: string;
     product_code: string;
+    image: string | null;
     price_sale: number;
     status: boolean;
     category_id: number;
@@ -69,6 +70,7 @@ const createForm = useForm({
     name: '',
     description: '',
     product_code: '',
+    image: '',
     price_sale: 0,
     status: true,
     category_id: props.categories[0]?.id ?? null,
@@ -80,6 +82,7 @@ const editForm = useForm({
     name: '',
     description: '',
     product_code: '',
+    image: '',
     price_sale: 0,
     status: true,
     category_id: null as number | null,
@@ -118,6 +121,7 @@ const submitCreate = () => {
             createForm.reset();
             createForm.status = true;
             createForm.category_id = props.categories[0]?.id ?? null;
+            createForm.image = '';
         },
     });
 };
@@ -127,6 +131,7 @@ const openEdit = (product: Product) => {
     editForm.name = product.name;
     editForm.description = product.description;
     editForm.product_code = product.product_code;
+    editForm.image = product.image ?? '';
     editForm.price_sale = product.price_sale;
     editForm.status = product.status;
     editForm.category_id = product.category_id;
@@ -192,6 +197,10 @@ const columns = [
     columnHelper.accessor('product_code', {
         header: () => sortableHeader('Código', 'product_code'),
         cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('image', {
+        header: () => sortableHeader('Imagen', 'image'),
+        cell: (info) => (info.getValue() ? 'Configurada' : 'Sin imagen'),
     }),
     columnHelper.accessor('category_name', {
         header: () => sortableHeader('Categoría', 'category_name'),
@@ -383,6 +392,7 @@ const hasProducts = computed(() => table.getRowModel().rows.length > 0);
             @submit="submitCreate"
             @update:category-id="createForm.category_id = $event"
             @update:description="createForm.description = $event"
+            @update:image="createForm.image = $event"
             @update:name="createForm.name = $event"
             @update:price-sale="createForm.price_sale = $event"
             @update:product-code="createForm.product_code = $event"
@@ -399,6 +409,7 @@ const hasProducts = computed(() => table.getRowModel().rows.length > 0);
             @submit="submitEdit"
             @update:category-id="editForm.category_id = $event"
             @update:description="editForm.description = $event"
+            @update:image="editForm.image = $event"
             @update:name="editForm.name = $event"
             @update:price-sale="editForm.price_sale = $event"
             @update:product-code="editForm.product_code = $event"

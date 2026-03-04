@@ -22,6 +22,7 @@ class ProductFactory extends Factory
             'description' => fake()->sentence(),
             'price_sale' => fake()->randomFloat(2, 5, 500),
             'product_code' => strtoupper(fake()->unique()->bothify('PRD-####')),
+            'image' => fake()->optional()->imageUrl(1200, 1200, 'products'),
             'status' => true,
             'discount_value' => null,
             'discount_type' => null,
