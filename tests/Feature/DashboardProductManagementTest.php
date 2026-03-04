@@ -29,6 +29,7 @@ test('authenticated users can visit dashboard products index', function () {
         ->component('products/Index')
         ->has('products', 1)
         ->where('products.0.name', 'Jabón facial')
+        ->where('products.0.image', null)
         ->where('categories.0.name', 'Spa')
     );
 });
@@ -54,6 +55,7 @@ test('product create, update and delete actions are reflected on dashboard produ
             'name' => 'Crema Hidratante',
             'description' => 'Descripción inicial',
             'product_code' => 'PRD-1100',
+            'image' => 'https://cdn.example.com/crema-hidratante.jpg',
             'price_sale' => 49.90,
             'status' => true,
             'discount_value' => null,
@@ -71,6 +73,7 @@ test('product create, update and delete actions are reflected on dashboard produ
             ->has('products', 1)
             ->where('products.0.name', 'Crema Hidratante')
             ->where('products.0.product_code', 'PRD-1100')
+            ->where('products.0.image', 'https://cdn.example.com/crema-hidratante.jpg')
             ->where('products.0.category_name', 'Corporal')
         );
 
@@ -80,6 +83,7 @@ test('product create, update and delete actions are reflected on dashboard produ
             'name' => 'Crema Hidratante Plus',
             'description' => 'Descripción editada',
             'product_code' => 'PRD-1100',
+            'image' => 'https://cdn.example.com/crema-hidratante-plus.jpg',
             'price_sale' => 59.90,
             'status' => false,
             'discount_value' => null,
@@ -92,6 +96,7 @@ test('product create, update and delete actions are reflected on dashboard produ
         ->get(route('dashboard.products.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->where('products.0.name', 'Crema Hidratante Plus')
+            ->where('products.0.image', 'https://cdn.example.com/crema-hidratante-plus.jpg')
             ->where('products.0.category_name', 'Facial')
             ->where('products.0.status', false)
         );
@@ -117,6 +122,7 @@ test('dashboard products store requires a valid category', function () {
             'name' => 'Aceite esencial',
             'description' => 'Texto',
             'product_code' => 'PRD-2100',
+            'image' => 'https://cdn.example.com/aceite-esencial.jpg',
             'price_sale' => 39.90,
             'status' => true,
             'discount_value' => null,
@@ -125,4 +131,30 @@ test('dashboard products store requires a valid category', function () {
         ])
         ->assertRedirect(route('dashboard.products.index'))
         ->assertSessionHasErrors('category_id');
+});
+
+test('dashboard products store validates image as a valid url', function () {
+    $user = User::factory()->create();
+
+    $category = Category::query()->create([
+        'name' => 'Aromaterapia',
+        'icon' => 'Flower2',
+        'sort_order' => 1,
+    ]);
+
+    $this->actingAs($user)
+        ->from(route('dashboard.products.index'))
+        ->post(route('dashboard.products.store'), [
+            'name' => 'Bruma relajante',
+            'description' => 'Texto',
+            'product_code' => 'PRD-2200',
+            'image' => 'imagen-invalida',
+            'price_sale' => 35.90,
+            'status' => true,
+            'discount_value' => null,
+            'discount_type' => null,
+            'category_id' => $category->id,
+        ])
+        ->assertRedirect(route('dashboard.products.index'))
+        ->assertSessionHasErrors('image');
 });

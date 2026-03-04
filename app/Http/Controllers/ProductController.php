@@ -119,7 +119,7 @@ class ProductController extends Controller
             'reviews' => 0,
             'price' => '$'.number_format((float) $product->price_sale, 2),
             'productCode' => $product->product_code,
-            'image' => $product->images->first()->url ?? 'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80',
+            'image' => $product->image ?? $product->images->first()?->url ?? 'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80',
         ];
     }
 
