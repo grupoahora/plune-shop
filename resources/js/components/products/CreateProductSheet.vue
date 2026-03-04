@@ -14,6 +14,7 @@ type ProductFormData = {
     name: string;
     description: string;
     product_code: string;
+    image: File | null;
     price_sale: number;
     category_id: number | null;
     status: boolean;
@@ -35,6 +36,8 @@ const emit = defineEmits<{
     (event: 'update:name', value: string): void;
     (event: 'update:description', value: string): void;
     (event: 'update:productCode', value: string): void;
+    (event: 'update:image', value: File | null): void;
+    (event: 'clear:image'): void;
     (event: 'update:priceSale', value: number): void;
     (event: 'update:categoryId', value: number): void;
     (event: 'update:status', value: boolean): void;
@@ -57,9 +60,12 @@ const emit = defineEmits<{
                         id-prefix="create"
                         :categories="props.categories"
                         :errors="props.errors"
+                        :current-image-url="null"
                         :form="props.form"
                         @update:category-id="emit('update:categoryId', $event)"
                         @update:description="emit('update:description', $event)"
+                        @clear:image="emit('clear:image')"
+                        @update:image="emit('update:image', $event)"
                         @update:name="emit('update:name', $event)"
                         @update:price-sale="emit('update:priceSale', $event)"
                         @update:product-code="emit('update:productCode', $event)"

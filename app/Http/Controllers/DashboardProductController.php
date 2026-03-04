@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDashboardProductRequest;
 use App\Http\Requests\UpdateDashboardProductRequest;
 use App\Models\Category;
+use App\Models\Image;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,7 +22,7 @@ class DashboardProductController extends Controller
     {
         $products = Cache::remember(self::INDEX_CACHE_KEY, now()->addMinutes(10), function (): array {
             return Product::query()
-                ->with('category:id,name')
+                ->with(['category:id,name', 'images:id,url,imageable_id,imageable_type'])
                 ->orderBy('name')
                 ->get(['id', 'name', 'description', 'product_code', 'price_sale', 'status', 'category_id'])
                 ->map(function (Product $product): array {
@@ -28,6 +31,7 @@ class DashboardProductController extends Controller
                         'name' => $product->name,
                         'description' => $product->description,
                         'product_code' => $product->product_code,
+                        'image' => $this->resolveImageUrl($product->images->first()),
                         'price_sale' => (float) $product->price_sale,
                         'status' => (bool) $product->status,
                         'category_id' => $product->category_id,
@@ -45,7 +49,13 @@ class DashboardProductController extends Controller
 
     public function store(StoreDashboardProductRequest $request): RedirectResponse
     {
-        Product::query()->create($request->validated());
+        $validatedData = $request->validated();
+
+        $uploadedImage = $request->file('image');
+        unset($validatedData['image'], $validatedData['remove_image']);
+
+        $product = Product::query()->create($validatedData);
+        $this->syncProductImage($product, $uploadedImage, false);
         $this->forgetProductsIndexCache();
 
         return back()->with('toast', [
@@ -57,7 +67,15 @@ class DashboardProductController extends Controller
 
     public function update(UpdateDashboardProductRequest $request, Product $product): RedirectResponse
     {
-        $product->update($request->validated());
+        $validatedData = $request->validated();
+
+        $uploadedImage = $request->file('image');
+        $removeImage = (bool) ($validatedData['remove_image'] ?? false);
+
+        unset($validatedData['image'], $validatedData['remove_image']);
+
+        $product->update($validatedData);
+        $this->syncProductImage($product, $uploadedImage, $removeImage);
         $this->forgetProductsIndexCache();
 
         return back()->with('toast', [
@@ -82,5 +100,51 @@ class DashboardProductController extends Controller
     private function forgetProductsIndexCache(): void
     {
         Cache::forget(self::INDEX_CACHE_KEY);
+    }
+
+    private function syncProductImage(Product $product, ?UploadedFile $uploadedImage, bool $removeImage): void
+    {
+        $existingImage = $product->images()->first();
+
+        if ($uploadedImage === null && ! $removeImage) {
+            return;
+        }
+
+        if ($existingImage !== null) {
+            $this->deleteStoredImageIfManagedPath($existingImage->url);
+            $existingImage->delete();
+        }
+
+        if ($uploadedImage === null || $removeImage) {
+            return;
+        }
+
+        $storedPath = $uploadedImage->store('products', 'public');
+
+        $product->images()->create([
+            'url' => $storedPath,
+        ]);
+    }
+
+    private function deleteStoredImageIfManagedPath(string $storedValue): void
+    {
+        if (str_starts_with($storedValue, 'http://') || str_starts_with($storedValue, 'https://')) {
+            return;
+        }
+
+        Storage::disk('public')->delete($storedValue);
+    }
+
+    private function resolveImageUrl(?Image $image): ?string
+    {
+        if ($image === null) {
+            return null;
+        }
+
+        if (str_starts_with($image->url, 'http://') || str_starts_with($image->url, 'https://')) {
+            return $image->url;
+        }
+
+        return Storage::disk('public')->url($image->url);
     }
 }

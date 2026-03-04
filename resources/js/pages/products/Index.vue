@@ -17,8 +17,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useIncrementalPagination } from '@/composables/useIncrementalPagination';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { dashboard } from '@/routes';
 import { type AppPageProps, type BreadcrumbItem } from '@/types';
+import { dashboard } from '@/routes';
 
 const CreateProductSheet = defineAsyncComponent(
     () => import('@/components/products/CreateProductSheet.vue'),
@@ -35,6 +35,7 @@ interface Product {
     name: string;
     description: string;
     product_code: string;
+    image: string | null;
     price_sale: number;
     status: boolean;
     category_id: number;
@@ -62,6 +63,7 @@ const createSheetOpen = ref(false);
 const editSheetOpen = ref(false);
 const deleteDialogOpen = ref(false);
 const selectedProduct = ref<Product | null>(null);
+const currentEditImageUrl = ref<string | null>(null);
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
 
@@ -69,22 +71,26 @@ const createForm = useForm({
     name: '',
     description: '',
     product_code: '',
+    image: null as File | null,
     price_sale: 0,
     status: true,
     category_id: props.categories[0]?.id ?? null,
     discount_value: null as number | null,
     discount_type: null as string | null,
+    remove_image: false,
 });
 
 const editForm = useForm({
     name: '',
     description: '',
     product_code: '',
+    image: null as File | null,
     price_sale: 0,
     status: true,
     category_id: null as number | null,
     discount_value: null as number | null,
     discount_type: null as string | null,
+    remove_image: false,
 });
 
 const deleteForm = useForm({});
@@ -113,11 +119,14 @@ watch(
 const submitCreate = () => {
     createForm.post('/dashboard/productos', {
         preserveScroll: true,
+        forceFormData: true,
         onSuccess: () => {
             createSheetOpen.value = false;
             createForm.reset();
             createForm.status = true;
             createForm.category_id = props.categories[0]?.id ?? null;
+            createForm.image = null;
+            createForm.remove_image = false;
         },
     });
 };
@@ -127,6 +136,9 @@ const openEdit = (product: Product) => {
     editForm.name = product.name;
     editForm.description = product.description;
     editForm.product_code = product.product_code;
+    editForm.image = null;
+    editForm.remove_image = false;
+    currentEditImageUrl.value = product.image;
     editForm.price_sale = product.price_sale;
     editForm.status = product.status;
     editForm.category_id = product.category_id;
@@ -140,9 +152,11 @@ const submitEdit = () => {
 
     editForm.put(`/dashboard/productos/${selectedProduct.value.id}`, {
         preserveScroll: true,
+        forceFormData: true,
         onSuccess: () => {
             editSheetOpen.value = false;
             selectedProduct.value = null;
+            currentEditImageUrl.value = null;
         },
     });
 };
@@ -162,8 +176,32 @@ const submitDelete = () => {
         onSuccess: () => {
             deleteDialogOpen.value = false;
             selectedProduct.value = null;
+            currentEditImageUrl.value = null;
         },
     });
+};
+
+
+const clearCreateImage = (): void => {
+    createForm.remove_image = true;
+    createForm.image = null;
+};
+
+const setCreateImage = (file: File | null): void => {
+    createForm.remove_image = false;
+    createForm.image = file;
+};
+
+const clearEditImage = (): void => {
+    editForm.remove_image = true;
+    editForm.image = null;
+    currentEditImageUrl.value = null;
+};
+
+const setEditImage = (file: File | null): void => {
+    editForm.remove_image = false;
+    editForm.image = file;
+    currentEditImageUrl.value = null;
 };
 
 const columnHelper = createColumnHelper<Product>();
@@ -192,6 +230,10 @@ const columns = [
     columnHelper.accessor('product_code', {
         header: () => sortableHeader('Código', 'product_code'),
         cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor('image', {
+        header: () => sortableHeader('Imagen', 'image'),
+        cell: (info) => (info.getValue() ? 'Configurada' : 'Sin imagen'),
     }),
     columnHelper.accessor('category_name', {
         header: () => sortableHeader('Categoría', 'category_name'),
@@ -383,6 +425,8 @@ const hasProducts = computed(() => table.getRowModel().rows.length > 0);
             @submit="submitCreate"
             @update:category-id="createForm.category_id = $event"
             @update:description="createForm.description = $event"
+            @clear:image="clearCreateImage"
+            @update:image="setCreateImage"
             @update:name="createForm.name = $event"
             @update:price-sale="createForm.price_sale = $event"
             @update:product-code="createForm.product_code = $event"
@@ -395,10 +439,13 @@ const hasProducts = computed(() => table.getRowModel().rows.length > 0);
             :categories="props.categories"
             :errors="editForm.errors"
             :form="editForm"
+            :current-image-url="currentEditImageUrl"
             :processing="editForm.processing"
             @submit="submitEdit"
             @update:category-id="editForm.category_id = $event"
             @update:description="editForm.description = $event"
+            @clear:image="clearEditImage"
+            @update:image="setEditImage"
             @update:name="editForm.name = $event"
             @update:price-sale="editForm.price_sale = $event"
             @update:product-code="editForm.product_code = $event"
