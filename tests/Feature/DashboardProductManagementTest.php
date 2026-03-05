@@ -78,6 +78,8 @@ test('product create, update and delete actions are reflected on dashboard produ
     expect($storedFirstPath)->not->toBeNull();
     Storage::disk('public')->assertExists((string) $storedFirstPath);
 
+    expect($product->images()->first()?->url)->toBe('https://cdn.example.com/crema-hidratante.jpg');
+
     $this->actingAs($user)
         ->get(route('dashboard.products.index'))
         ->assertInertia(fn (Assert $page) => $page
@@ -123,6 +125,8 @@ test('product create, update and delete actions are reflected on dashboard produ
             ->where('products.0.status', false)
         );
 
+    expect($product->fresh()->images()->first()?->url)->toBe('https://cdn.example.com/crema-hidratante-plus.jpg');
+
     $this->actingAs($user)
         ->from(route('dashboard.products.index'))
         ->delete(route('dashboard.products.destroy', $product))
@@ -146,6 +150,7 @@ test('dashboard products store requires a valid category', function () {
             'name' => 'Aceite esencial',
             'description' => 'Texto',
             'product_code' => 'PRD-2100',
+            'image' => 'https://cdn.example.com/aceite-esencial.jpg',
             'price_sale' => 39.90,
             'status' => true,
             'discount_value' => null,

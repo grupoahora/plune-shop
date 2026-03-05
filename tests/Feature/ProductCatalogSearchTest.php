@@ -19,6 +19,7 @@ test('catalog page filters products by search term', function () {
         'description' => 'Producto de prueba para hidratación.',
         'price_sale' => 19.90,
         'product_code' => 'PLN-SH-01',
+        'image' => 'https://cdn.example.com/shampoo-hidratante.jpg',
         'status' => true,
         'category_id' => $category->id,
     ]);

@@ -24,7 +24,7 @@ class DashboardProductController extends Controller
             return Product::query()
                 ->with(['category:id,name', 'images:id,url,imageable_id,imageable_type'])
                 ->orderBy('name')
-                ->get(['id', 'name', 'description', 'product_code', 'price_sale', 'status', 'category_id'])
+                ->get(['id', 'name', 'description', 'product_code', 'image', 'price_sale', 'status', 'category_id'])
                 ->map(function (Product $product): array {
                     return [
                         'id' => $product->id,
