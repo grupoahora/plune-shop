@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
@@ -119,8 +120,24 @@ class ProductController extends Controller
             'reviews' => 0,
             'price' => '$'.number_format((float) $product->price_sale, 2),
             'productCode' => $product->product_code,
-            'image' => $product->images->first()?->url ?? 'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80',
+            'image' => $this->resolveCatalogImageUrl($product) ?? 'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80',
         ];
+    }
+
+
+    private function resolveCatalogImageUrl(Product $product): ?string
+    {
+        $storedImageValue = $product->images->first()?->url;
+
+        if ($storedImageValue === null) {
+            return null;
+        }
+
+        if (str_starts_with($storedImageValue, 'http://') || str_starts_with($storedImageValue, 'https://')) {
+            return $storedImageValue;
+        }
+
+        return Storage::disk('public')->url($storedImageValue);
     }
 
     private function resolveSelectedCategoryId(Request $request): ?int

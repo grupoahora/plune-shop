@@ -3,9 +3,13 @@
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('authenticated users can visit dashboard products index', function () {
+    Storage::fake('public');
+
     $user = User::factory()->create();
 
     $category = Category::query()->create([
@@ -35,6 +39,8 @@ test('authenticated users can visit dashboard products index', function () {
 });
 
 test('product create, update and delete actions are reflected on dashboard products index', function () {
+    Storage::fake('public');
+
     $user = User::factory()->create();
 
     $category = Category::query()->create([
@@ -49,13 +55,15 @@ test('product create, update and delete actions are reflected on dashboard produ
         'sort_order' => 2,
     ]);
 
+    $firstImage = UploadedFile::fake()->image('crema-hidratante.jpg');
+
     $this->actingAs($user)
         ->from(route('dashboard.products.index'))
         ->post(route('dashboard.products.store'), [
             'name' => 'Crema Hidratante',
             'description' => 'Descripción inicial',
             'product_code' => 'PRD-1100',
-            'image' => 'https://cdn.example.com/crema-hidratante.jpg',
+            'image' => $firstImage,
             'price_sale' => 49.90,
             'status' => true,
             'discount_value' => null,
@@ -65,6 +73,10 @@ test('product create, update and delete actions are reflected on dashboard produ
         ->assertRedirect(route('dashboard.products.index'));
 
     $product = Product::query()->firstOrFail();
+    $storedFirstPath = $product->images()->first()?->url;
+
+    expect($storedFirstPath)->not->toBeNull();
+    Storage::disk('public')->assertExists((string) $storedFirstPath);
 
     expect($product->images()->first()?->url)->toBe('https://cdn.example.com/crema-hidratante.jpg');
 
@@ -75,9 +87,11 @@ test('product create, update and delete actions are reflected on dashboard produ
             ->has('products', 1)
             ->where('products.0.name', 'Crema Hidratante')
             ->where('products.0.product_code', 'PRD-1100')
-            ->where('products.0.image', 'https://cdn.example.com/crema-hidratante.jpg')
+            ->where('products.0.image', Storage::disk('public')->url((string) $storedFirstPath))
             ->where('products.0.category_name', 'Corporal')
         );
+
+    $secondImage = UploadedFile::fake()->image('crema-hidratante-plus.jpg');
 
     $this->actingAs($user)
         ->from(route('dashboard.products.index'))
@@ -85,7 +99,7 @@ test('product create, update and delete actions are reflected on dashboard produ
             'name' => 'Crema Hidratante Plus',
             'description' => 'Descripción editada',
             'product_code' => 'PRD-1100',
-            'image' => 'https://cdn.example.com/crema-hidratante-plus.jpg',
+            'image' => $secondImage,
             'price_sale' => 59.90,
             'status' => false,
             'discount_value' => null,
@@ -94,11 +108,19 @@ test('product create, update and delete actions are reflected on dashboard produ
         ])
         ->assertRedirect(route('dashboard.products.index'));
 
+    $storedSecondPath = $product->fresh()->images()->first()?->url;
+
+    expect($storedSecondPath)->not->toBeNull();
+    expect($storedSecondPath)->not->toBe($storedFirstPath);
+
+    Storage::disk('public')->assertMissing((string) $storedFirstPath);
+    Storage::disk('public')->assertExists((string) $storedSecondPath);
+
     $this->actingAs($user)
         ->get(route('dashboard.products.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->where('products.0.name', 'Crema Hidratante Plus')
-            ->where('products.0.image', 'https://cdn.example.com/crema-hidratante-plus.jpg')
+            ->where('products.0.image', Storage::disk('public')->url((string) $storedSecondPath))
             ->where('products.0.category_name', 'Facial')
             ->where('products.0.status', false)
         );
@@ -118,6 +140,8 @@ test('product create, update and delete actions are reflected on dashboard produ
 });
 
 test('dashboard products store requires a valid category', function () {
+    Storage::fake('public');
+
     $user = User::factory()->create();
 
     $this->actingAs($user)
@@ -137,7 +161,9 @@ test('dashboard products store requires a valid category', function () {
         ->assertSessionHasErrors('category_id');
 });
 
-test('dashboard products store validates image as a valid url', function () {
+test('dashboard products store validates image as a valid file', function () {
+    Storage::fake('public');
+
     $user = User::factory()->create();
 
     $category = Category::query()->create([
@@ -163,8 +189,9 @@ test('dashboard products store validates image as a valid url', function () {
         ->assertSessionHasErrors('image');
 });
 
-
 test('dashboard products update allows clearing product image', function () {
+    Storage::fake('public');
+
     $user = User::factory()->create();
 
     $category = Category::query()->create([
@@ -184,8 +211,10 @@ test('dashboard products update allows clearing product image', function () {
         'category_id' => $category->id,
     ]);
 
+    $storedPath = UploadedFile::fake()->image('aceite-corporal.jpg')->store('products', 'public');
+
     $product->images()->create([
-        'url' => 'https://cdn.example.com/aceite-corporal.jpg',
+        'url' => $storedPath,
     ]);
 
     $this->actingAs($user)
@@ -194,7 +223,7 @@ test('dashboard products update allows clearing product image', function () {
             'name' => 'Aceite corporal',
             'description' => 'Texto',
             'product_code' => 'PRD-3300',
-            'image' => '',
+            'remove_image' => true,
             'price_sale' => 19.90,
             'status' => true,
             'discount_value' => null,
@@ -204,4 +233,5 @@ test('dashboard products update allows clearing product image', function () {
         ->assertRedirect(route('dashboard.products.index'));
 
     expect($product->fresh()->images()->exists())->toBeFalse();
+    Storage::disk('public')->assertMissing($storedPath);
 });

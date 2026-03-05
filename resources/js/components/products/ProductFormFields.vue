@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,7 +16,8 @@ type ProductFormData = {
     name: string;
     description: string;
     product_code: string;
-    image: string;
+    image: File | null;
+    remove_image?: boolean;
     price_sale: number;
     category_id: number | null;
     status: boolean;
@@ -23,22 +25,31 @@ type ProductFormData = {
 
 type ProductFormErrors = Partial<Record<keyof ProductFormData, string>>;
 
-defineProps<{
+const props = defineProps<{
     form: ProductFormData;
     errors: ProductFormErrors;
     idPrefix: string;
     categories: Array<{ id: number; name: string }>;
+    currentImageUrl?: string | null;
 }>();
 
 const emit = defineEmits<{
     (event: 'update:name', value: string): void;
     (event: 'update:description', value: string): void;
     (event: 'update:productCode', value: string): void;
-    (event: 'update:image', value: string): void;
+    (event: 'update:image', value: File | null): void;
+    (event: 'clear:image'): void;
     (event: 'update:priceSale', value: number): void;
     (event: 'update:categoryId', value: number): void;
     (event: 'update:status', value: boolean): void;
 }>();
+
+const handleImageSelection = (event: Event): void => {
+    const inputElement = event.target as HTMLInputElement;
+    const file = inputElement.files?.[0] ?? null;
+
+    emit('update:image', file);
+};
 </script>
 
 <template>
@@ -70,15 +81,29 @@ const emit = defineEmits<{
             </div>
 
             <div class="grid gap-2">
-                <Label :for="`${idPrefix}-image`">URL de imagen</Label>
+                <Label :for="`${idPrefix}-image`">Imagen del producto</Label>
                 <Input
                     :id="`${idPrefix}-image`"
-                    :model-value="form.image"
-                    placeholder="https://..."
-                    type="url"
-                    @update:model-value="emit('update:image', String($event))"
+                    accept="image/*"
+                    type="file"
+                    @change="handleImageSelection"
                 />
                 <InputError :message="errors.image" />
+
+                <div v-if="props.currentImageUrl" class="flex items-center gap-2">
+                    <a
+                        :href="props.currentImageUrl"
+                        class="text-xs text-primary underline"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                    >
+                        Ver imagen actual
+                    </a>
+
+                    <Button size="sm" type="button" variant="outline" @click="emit('clear:image')">
+                        Quitar imagen
+                    </Button>
+                </div>
             </div>
 
             <div class="grid gap-2 sm:grid-cols-2 sm:gap-4">

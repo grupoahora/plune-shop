@@ -2,9 +2,12 @@
 
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('catalog page filters products by search term', function () {
+    Storage::fake('public');
+
     $category = Category::query()->create([
         'name' => 'Categoría base',
         'icon' => 'sparkles',
@@ -22,7 +25,7 @@ test('catalog page filters products by search term', function () {
     ]);
 
     $shampoo->images()->create([
-        'url' => 'https://cdn.example.com/shampoo-hidratante.jpg',
+        'url' => 'products/shampoo-hidratante.jpg',
     ]);
 
     Product::query()->create([
@@ -41,7 +44,7 @@ test('catalog page filters products by search term', function () {
             ->has('products', 1)
             ->where('products.0.name', 'Shampoo Hidratante')
             ->where('products.0.productCode', 'PLN-SH-01')
-            ->where('products.0.image', 'https://cdn.example.com/shampoo-hidratante.jpg')
+            ->where('products.0.image', Storage::disk('public')->url('products/shampoo-hidratante.jpg'))
             ->has('allProducts', 2)
             ->where('allProducts.1.name', 'Shampoo Hidratante')
             ->where('search', 'Shampoo')
