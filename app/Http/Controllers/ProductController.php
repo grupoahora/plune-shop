@@ -34,6 +34,7 @@ class ProductController extends Controller
 
     public function index(Request $request): Response
     {
+        dump($request);
         $selectedCategoryId = $this->resolveSelectedCategoryId($request);
         $searchTerm = trim((string) $request->query('search', ''));
 
@@ -58,7 +59,7 @@ class ProductController extends Controller
             ->get()
             ->map(fn(Product $product): array => $this->catalogProductData($product))
             ->all();
-
+        
         return Inertia::render('Catalogo', [
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'categories' => fn () => Category::query()->orderBy('sort_order')->get(['id', 'name', 'icon']),
@@ -120,25 +121,12 @@ class ProductController extends Controller
             'reviews' => 0,
             'price' => '$'.number_format((float) $product->price_sale, 2),
             'productCode' => $product->product_code,
-            'image' => $this->resolveCatalogImageUrl($product) ?? 'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80',
+            'image' => $product->images->first() ? '/storage/' . $product->images->first()->url : 'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80',
         ];
     }
 
 
-    private function resolveCatalogImageUrl(Product $product): ?string
-    {
-        $storedImageValue = $product->images->first()?->url;
-
-        if ($storedImageValue === null) {
-            return null;
-        }
-
-        if (str_starts_with($storedImageValue, 'http://') || str_starts_with($storedImageValue, 'https://')) {
-            return $storedImageValue;
-        }
-
-        return Storage::disk('public')->url($storedImageValue);
-    }
+    
 
     private function resolveSelectedCategoryId(Request $request): ?int
     {

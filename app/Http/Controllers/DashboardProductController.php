@@ -31,7 +31,7 @@ class DashboardProductController extends Controller
                         'name' => $product->name,
                         'description' => $product->description,
                         'product_code' => $product->product_code,
-                        'image' => $this->resolveImageUrl($product->images->first()),
+                        'image' => $product->images->first() ? '/storage/'.$product->images->first()->url : null,
                         'price_sale' => (float) $product->price_sale,
                         'status' => (bool) $product->status,
                         'category_id' => $product->category_id,
@@ -40,7 +40,7 @@ class DashboardProductController extends Controller
                 })
                 ->all();
         });
-
+      
         return Inertia::render('products/Index', [
             'products' => $products,
             'categories' => Category::query()->orderBy('sort_order')->get(['id', 'name']),
@@ -135,16 +135,5 @@ class DashboardProductController extends Controller
         Storage::disk('public')->delete($storedValue);
     }
 
-    private function resolveImageUrl(?Image $image): ?string
-    {
-        if ($image === null) {
-            return null;
-        }
-
-        if (str_starts_with($image->url, 'http://') || str_starts_with($image->url, 'https://')) {
-            return $image->url;
-        }
-
-        return Storage::disk('public')->url($image->url);
-    }
+    
 }
