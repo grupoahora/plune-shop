@@ -34,7 +34,7 @@ class ProductController extends Controller
 
     public function index(Request $request): Response
     {
-        dump($request);
+        
         $selectedCategoryId = $this->resolveSelectedCategoryId($request);
         $searchTerm = trim((string) $request->query('search', ''));
 
