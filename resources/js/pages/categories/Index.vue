@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { useIncrementalPagination } from '@/composables/useIncrementalPagination';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type AppPageProps, type BreadcrumbItem } from '@/types';
+import { type CategorySummary } from '@/types/categories';
 import { dashboard } from '@/routes';
 
 const CreateCategorySheet = defineAsyncComponent(
@@ -30,15 +31,8 @@ const DeleteCategoryDialog = defineAsyncComponent(
     () => import('@/components/categories/DeleteCategoryDialog.vue'),
 );
 
-interface Category {
-    id: number;
-    name: string;
-    icon: string;
-    sort_order: number;
-}
-
 const props = defineProps<{
-    categories: Category[];
+    categories: CategorySummary[];
     iconOptions: string[];
 }>();
 
@@ -52,17 +46,9 @@ const breadcrumbs: BreadcrumbItem[] = [
 const createSheetOpen = ref(false);
 const editSheetOpen = ref(false);
 const deleteDialogOpen = ref(false);
-const selectedCategory = ref<Category | null>(null);
+const selectedCategory = ref<CategorySummary | null>(null);
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
-
-const editForm = useForm({
-    name: '',
-    icon: '',
-    sort_order: 0,
-});
-
-const deleteForm = useForm({});
 
 const page = usePage<AppPageProps>();
 
@@ -101,50 +87,22 @@ watch(
     { immediate: true },
 );
 
-const openEdit = (category: Category) => {
+const openEdit = (category: CategorySummary): void => {
     selectedCategory.value = category;
-    editForm.name = category.name;
-    editForm.icon = category.icon;
-    editForm.sort_order = category.sort_order;
     editSheetOpen.value = true;
 };
 
-const submitEdit = () => {
-    if (!selectedCategory.value) {
-        return;
-    }
-
-    editForm.put(`/dashboard/categorias/${selectedCategory.value.id}`, {
-        preserveScroll: true,
-        onSuccess: () => {
-            editSheetOpen.value = false;
-            selectedCategory.value = null;
-        },
-    });
-};
-
-const openDelete = (category: Category) => {
+const openDelete = (category: CategorySummary): void => {
     selectedCategory.value = category;
     deleteDialogOpen.value = true;
 };
 
-const submitDelete = () => {
-    if (!selectedCategory.value) {
-        return;
-    }
+const columnHelper = createColumnHelper<CategorySummary>();
 
-    deleteForm.delete(`/dashboard/categorias/${selectedCategory.value.id}`, {
-        preserveScroll: true,
-        onSuccess: () => {
-            deleteDialogOpen.value = false;
-            selectedCategory.value = null;
-        },
-    });
-};
-
-const columnHelper = createColumnHelper<Category>();
-
-const sortableHeader = (label: string, columnId: keyof Category) => {
+const sortableHeader = (
+    label: string,
+    columnId: keyof CategorySummary,
+): ReturnType<typeof h> => {
     return h(
         Button,
         {
@@ -365,24 +323,16 @@ const hasCategories = computed(() => table.getRowModel().rows.length > 0);
         />
 
         <EditCategorySheet
-            v-if="editSheetOpen"
+            v-if="editSheetOpen && selectedCategory"
             v-model:open="editSheetOpen"
-            :errors="editForm.errors"
-            :form="editForm"
+            :category="selectedCategory"
             :icon-options="props.iconOptions"
-            :processing="editForm.processing"
-            @submit="submitEdit"
-            @update:icon="editForm.icon = $event"
-            @update:name="editForm.name = $event"
-            @update:sort-order="editForm.sort_order = $event"
         />
 
         <DeleteCategoryDialog
-            v-if="deleteDialogOpen"
+            v-if="deleteDialogOpen && selectedCategory"
             v-model:open="deleteDialogOpen"
-            :category-name="selectedCategory?.name ?? null"
-            :processing="deleteForm.processing"
-            @confirm="submitDelete"
+            :category="selectedCategory"
         />
     </AppLayout>
 </template>
