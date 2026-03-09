@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import CategoryController from '@/actions/App/Http/Controllers/CategoryController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +18,6 @@ import {
 import { resolveCategoryIcon } from '@/lib/category-icons';
 import { cn } from '@/lib/utils';
 import { type CreateCategorySheetProps } from '@/types/categories';
-import CategoryController from '@/actions/App/Http/Controllers/CategoryController';
 
 const props = defineProps<CreateCategorySheetProps>();
 

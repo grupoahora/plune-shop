@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
+import CategoryController from '@/actions/App/Http/Controllers/CategoryController';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +18,6 @@ import {
 import { resolveCategoryIcon } from '@/lib/category-icons';
 import { cn } from '@/lib/utils';
 import { type EditCategorySheetProps } from '@/types/categories';
-import CategoryController from '@/actions/App/Http/Controllers/CategoryController';
 
 const props = defineProps<EditCategorySheetProps>();
 
@@ -53,7 +53,7 @@ const closeSheet = (): void => {
                 class="mt-0 rounded-lg border border-border/80 bg-muted/20 p-4"
             >
                 <Form
-                    v-bind="CategoryController.update(props.category.id).form()"
+                    v-bind="CategoryController.update.form(props.category.id)"
                     reset-on-success
                     class="grid gap-4"
                     @success="closeSheet"
@@ -71,7 +71,7 @@ const closeSheet = (): void => {
                                     name="name"
                                     type="text"
                                     placeholder="Nombre de la categoría"
-                                    :value="props.category.name"
+                                    :default-value="props.category.name"
                                 />
                                 <InputError :message="errors.name" />
                             </div>
@@ -80,10 +80,10 @@ const closeSheet = (): void => {
                                 <Label for="edit-icon"
                                     >Icono (permitidos)</Label
                                 >
-                                <input
+                                <Input
                                     type="hidden"
                                     name="icon"
-                                    :value="selectedIcon"
+                                    :default-value="selectedIcon"
                                 />
                                 <div
                                     id="edit-icon"
@@ -127,7 +127,7 @@ const closeSheet = (): void => {
                                     name="sort_order"
                                     min="0"
                                     type="number"
-                                    :value="props.category.sort_order"
+                                    :default-value="props.category.sort_order"
                                 />
                                 <InputError :message="errors.sort_order" />
                             </div>
