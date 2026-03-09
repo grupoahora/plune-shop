@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDashboardProductRequest;
 use App\Http\Requests\UpdateDashboardProductRequest;
 use App\Models\Category;
-use App\Models\Image;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\UploadedFile;
@@ -31,7 +30,7 @@ class DashboardProductController extends Controller
                         'name' => $product->name,
                         'description' => $product->description,
                         'product_code' => $product->product_code,
-                        'image' => $product->images->first() ? '/storage/'.$product->images->first()->url : null,
+                        'image' => $this->resolvePublicImageUrl($product->images->first()?->url),
                         'price_sale' => (float) $product->price_sale,
                         'status' => (bool) $product->status,
                         'category_id' => $product->category_id,
@@ -119,7 +118,7 @@ class DashboardProductController extends Controller
             return;
         }
 
-        $storedPath = $uploadedImage->store('products', 'public');
+        $storedPath = $uploadedImage->store('productos', 'public');
 
         $product->images()->create([
             'url' => $storedPath,
@@ -133,6 +132,23 @@ class DashboardProductController extends Controller
         }
 
         Storage::disk('public')->delete($storedValue);
+    }
+
+    private function resolvePublicImageUrl(?string $storedValue): ?string
+    {
+        if ($storedValue === null || $storedValue === '') {
+            return null;
+        }
+
+        if (str_starts_with($storedValue, 'http://') || str_starts_with($storedValue, 'https://')) {
+            return $storedValue;
+        }
+
+        $relativePath = str_starts_with($storedValue, 'productos/')
+            ? substr($storedValue, strlen('productos/'))
+            : $storedValue;
+
+        return '/productos/'.ltrim($relativePath, '/');
     }
 
     

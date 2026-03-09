@@ -78,7 +78,7 @@ test('product create, update and delete actions are reflected on dashboard produ
     expect($storedFirstPath)->not->toBeNull();
     Storage::disk('public')->assertExists((string) $storedFirstPath);
 
-    expect($product->images()->first()?->url)->toBe('https://cdn.example.com/crema-hidratante.jpg');
+    expect((string) $storedFirstPath)->toStartWith('productos/');
 
     $this->actingAs($user)
         ->get(route('dashboard.products.index'))
@@ -87,7 +87,7 @@ test('product create, update and delete actions are reflected on dashboard produ
             ->has('products', 1)
             ->where('products.0.name', 'Crema Hidratante')
             ->where('products.0.product_code', 'PRD-1100')
-            ->where('products.0.image', Storage::disk('public')->url((string) $storedFirstPath))
+            ->where('products.0.image', '/productos/'.basename((string) $storedFirstPath))
             ->where('products.0.category_name', 'Corporal')
         );
 
@@ -120,12 +120,12 @@ test('product create, update and delete actions are reflected on dashboard produ
         ->get(route('dashboard.products.index'))
         ->assertInertia(fn (Assert $page) => $page
             ->where('products.0.name', 'Crema Hidratante Plus')
-            ->where('products.0.image', Storage::disk('public')->url((string) $storedSecondPath))
+            ->where('products.0.image', '/productos/'.basename((string) $storedSecondPath))
             ->where('products.0.category_name', 'Facial')
             ->where('products.0.status', false)
         );
 
-    expect($product->fresh()->images()->first()?->url)->toBe('https://cdn.example.com/crema-hidratante-plus.jpg');
+    expect((string) $storedSecondPath)->toStartWith('productos/');
 
     $this->actingAs($user)
         ->from(route('dashboard.products.index'))
@@ -211,7 +211,7 @@ test('dashboard products update allows clearing product image', function () {
         'category_id' => $category->id,
     ]);
 
-    $storedPath = UploadedFile::fake()->image('aceite-corporal.jpg')->store('products', 'public');
+    $storedPath = UploadedFile::fake()->image('aceite-corporal.jpg')->store('productos', 'public');
 
     $product->images()->create([
         'url' => $storedPath,
