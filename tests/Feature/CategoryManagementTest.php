@@ -326,3 +326,56 @@ test('authenticated users can undo a category deletion', function () {
         'sort_order' => 4,
     ]);
 });
+
+
+test('category sort order must be unique when creating and updating', function () {
+    $user = User::factory()->create();
+
+    $firstCategory = Category::query()->create([
+        'name' => 'Cabello',
+        'icon' => 'Flower2',
+        'sort_order' => 1,
+    ]);
+
+    $secondCategory = Category::query()->create([
+        'name' => 'Rostro',
+        'icon' => 'Smile',
+        'sort_order' => 2,
+    ]);
+
+    $this->actingAs($user)
+        ->from(route('categories.index'))
+        ->post(route('categories.store'), [
+            'name' => 'Cuerpo',
+            'icon' => 'Leaf',
+            'sort_order' => 1,
+        ])
+        ->assertRedirect(route('categories.index'))
+        ->assertSessionHasErrors('sort_order');
+
+    $this->actingAs($user)
+        ->from(route('categories.index'))
+        ->put(route('categories.update', $secondCategory), [
+            'name' => 'Rostro Premium',
+            'icon' => 'Leaf',
+            'sort_order' => 1,
+        ])
+        ->assertRedirect(route('categories.index'))
+        ->assertSessionHasErrors('sort_order');
+
+    $this->actingAs($user)
+        ->from(route('categories.index'))
+        ->put(route('categories.update', $secondCategory), [
+            'name' => 'Rostro Premium',
+            'icon' => 'Leaf',
+            'sort_order' => 2,
+        ])
+        ->assertRedirect(route('categories.index'))
+        ->assertSessionDoesntHaveErrors('sort_order');
+
+    $firstCategory->refresh();
+    $secondCategory->refresh();
+
+    expect($firstCategory->sort_order)->toBe(1)
+        ->and($secondCategory->sort_order)->toBe(2);
+});
