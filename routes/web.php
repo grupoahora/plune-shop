@@ -10,11 +10,14 @@ Route::get('/', [ProductController::class, 'home'])->name('home');
 Route::get('/catalogo', [ProductController::class, 'index'])->name('catalogo');
 Route::get('/productos/buscar', [ProductController::class, 'search'])->name('products.search');
 Route::get('/productos/{product}', [ProductController::class, 'show'])->name('products.show');
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:cliente,admin'])->group(function () {
+    Route::get('dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+});
+
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('dashboard/categorias', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('dashboard/categorias', [CategoryController::class, 'store'])->name('categories.store');
     Route::put('dashboard/categorias/{category}', [CategoryController::class, 'update'])->name('categories.update');

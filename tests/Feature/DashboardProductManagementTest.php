@@ -1,5 +1,6 @@
 <?php
 
+use Spatie\Permission\Models\Role;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
@@ -10,7 +11,10 @@ use Inertia\Testing\AssertableInertia as Assert;
 test('authenticated users can visit dashboard products index', function () {
     Storage::fake('public');
 
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $category = Category::query()->create([
         'name' => 'Spa',
@@ -41,7 +45,10 @@ test('authenticated users can visit dashboard products index', function () {
 test('product create, update and delete actions are reflected on dashboard products index', function () {
     Storage::fake('public');
 
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $category = Category::query()->create([
         'name' => 'Corporal',
@@ -142,7 +149,10 @@ test('product create, update and delete actions are reflected on dashboard produ
 test('dashboard products store requires a valid category', function () {
     Storage::fake('public');
 
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $this->actingAs($user)
         ->from(route('dashboard.products.index'))
@@ -164,7 +174,10 @@ test('dashboard products store requires a valid category', function () {
 test('dashboard products store validates image as a valid file', function () {
     Storage::fake('public');
 
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $category = Category::query()->create([
         'name' => 'Aromaterapia',
@@ -192,7 +205,10 @@ test('dashboard products store validates image as a valid file', function () {
 test('dashboard products update allows clearing product image', function () {
     Storage::fake('public');
 
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $category = Category::query()->create([
         'name' => 'Corporal',

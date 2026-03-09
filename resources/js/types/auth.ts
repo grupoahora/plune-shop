@@ -7,9 +7,10 @@ export type User = {
     created_at: string;
     updated_at: string;
     [key: string]: unknown;
-    roles: role[];
+    roles: Role[];
 };
-export type role = {
+
+export type Role = {
     id: number;
     name: string;
     guard_name: string;
@@ -17,8 +18,15 @@ export type role = {
     updated_at: string;
     [key: string]: unknown;
 };
+
+export type AuthRoleFlags = {
+    is_admin: boolean;
+    is_cliente: boolean;
+};
+
 export type Auth = {
     user: User;
+    roles: AuthRoleFlags;
 };
 
 export type TwoFactorConfigContent = {

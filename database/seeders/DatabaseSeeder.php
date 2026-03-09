@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Support\Auth\RoleHelper;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -24,14 +25,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::factory()->create([
-            'name' => 'Administrador',
+            'name' => 'Admin',
             'email' => 'admin@example.com',
-        ])->assignRole('Administrador');
+        ])->assignRole(RoleHelper::ADMIN);
 
         User::factory()->create([
             'name' => 'Cliente',
             'email' => 'cliente@example.com',
-        ])->assignRole('Cliente');
+        ])->assignRole(RoleHelper::CLIENTE);
         $this->call([
             CategorySeeder::class,
             ProductSeeder::class,

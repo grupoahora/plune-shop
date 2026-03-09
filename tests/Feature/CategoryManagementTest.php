@@ -1,12 +1,16 @@
 <?php
 
+use Spatie\Permission\Models\Role;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Testing\AssertableInertia as Assert;
 
 test('authenticated users can visit categories index', function () {
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     Category::query()->create([
         'name' => 'Spa',
@@ -26,7 +30,10 @@ test('authenticated users can visit categories index', function () {
 });
 
 test('category icon must be one of the allowed options', function () {
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $this->actingAs($user)
         ->from(route('categories.index'))
@@ -40,7 +47,10 @@ test('category icon must be one of the allowed options', function () {
 });
 
 test('categories index always returns all categories ordered by sort order', function () {
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     Category::query()->create([
         'name' => 'Corporal',
@@ -76,7 +86,10 @@ test('categories index always returns all categories ordered by sort order', fun
 test('categories index cache is invalidated after category mutations and undo actions', function () {
     Cache::flush();
 
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $this->actingAs($user)->get(route('categories.index'))->assertOk();
 
@@ -181,7 +194,10 @@ test('categories index cache is invalidated after category mutations and undo ac
 
 
 test('category create, update and delete actions are reflected on categories index', function () {
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $this->actingAs($user)
         ->from(route('categories.index'))
@@ -233,7 +249,10 @@ test('category create, update and delete actions are reflected on categories ind
 });
 
 test('authenticated users can undo category creation', function () {
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $response = $this->actingAs($user)
         ->post(route('categories.store'), [
@@ -262,7 +281,10 @@ test('authenticated users can undo category creation', function () {
 });
 
 test('authenticated users can undo category update', function () {
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $category = Category::query()->create([
         'name' => 'Aromaterapia',
@@ -297,7 +319,10 @@ test('authenticated users can undo category update', function () {
 });
 
 test('authenticated users can undo a category deletion', function () {
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $category = Category::query()->create([
         'name' => 'Mascarillas',
@@ -329,7 +354,10 @@ test('authenticated users can undo a category deletion', function () {
 
 
 test('category sort order must be unique when creating and updating', function () {
+    Role::findOrCreate('admin');
+
     $user = User::factory()->create();
+    $user->assignRole('admin');
 
     $firstCategory = Category::query()->create([
         'name' => 'Cabello',

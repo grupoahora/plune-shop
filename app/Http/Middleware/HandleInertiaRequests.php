@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Auth\RoleHelper;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -39,9 +40,10 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => fn() => $request->user()
+                'user' => fn () => $request->user()
                     ? $request->user()->load('roles')
                     : null,
+                'roles' => fn () => RoleHelper::roleFlags($request->user()?->loadMissing('roles')),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'toast' => fn () => $request->session()->get('toast'),

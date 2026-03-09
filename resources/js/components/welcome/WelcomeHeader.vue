@@ -479,8 +479,7 @@ const dashboardButtonClass =
             <nav class="hidden items-center gap-3 lg:flex">
                 <Link
                     v-if="
-                        $page.props.auth.user &&
-                        $page?.props.auth.user.roles[0]?.name == 'Administrador'
+                        $page?.props.auth.roles?.is_admin
                     "
                     :href="dashboard()"
                     :class="dashboardButtonClass"
@@ -488,8 +487,7 @@ const dashboardButtonClass =
                 >
                 <Link
                     v-if="
-                        $page.props.auth.user &&
-                        $page?.props.auth.user.roles[0]?.name == 'Cliente'
+                        $page?.props.auth.roles?.is_cliente
                     "
                     :href="dashboard()"
                     :class="dashboardButtonClass"
