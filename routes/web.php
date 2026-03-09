@@ -3,8 +3,12 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardProductController;
 use App\Http\Controllers\ProductController;
+use App\Models\Product;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Laravel\Fortify\Features;
 
 Route::get('/', [ProductController::class, 'home'])->name('home');
 Route::get('/catalogo', [ProductController::class, 'index'])->name('catalogo');
@@ -13,6 +17,15 @@ Route::get('/productos/{product}', [ProductController::class, 'show'])->name('pr
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('cliente/dashboard', function (Request $request) {
+    return Inertia::render('ClienteDashboard', [
+        'canResetPassword' => Features::enabled(Features::resetPasswords()),
+        'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+        'status' => $request->session()->get('status'),
+        'allProducts' => Product::query()->where('status', true)->get(),
+    ]);
+})->middleware(['auth'])->name('client.dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/categorias', [CategoryController::class, 'index'])->name('categories.index');
