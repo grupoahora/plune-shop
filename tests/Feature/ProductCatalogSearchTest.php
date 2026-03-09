@@ -25,7 +25,7 @@ test('catalog page filters products by search term', function () {
     ]);
 
     $shampoo->images()->create([
-        'url' => 'products/shampoo-hidratante.jpg',
+        'url' => 'productos/shampoo-hidratante.jpg',
     ]);
 
     Product::query()->create([
@@ -44,7 +44,7 @@ test('catalog page filters products by search term', function () {
             ->has('products', 1)
             ->where('products.0.name', 'Shampoo Hidratante')
             ->where('products.0.productCode', 'PLN-SH-01')
-            ->where('products.0.image', Storage::disk('public')->url('products/shampoo-hidratante.jpg'))
+            ->where('products.0.image', '/productos/shampoo-hidratante.jpg')
             ->has('allProducts', 2)
             ->where('allProducts.1.name', 'Shampoo Hidratante')
             ->where('search', 'Shampoo')

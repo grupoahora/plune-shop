@@ -7,7 +7,6 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Laravel\Fortify\Features;
@@ -121,12 +120,30 @@ class ProductController extends Controller
             'reviews' => 0,
             'price' => '$'.number_format((float) $product->price_sale, 2),
             'productCode' => $product->product_code,
-            'image' => $product->images->first() ? '/storage/' . $product->images->first()->url : 'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80',
+            'image' => $this->resolvePublicImageUrl($product->images->first()?->url) ?? 'https://images.unsplash.com/photo-1556228578-dd8c4c6d3f23?auto=format&fit=crop&w=1200&q=80',
         ];
     }
 
 
     
+
+
+    private function resolvePublicImageUrl(?string $storedValue): ?string
+    {
+        if ($storedValue === null || $storedValue === '') {
+            return null;
+        }
+
+        if (str_starts_with($storedValue, 'http://') || str_starts_with($storedValue, 'https://')) {
+            return $storedValue;
+        }
+
+        $relativePath = str_starts_with($storedValue, 'productos/')
+            ? substr($storedValue, strlen('productos/'))
+            : $storedValue;
+
+        return '/productos/'.ltrim($relativePath, '/');
+    }
 
     private function resolveSelectedCategoryId(Request $request): ?int
     {
