@@ -48,7 +48,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:categories,name'],
             'icon' => ['required', 'string', 'max:255', Rule::in(config('categories.allowed_icons', []))],
-            'sort_order' => ['required', 'integer', 'min:0'],
+            'sort_order' => ['required', 'integer', 'min:0', 'unique:categories,sort_order'],
         ]);
 
         $category = Category::query()->create($validated);
@@ -69,7 +69,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:categories,name,'.$category->id],
             'icon' => ['required', 'string', 'max:255', Rule::in(config('categories.allowed_icons', []))],
-            'sort_order' => ['required', 'integer', 'min:0'],
+            'sort_order' => ['required', 'integer', 'min:0', Rule::unique('categories', 'sort_order')->ignore($category->id)],
         ]);
 
         $undoToken = $this->categoryUndoManager->storeUpdatedCategory($request->session(), $category);

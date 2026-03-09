@@ -26,11 +26,13 @@ const emit = defineEmits<{
 }>();
 
 const selectedIcon = ref(props.category.icon);
+const selectedSortOrder = ref(props.category.sort_order);
 
 watch(
     () => props.category,
     (category) => {
         selectedIcon.value = category.icon;
+        selectedSortOrder.value = category.sort_order;
     },
 );
 
@@ -80,10 +82,10 @@ const closeSheet = (): void => {
                                 <Label for="edit-icon"
                                     >Icono (permitidos)</Label
                                 >
-                                <Input
+                                <input
                                     type="hidden"
                                     name="icon"
-                                    :default-value="selectedIcon"
+                                    :value="selectedIcon"
                                 />
                                 <div
                                     id="edit-icon"
@@ -127,7 +129,7 @@ const closeSheet = (): void => {
                                     name="sort_order"
                                     min="0"
                                     type="number"
-                                    :default-value="props.category.sort_order"
+                                    v-model="selectedSortOrder"
                                 />
                                 <InputError :message="errors.sort_order" />
                             </div>
