@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/sheet';
 import { Spinner } from '@/components/ui/spinner';
 import type { Product } from '@/types';
+import WelcomeHeaderUserMenu from '@/components/welcome/WelcomeHeaderUserMenu.vue';
 import { dashboard } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
@@ -84,6 +85,7 @@ const iconButtonClass =
 
 const dashboardButtonClass =
     'rounded-xl border border-border px-4 py-2 text-sm font-semibold transition-all hover:border-primary hover:bg-muted/40 hover:text-primary dark:border-border dark:hover:border-primary dark:hover:bg-primary/10 dark:hover:text-primary';
+
 </script>
 
 <template>
@@ -486,15 +488,14 @@ const dashboardButtonClass =
                     :class="dashboardButtonClass"
                     >Dashboard</Link
                 >
-                <Link
+                <WelcomeHeaderUserMenu
                     v-if="
                         $page.props.auth.user &&
                         $page?.props.auth.user.roles[0]?.name == 'Cliente'
                     "
-                    :href="dashboard()"
-                    :class="dashboardButtonClass"
-                    >Mi Cuenta</Link
-                >
+                    :user="$page.props.auth.user"
+                    :button-class="dashboardButtonClass"
+                />
             </nav>
         </div>
     </header>
