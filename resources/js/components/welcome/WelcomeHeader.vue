@@ -22,9 +22,11 @@ import { Spinner } from '@/components/ui/spinner';
 import type { Product } from '@/types';
 import WelcomeHeaderUserMenu from '@/components/welcome/WelcomeHeaderUserMenu.vue';
 import { dashboard } from '@/routes';
+import { dashboard as client } from '@/routes/client';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import { store as registerStore } from '@/routes/register';
+import type { Product } from '@/types';
 
 const props = defineProps<{
     canResetPassword: boolean;
