@@ -19,11 +19,12 @@ import {
     SheetTrigger,
 } from '@/components/ui/sheet';
 import { Spinner } from '@/components/ui/spinner';
-import type { Product } from '@/types';
 import { dashboard } from '@/routes';
+import { dashboard as client } from '@/routes/client';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import { store as registerStore } from '@/routes/register';
+import type { Product } from '@/types';
 
 const props = defineProps<{
     canResetPassword: boolean;
@@ -491,7 +492,7 @@ const dashboardButtonClass =
                         $page.props.auth.user &&
                         $page?.props.auth.user.roles[0]?.name == 'Cliente'
                     "
-                    :href="dashboard()"
+                    :href="client()"
                     :class="dashboardButtonClass"
                     >Mi Cuenta</Link
                 >
